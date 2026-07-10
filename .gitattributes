@@ -1,0 +1,25 @@
+# Normalize text files to LF in the repository, checkout native on Windows
+* text=auto
+
+# Explicitly mark documentation/source text
+*.md   text
+*.html text
+*.css  text
+*.js   text
+*.json text
+*.sql  text
+*.csv  text
+
+# Treat binary artifacts as binary (no diff/merge, no EOL conversion)
+*.doc  binary
+*.docx binary
+*.xls  binary
+*.xlsx binary
+*.ppt  binary
+*.pptx binary
+*.pbix binary
+*.pdf  binary
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.gif  binary

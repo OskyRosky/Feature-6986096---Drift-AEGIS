@@ -1,0 +1,1347 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AEGIS · Forecast Drift — Prototype</title>
+<style>
+:root{
+  --bg:#f4f6f9; --surface:#ffffff; --surface-2:#f8f9fb; --surface-3:#eef1f5; --border:#e3e7ee;
+  --text:#1a1f29; --text-muted:#6b7280; --text-faint:#9aa1ac;
+  --primary:#155ec9; --primary-bg:#e9f1fd; --primary-dark:#0f3f8a;
+  --accent:#6b4fbb; --accent-bg:#efeaf9;
+  --teal:#0e8a7d; --teal-bg:#e4f6f3;
+  --green:#0e8f47; --green-bg:#e5f7ec;
+  --amber:#a3720a; --amber-bg:#fbf1da;
+  --orange:#b5540f; --orange-bg:#fdece0;
+  --red:#c22a3e; --red-bg:#fbe8ea;
+  --radius:12px; --radius-sm:8px;
+  --shadow:0 1px 2px rgba(16,24,40,.04), 0 2px 6px rgba(16,24,40,.05);
+  --shadow-md:0 4px 16px rgba(16,24,40,.08);
+  --font:'Segoe UI',-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif;
+  --sidebar-w:238px;
+}
+[data-theme="dark"]{
+  --bg:#0e1015; --surface:#161920; --surface-2:#1b1f27; --surface-3:#222732; --border:#2a2f3a;
+  --text:#e8eaee; --text-muted:#9aa1ac; --text-faint:#6b7280;
+  --primary:#4d94ff; --primary-bg:#132844; --primary-dark:#7fb2ff;
+  --accent:#a389e8; --accent-bg:#241f3a;
+  --teal:#3fd6c4; --teal-bg:#0f2a27;
+  --green:#3fd67a; --green-bg:#0f2a1c;
+  --amber:#f0b83f; --amber-bg:#2e2510;
+  --orange:#f0925a; --orange-bg:#2e1c10;
+  --red:#f26b7f; --red-bg:#301218;
+  --shadow:0 1px 2px rgba(0,0,0,.3), 0 2px 8px rgba(0,0,0,.25);
+  --shadow-md:0 8px 24px rgba(0,0,0,.4);
+}
+*{box-sizing:border-box;}
+html,body{height:100%;margin:0;}
+body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:13px;-webkit-font-smoothing:antialiased;}
+h1,h2,h3,h4{margin:0;font-weight:600;}
+p{margin:0;}
+a{color:inherit;text-decoration:none;}
+button{font-family:inherit;cursor:pointer;}
+input,select{font-family:inherit;}
+::-webkit-scrollbar{width:9px;height:9px;}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:6px;}
+::-webkit-scrollbar-track{background:transparent;}
+
+.app{display:flex;height:100vh;overflow:hidden;}
+
+/* ---------- SIDEBAR ---------- */
+.sidebar{width:var(--sidebar-w);flex-shrink:0;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;}
+.brand{display:flex;align-items:center;gap:10px;padding:18px 18px 14px;}
+.brand .mark{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,var(--primary),var(--accent));flex-shrink:0;}
+.brand .txt b{display:block;font-size:15px;letter-spacing:.02em;}
+.brand .txt span{display:block;font-size:9.5px;color:var(--text-faint);letter-spacing:.08em;text-transform:uppercase;margin-top:1px;}
+.nav{flex:1;overflow-y:auto;padding:6px 10px;}
+.nav-section-label{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--text-faint);padding:14px 10px 6px;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:8px 10px;margin-bottom:2px;border-radius:8px;color:var(--text-muted);font-size:12.8px;cursor:pointer;transition:background .12s,color .12s;position:relative;}
+.nav-item svg{width:16px;height:16px;flex-shrink:0;stroke:currentColor;fill:none;stroke-width:1.7;}
+.nav-item:hover{background:var(--surface-2);color:var(--text);}
+.nav-item.active{background:var(--primary-bg);color:var(--primary);font-weight:600;}
+.nav-item.active::before{content:"";position:absolute;left:-10px;top:6px;bottom:6px;width:3px;border-radius:3px;background:var(--primary);}
+.sidebar-foot{padding:12px;border-top:1px solid var(--border);}
+.theme-toggle{display:flex;align-items:center;justify-content:space-between;background:var(--surface-2);border:1px solid var(--border);border-radius:10px;padding:7px 10px;font-size:11.5px;color:var(--text-muted);}
+.theme-toggle button{background:var(--surface);border:1px solid var(--border);border-radius:7px;padding:5px 8px;display:flex;align-items:center;color:var(--text);}
+.theme-toggle button svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.8;}
+
+/* ---------- MAIN ---------- */
+.main-wrap{flex:1;display:flex;flex-direction:column;min-width:0;}
+.topbar{height:56px;flex-shrink:0;display:flex;align-items:center;justify-content:space-between;padding:0 22px;border-bottom:1px solid var(--border);background:var(--surface);}
+.topbar .titleblock h1{font-size:16.5px;}
+.topbar .titleblock .crumb{font-size:11px;color:var(--text-faint);margin-top:1px;}
+.topbar-actions{display:flex;align-items:center;gap:12px;}
+.icon-btn{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;border:1px solid var(--border);background:var(--surface);color:var(--text-muted);position:relative;}
+.icon-btn svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.8;}
+.icon-btn .dot{position:absolute;top:5px;right:5px;width:7px;height:7px;border-radius:50%;background:var(--red);border:1.5px solid var(--surface);}
+.updated-badge{font-size:11px;color:var(--text-muted);background:var(--surface-2);border:1px solid var(--border);border-radius:20px;padding:5px 12px;display:flex;align-items:center;gap:6px;}
+.updated-badge b{color:var(--text);}
+.pulse{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 0 0 rgba(14,143,71,.5);animation:pulse 2s infinite;}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(14,143,71,.45);}70%{box-shadow:0 0 0 6px rgba(14,143,71,0);}100%{box-shadow:0 0 0 0 rgba(14,143,71,0);}}
+.avatar{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#6b4fbb,#155ec9);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;}
+
+.filterbar{background:var(--surface-2);border-bottom:1px solid var(--border);padding:10px 22px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;}
+.filterbar .flabel{font-size:11px;color:var(--text-faint);display:flex;align-items:center;gap:5px;margin-right:2px;}
+.filterbar select{appearance:none;background:var(--surface) url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%236b7280" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>') no-repeat right 8px center/12px;border:1px solid var(--border);border-radius:7px;padding:6px 26px 6px 10px;font-size:11.6px;color:var(--text);min-width:108px;}
+.filterbar select:hover{border-color:var(--primary);}
+.filter-reset{font-size:11.3px;color:var(--primary);background:var(--surface);border:1px solid var(--border);border-radius:7px;padding:6px 11px;display:flex;align-items:center;gap:5px;}
+.filter-reset svg{width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2;}
+.filter-count{margin-left:auto;font-size:11.3px;color:var(--text-muted);background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:5px 12px;}
+.filter-count b{color:var(--primary);}
+
+#content{flex:1;overflow-y:auto;padding:20px 22px 40px;}
+.page{display:none;animation:fadein .18s ease;}
+.page.active{display:block;}
+@keyframes fadein{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
+
+.page-head{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:16px;}
+.page-head h1{font-size:19px;}
+.page-head p{font-size:12px;color:var(--text-muted);margin-top:3px;}
+.page-actions{display:flex;gap:8px;}
+.btn{font-size:12px;border-radius:8px;padding:7px 13px;border:1px solid var(--border);background:var(--surface);color:var(--text);display:flex;align-items:center;gap:6px;}
+.btn svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;}
+.btn.primary{background:var(--primary);border-color:var(--primary);color:#fff;}
+.btn:hover{border-color:var(--primary);color:var(--primary);}
+.btn.primary:hover{opacity:.92;color:#fff;}
+
+/* ---------- GRID / CARDS ---------- */
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(172px,1fr));gap:12px;margin-bottom:16px;}
+.grid-2{display:grid;grid-template-columns:1.3fr 1fr;gap:14px;margin-bottom:14px;}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:14px;}
+@media(max-width:1100px){.grid-2,.grid-3{grid-template-columns:1fr;}}
+
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow);transition:box-shadow .15s,transform .15s;}
+.card:hover{box-shadow:var(--shadow-md);}
+.card.center{display:flex;flex-direction:column;align-items:center;text-align:center;}
+.card-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
+.card-head h3{font-size:13px;}
+.card-head .link{font-size:11.5px;color:var(--primary);font-weight:600;}
+.muted{color:var(--text-muted);}
+.small{font-size:11px;}
+
+.kpi{position:relative;overflow:hidden;cursor:default;}
+.kpi .lbl{font-size:10.5px;color:var(--text-faint);text-transform:uppercase;letter-spacing:.05em;display:flex;align-items:center;gap:5px;}
+.kpi .value{font-size:24px;font-weight:700;margin-top:6px;line-height:1;}
+.kpi .value span{font-size:13px;color:var(--text-faint);font-weight:500;}
+.kpi .sub{font-size:11px;color:var(--text-muted);margin-top:6px;display:flex;align-items:center;gap:5px;}
+.kpi .bar{margin-top:10px;height:4px;border-radius:3px;background:var(--surface-3);overflow:hidden;}
+.kpi .bar i{display:block;height:100%;border-radius:3px;}
+.kpi.accent-primary{border-top:3px solid var(--primary);}
+.kpi.accent-green{border-top:3px solid var(--green);}
+.kpi.accent-amber{border-top:3px solid var(--amber);}
+.kpi.accent-red{border-top:3px solid var(--red);}
+.kpi.accent-accent{border-top:3px solid var(--accent);}
+.kpi.accent-teal{border-top:3px solid var(--teal);}
+
+.trend{display:inline-flex;align-items:center;gap:3px;font-weight:600;}
+.trend svg{width:11px;height:11px;stroke:currentColor;fill:none;stroke-width:2.4;}
+.trend.up{color:var(--red);}
+.trend.down{color:var(--green);}
+.trend.flat{color:var(--text-faint);}
+
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:10.8px;font-weight:700;white-space:nowrap;}
+.badge.dot::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor;}
+.badge.healthy,.badge.low,.badge.resolved{background:var(--green-bg);color:var(--green);}
+.badge.watch,.badge.medium,.badge.acknowledged{background:var(--amber-bg);color:var(--amber);}
+.badge.warning,.badge.high,.badge.investigating{background:var(--orange-bg);color:var(--orange);}
+.badge.critical,.badge.open{background:var(--red-bg);color:var(--red);}
+
+.chart-box{width:100%;}
+.chart-box.tall svg{min-height:260px;}
+.empty-state{padding:30px 10px;text-align:center;color:var(--text-faint);font-size:12px;}
+
+/* ---------- TABLE ---------- */
+.dt-toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;gap:10px;flex-wrap:wrap;}
+.dt-search{display:flex;align-items:center;gap:7px;background:var(--surface-2);border:1px solid var(--border);border-radius:8px;padding:6px 10px;min-width:260px;}
+.dt-search svg{width:14px;height:14px;stroke:var(--text-faint);fill:none;stroke-width:2;flex-shrink:0;}
+.dt-search input{border:none;outline:none;background:transparent;font-size:12.3px;color:var(--text);width:100%;}
+table.dt{width:100%;border-collapse:collapse;font-size:12.2px;}
+table.dt th{text-align:left;padding:9px 10px;color:var(--text-faint);font-weight:600;font-size:10.6px;text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid var(--border);cursor:pointer;user-select:none;white-space:nowrap;}
+table.dt th:hover{color:var(--primary);}
+table.dt th .arrow{margin-left:4px;opacity:.5;font-size:9px;}
+table.dt td{padding:9px 10px;border-bottom:1px solid var(--surface-3);color:var(--text);vertical-align:middle;}
+table.dt tbody tr{cursor:pointer;transition:background .1s;}
+table.dt tbody tr:hover{background:var(--surface-2);}
+table.dt tbody tr.expanded{background:var(--primary-bg);}
+.dt-detail{background:var(--surface-2);}
+.dt-detail td{padding:14px 16px;border-bottom:1px solid var(--border);}
+.dt-detail .drow{display:flex;gap:26px;flex-wrap:wrap;align-items:flex-start;}
+.dt-detail .dcol b{display:block;font-size:10px;color:var(--text-faint);text-transform:uppercase;margin-bottom:3px;}
+.dt-detail .dcol span{font-size:12.5px;}
+.dt-detail .dactions{margin-left:auto;display:flex;gap:8px;}
+.ellipsis{max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:inline-block;vertical-align:middle;}
+.mono{font-family:Consolas,'SFMono-Regular',Menlo,monospace;font-size:11.6px;}
+.dt-footer{display:flex;justify-content:space-between;align-items:center;margin-top:10px;font-size:11.6px;color:var(--text-muted);}
+.dt-pager{display:flex;align-items:center;gap:6px;}
+.dt-pager button{width:26px;height:26px;border-radius:6px;border:1px solid var(--border);background:var(--surface);color:var(--text-muted);display:flex;align-items:center;justify-content:center;}
+.dt-pager button:disabled{opacity:.35;cursor:default;}
+.dt-pager button:not(:disabled):hover{border-color:var(--primary);color:var(--primary);}
+.dt-pager select{border:1px solid var(--border);border-radius:6px;padding:4px 6px;background:var(--surface);color:var(--text);font-size:11.5px;}
+
+/* ---------- MISC WIDGETS ---------- */
+.legend{display:flex;flex-wrap:wrap;gap:12px;font-size:11.3px;color:var(--text-muted);}
+.legend .li{display:flex;align-items:center;gap:6px;}
+.legend .sw{width:9px;height:9px;border-radius:3px;}
+.bars-list .row{display:grid;grid-template-columns:120px 1fr 46px;gap:10px;align-items:center;padding:7px 0;}
+.bars-list .row .name{font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.bars-list .row .track{height:8px;border-radius:5px;background:var(--surface-3);overflow:hidden;}
+.bars-list .row .track i{display:block;height:100%;border-radius:5px;}
+.bars-list .row .val{font-size:11.6px;text-align:right;color:var(--text-muted);font-weight:600;}
+
+.heat-wrap{overflow-x:auto;}
+.heatgrid{display:grid;gap:4px;}
+.heatgrid .hcell{border-radius:5px;height:34px;display:flex;align-items:center;justify-content:center;font-size:10.5px;font-weight:700;color:#fff;cursor:default;}
+.heatgrid .hcol-label,.heatgrid .hrow-label{font-size:10px;color:var(--text-muted);display:flex;align-items:center;justify-content:center;text-align:center;}
+.heatgrid .hrow-label{justify-content:flex-start;font-weight:600;color:var(--text);}
+
+.timeline{position:relative;padding-left:26px;}
+.timeline::before{content:"";position:absolute;left:9px;top:4px;bottom:4px;width:2px;background:var(--border);}
+.tl-item{position:relative;padding-bottom:20px;}
+.tl-item .tl-dot{position:absolute;left:-26px;top:2px;width:18px;height:18px;border-radius:50%;background:var(--surface);border:2px solid var(--primary);display:flex;align-items:center;justify-content:center;}
+.tl-item .tl-dot svg{width:9px;height:9px;stroke:var(--primary);fill:none;stroke-width:2.5;}
+.tl-item .tl-time{font-size:10.6px;color:var(--text-faint);margin-bottom:2px;}
+.tl-item .tl-title{font-size:12.6px;font-weight:600;margin-bottom:2px;}
+.tl-item .tl-desc{font-size:11.6px;color:var(--text-muted);}
+.chip{font-size:11px;padding:5px 11px;border-radius:20px;border:1px solid var(--border);background:var(--surface);color:var(--text-muted);cursor:pointer;}
+.chip.active{background:var(--primary-bg);color:var(--primary);border-color:var(--primary);font-weight:600;}
+.chip-row{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:14px;}
+
+.metric-card{cursor:pointer;border:1px solid var(--border);}
+.metric-card.selected{border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-bg);}
+
+.slider-row{display:flex;align-items:center;gap:12px;margin-bottom:16px;}
+.slider-row .sname{width:120px;font-size:12.3px;font-weight:600;}
+.slider-row input[type=range]{flex:1;accent-color:var(--primary);}
+.slider-row .sval{width:42px;text-align:right;font-size:12px;color:var(--text-muted);font-weight:600;}
+.toggle-row{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--surface-3);}
+.toggle-row:last-child{border-bottom:none;}
+.toggle-row .tname{font-size:12.6px;font-weight:600;}
+.toggle-row .tsub{font-size:11px;color:var(--text-muted);margin-top:2px;}
+.switch{width:36px;height:20px;border-radius:12px;background:var(--surface-3);position:relative;flex-shrink:0;}
+.switch i{position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.3);transition:left .15s;}
+.switch.on{background:var(--primary);}
+.switch.on i{left:18px;}
+.footer{padding:10px 22px;font-size:10.8px;color:var(--text-faint);border-top:1px solid var(--border);background:var(--surface);display:flex;justify-content:space-between;flex-shrink:0;}
+
+.tooltip-wrap{position:relative;}
+.tooltip-wrap[data-tip]:hover::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:#111827;color:#fff;font-size:10.6px;padding:5px 8px;border-radius:6px;white-space:nowrap;z-index:50;box-shadow:0 4px 10px rgba(0,0,0,.25);}
+.toast{position:fixed;bottom:22px;right:22px;background:var(--text);color:var(--bg);padding:10px 16px;border-radius:9px;font-size:12.4px;box-shadow:var(--shadow-md);opacity:0;transform:translateY(8px);transition:all .2s;z-index:200;}
+.toast.show{opacity:1;transform:translateY(0);}
+.protobadge{position:fixed;top:14px;right:14px;background:var(--accent);color:#fff;font-size:10px;font-weight:700;padding:4px 10px;border-radius:20px;letter-spacing:.03em;z-index:150;box-shadow:var(--shadow-md);opacity:.92;}
+</style>
+</head>
+<body>
+<div class="protobadge">UX PROTOTYPE — NOT LIVE DATA</div>
+<div class="app">
+
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="mark"></div>
+      <div class="txt"><b>AEGIS</b><span>Forecast Drift</span></div>
+    </div>
+    <nav class="nav" id="navList"></nav>
+    <div class="sidebar-foot">
+      <div class="theme-toggle">
+        <span id="themeLabel">Light mode</span>
+        <button id="themeBtn"></button>
+      </div>
+    </div>
+  </aside>
+
+  <div class="main-wrap">
+    <header class="topbar">
+      <div class="titleblock">
+        <h1 id="pageTitle">Overview</h1>
+        <div class="crumb" id="pageCrumb">AEGIS / Forecast Drift / Overview</div>
+      </div>
+      <div class="topbar-actions">
+        <div class="updated-badge"><span class="pulse"></span>Last refreshed <b id="lastRefreshed">just now</b></div>
+        <div class="icon-btn tooltip-wrap" data-tip="Alerts"><span class="dot"></span></div>
+        <div class="icon-btn tooltip-wrap" data-tip="Help"></div>
+        <div class="avatar">OC</div>
+      </div>
+    </header>
+
+    <div class="filterbar" id="filterBar"></div>
+
+    <main id="content"></main>
+
+    <footer class="footer">
+      <span>AEGIS Forecast Drift — Feature 6986096 · Interactive UX Prototype · Not connected to live data</span>
+      <span>v0.1 · Conceptual Blueprint</span>
+    </footer>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============================== DATA LAYER ============================== */
+function mulberry32(seed){return function(){seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+function hashStr(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619);}return h>>>0;}
+function rngFor(key){return mulberry32(hashStr(String(key)));}
+function pick(rng,arr){return arr[Math.floor(rng()*arr.length)];}
+function randInt(rng,min,max){return Math.floor(rng()*(max-min+1))+min;}
+function clamp(v,a,b){return Math.max(a,Math.min(b,v));}
+function fmt(n,d){if(n===null||n===undefined||isNaN(n))return '—';return Number(n).toFixed(d===undefined?1:d);}
+function fmtK(n){return n>=1000?(n/1000).toFixed(2)+'K':fmt(n,0);}
+function fmtDate(d){return d.toLocaleDateString('en-US',{month:'short',day:'2-digit',year:'numeric'});}
+function fmtDateTime(d){return d.toLocaleDateString('en-US',{month:'short',day:'2-digit'})+' · '+d.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});}
+function timeAgo(d){const s=Math.floor((Date.now()-d.getTime())/1000);if(s<60)return s+'s ago';const m=Math.floor(s/60);if(m<60)return m+'m ago';const h=Math.floor(m/60);if(h<24)return h+'h ago';const days=Math.floor(h/24);return days+'d ago';}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+
+const NOW = new Date();
+const SERVICES = ["APCP150","APCP153","APCPRD01","APCPRD02","AUSP282","AUSP300","AUSP310","BLOB210","BLOB215","MSDP401"];
+const SCENARIOS = ["HDD EDB Forecast","SSD EDB Forecast","Memory EDB Forecast","CPU EDB Forecast"];
+const REGIONS = ["US-West","US-East","EU-West","APAC"];
+const FORESTS = ["Forest-01","Forest-02","Forest-03","Forest-04"];
+const KEYS = Array.from({length:12},(_,i)=>"KEY-"+String(i+1).padStart(2,'0'));
+const FORECAST_VERSIONS = (function(){const arr=[];for(let i=7;i>=0;i--){const d=new Date(NOW.getTime()-i*7*86400000);arr.push(d.toISOString().slice(0,10));}return arr;})();
+const TARGET_DATES = ["2026-12-31","2027-06-30","2027-12-31"];
+const DRIFT_TYPES = ["Performance Drift","Shape Drift","Stability Drift","Volatility Drift"];
+const SEVERITIES = ["Low","Medium","High","Critical"];
+const STATUSES = ["Open","Investigating","Acknowledged","Resolved"];
+const METRIC_DEFS = [
+  {key:'accuracy',label:'Accuracy',unit:'%',base:85,vol:3,invert:true},
+  {key:'mape',label:'MAPE',unit:'',base:42,vol:6,invert:false},
+  {key:'bias',label:'%BIAS',unit:'%',base:18,vol:5,invert:false},
+  {key:'rmse',label:'RMSE',unit:'',base:4200,vol:500,invert:false,scale:1},
+  {key:'mae',label:'MAE',unit:'',base:3400,vol:420,invert:false,scale:1},
+  {key:'smape',label:'SMAPE',unit:'',base:38,vol:5,invert:false},
+  {key:'ttl',label:'TTL',unit:'w',base:6,vol:1.4,invert:false},
+];
+
+function driftBand(score){
+  if(score<20)return {label:'Healthy',cls:'healthy',color:'var(--green)'};
+  if(score<40)return {label:'Watch',cls:'watch',color:'var(--amber)'};
+  if(score<70)return {label:'Warning',cls:'warning',color:'var(--orange)'};
+  return {label:'Critical',cls:'critical',color:'var(--red)'};
+}
+function metricBand(def,value){
+  const v = def.invert ? 100-value : value/(def.scale?1:1);
+  const norm = def.invert ? (100-value) : (value/def.base)*45;
+  return driftBand(clamp(norm,0,100));
+}
+function sevClass(s){return s.toLowerCase();}
+
+function explainFor(type,ctx){
+  if(type==='Performance Drift')return `${ctx.metric||'MAPE'} moved from ${ctx.prev} to ${ctx.curr} across the last ${ctx.n} forecast runs for ${ctx.service}.`;
+  if(type==='Shape Drift')return `Forecast trajectory for ${ctx.service} diverged ${ctx.pct}% from the prior version between ${ctx.a} and ${ctx.b}.`;
+  if(type==='Stability Drift')return `Value at target date ${ctx.target} shifted from ${ctx.prev} to ${ctx.curr} between forecast versions for ${ctx.service}.`;
+  return `Forecast values for ${ctx.service} show a coefficient of variation of ${ctx.cv}, indicating unstable behavior across recent runs.`;
+}
+
+const EVENTS = (function(){
+  const out=[];
+  const N=170;
+  for(let i=0;i<N;i++){
+    const rng = rngFor('evt-'+i);
+    const service = pick(rng,SERVICES);
+    const scenario = pick(rng,SCENARIOS);
+    const region = pick(rng,REGIONS);
+    const forest = pick(rng,FORESTS);
+    const key = pick(rng,KEYS);
+    const version = pick(rng,FORECAST_VERSIONS);
+    const target = pick(rng,TARGET_DATES);
+    const type = pick(rng,DRIFT_TYPES);
+    const daysAgo = Math.floor(Math.pow(rng(),1.5)*60);
+    const ts = new Date(NOW.getTime()-daysAgo*86400000-randInt(rng,0,86399)*1000);
+    let score = Math.floor(Math.pow(rng(),1.8)*100);
+    if(rng()<0.06) score = randInt(rng,72,98);
+    const band = driftBand(score);
+    const severity = score>=70?'Critical':score>=40?'High':score>=20?'Medium':'Low';
+    const status = score>=70 ? pick(rng,['Open','Open','Investigating']) : score>=40 ? pick(rng,['Investigating','Acknowledged','Open']) : pick(rng,['Acknowledged','Resolved','Resolved']);
+    let ctx={service:service};
+    if(type==='Performance Drift'){ctx.metric=pick(rng,['MAPE','Bias','Accuracy']);ctx.prev=fmt(30+rng()*20,2);ctx.curr=fmt(30+rng()*20+score/3,2);ctx.n=randInt(rng,3,6);}
+    else if(type==='Shape Drift'){ctx.pct=randInt(rng,8,55);ctx.a='v'+randInt(rng,1,3);ctx.b='v'+randInt(rng,4,6);}
+    else if(type==='Stability Drift'){ctx.target=target;ctx.prev=randInt(rng,95,140);ctx.curr=ctx.prev+randInt(rng,-5,60);}
+    else {ctx.cv=fmt(0.05+rng()*0.4,2);}
+    out.push({
+      id:'EVT-'+(10000+i), timestamp:ts, scenario, key, service, region, forest,
+      forecastVersion:version, targetDate:target, driftType:type, score, severity,
+      status, band, explanation:explainFor(type,ctx)
+    });
+  }
+  out.sort((a,b)=>b.timestamp-a.timestamp);
+  return out;
+})();
+
+function withinRange(ts,rangeDays){
+  if(rangeDays==='all')return true;
+  const days=Number(rangeDays);
+  return (NOW.getTime()-ts.getTime())<=days*86400000;
+}
+
+/* ============================== STATE ============================== */
+const state = {
+  theme:'light',
+  currentPage:'overview',
+  filters:{scenario:'All',key:'All',service:'All',region:'All',forest:'All',forecastVersion:'All',targetDate:'All',metric:'All',severity:'All',range:'60'},
+  perf:{selected:'mape'},
+  timeline:{types:new Set(['Forecast generated','Drift detected','Alert triggered','Status updated'])},
+  events:{search:'',sortCol:'timestamp',sortDir:-1,page:1,pageSize:10,expanded:new Set()},
+  topServices:{search:'',sortCol:'score',sortDir:-1,page:1,pageSize:10},
+  topScenarios:{search:'',sortCol:'score',sortDir:-1,page:1,pageSize:10},
+  stability:{sortCol:'version',sortDir:-1,page:1,pageSize:10},
+};
+
+function filteredEvents(){
+  const f=state.filters;
+  return EVENTS.filter(e=>
+    (f.scenario==='All'||e.scenario===f.scenario) &&
+    (f.key==='All'||e.key===f.key) &&
+    (f.service==='All'||e.service===f.service) &&
+    (f.region==='All'||e.region===f.region) &&
+    (f.forest==='All'||e.forest===f.forest) &&
+    (f.forecastVersion==='All'||e.forecastVersion===f.forecastVersion) &&
+    (f.targetDate==='All'||e.targetDate===f.targetDate) &&
+    (f.severity==='All'||e.severity===f.severity) &&
+    withinRange(e.timestamp,f.range)
+  );
+}
+
+/* ============================== ICONS ============================== */
+const ICONS = {
+  overview:'<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',
+  drift:'<polyline points="3,13 8,13 10,7 14,19 16,13 21,13"/>',
+  performance:'<line x1="5" y1="20" x2="5" y2="11"/><line x1="11" y1="20" x2="11" y2="5"/><line x1="17" y1="20" x2="17" y2="15"/><line x1="3" y1="20" x2="21" y2="20"/>',
+  shape:'<path d="M3 15c2-7 4 7 6 0s4-7 6 0 4 7 6 0"/>',
+  stability:'<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="0.8" fill="currentColor"/>',
+  volatility:'<polyline points="3,7 7,18 11,7 15,18 19,7 21,10"/>',
+  events:'<line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="14" y2="18"/>',
+  timeline:'<circle cx="12" cy="12" r="9"/><polyline points="12,7 12,12 15,14"/>',
+  topservices:'<polyline points="3,17 9,11 13,15 21,5"/><polyline points="15,5 21,5 21,11"/>',
+  topscenarios:'<polygon points="12,3 21,8 12,13 3,8"/><polyline points="3,15 12,20 21,15"/>',
+  settings:'<circle cx="12" cy="12" r="3"/><path d="M19.4 13a7.4 7.4 0 0 0 0-2l2-1.5-2-3.4-2.3 1a7.3 7.3 0 0 0-1.8-1l-.4-2.6h-4l-.4 2.6a7.3 7.3 0 0 0-1.8 1l-2.3-1-2 3.4L6.4 11a7.4 7.4 0 0 0 0 2l-2 1.5 2 3.4 2.3-1a7.3 7.3 0 0 0 1.8 1l.4 2.6h4l.4-2.6a7.3 7.3 0 0 0 1.8-1l2.3 1 2-3.4Z"/>',
+  sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
+  moon:'<path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5Z"/>',
+  search:'<circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.6" y2="16.6"/>',
+  bell:'<path d="M6 9a6 6 0 1 1 12 0c0 5 2 6 2 6H4s2-1 2-6"/><path d="M10 20a2 2 0 0 0 4 0"/>',
+  help:'<circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.9.4-1.5 1-1.5 2.2"/><line x1="12" y1="17" x2="12" y2="17"/>',
+  refresh:'<polyline points="23 4 23 10 17 10"/><path d="M20.5 15a8 8 0 1 1-1.7-8.7L23 10"/>',
+  arrowUp:'<polyline points="18 15 12 9 6 15"/>',
+  arrowDown:'<polyline points="6 9 12 15 18 9"/>',
+  external:'<path d="M14 3h7v7"/><path d="M10 14 21 3"/><path d="M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5"/>',
+};
+function ic(name,cls){return `<svg class="${cls||''}" viewBox="0 0 24 24">${ICONS[name]||''}</svg>`;}
+
+/* ============================== NAV / FILTER CONFIG ============================== */
+const NAV = [
+  {id:'overview',label:'Overview',icon:'overview'},
+  {id:'drift',label:'Forecast Drift',icon:'drift'},
+  {id:'performance',label:'Performance Drift',icon:'performance'},
+  {id:'shape',label:'Shape Drift',icon:'shape'},
+  {id:'stability',label:'Stability Drift',icon:'stability'},
+  {id:'volatility',label:'Volatility Drift',icon:'volatility'},
+  {id:'events',label:'Forecast Drift Events',icon:'events'},
+  {id:'timeline',label:'Historical Timeline',icon:'timeline'},
+  {id:'topservices',label:'Top Services',icon:'topservices'},
+  {id:'topscenarios',label:'Top Scenarios',icon:'topscenarios'},
+  {id:'settings',label:'Settings',icon:'settings'},
+];
+const PAGE_META = {
+  overview:{title:'Overview',crumb:'AEGIS / Forecast Drift / Overview',sub:'Real-time summary of forecast drift across all scenarios and services.'},
+  drift:{title:'Forecast Drift',crumb:'AEGIS / Forecast Drift / Overview',sub:'Composite drift score, families, heatmap, and evolution.'},
+  performance:{title:'Performance Drift',crumb:'AEGIS / Forecast Drift / Performance',sub:'Accuracy, MAPE, Bias, RMSE, MAE, SMAPE and TTL against threshold bands.'},
+  shape:{title:'Shape Drift',crumb:'AEGIS / Forecast Drift / Shape',sub:'Trajectory comparison between forecast versions for the selected service.'},
+  stability:{title:'Stability Drift',crumb:'AEGIS / Forecast Drift / Stability',sub:'Value at a fixed target date across successive forecast versions.'},
+  volatility:{title:'Volatility Drift',crumb:'AEGIS / Forecast Drift / Volatility',sub:'Rolling variance, coefficient of variation, and forecast oscillation.'},
+  events:{title:'Forecast Drift Events',crumb:'AEGIS / Forecast Drift / Events',sub:'Governed event log — aegis_forecast_drift_signals.'},
+  timeline:{title:'Historical Timeline',crumb:'AEGIS / Forecast Drift / Timeline',sub:'Chronological view of forecast, drift, and mitigation activity.'},
+  topservices:{title:'Top Services',crumb:'AEGIS / Forecast Drift / Top Services',sub:'Services ranked by average Forecast Drift Score.'},
+  topscenarios:{title:'Top Scenarios',crumb:'AEGIS / Forecast Drift / Top Scenarios',sub:'Scenarios ranked by average Forecast Drift Score and family mix.'},
+  settings:{title:'Settings',crumb:'AEGIS / Forecast Drift / Settings',sub:'Score weights, thresholds and downstream integrations (roadmap).'},
+};
+const FILTERS_CONFIG = [
+  {key:'scenario',label:'Scenario',options:['All',...SCENARIOS]},
+  {key:'key',label:'Key',options:['All',...KEYS]},
+  {key:'service',label:'Service',options:['All',...SERVICES]},
+  {key:'region',label:'Region',options:['All',...REGIONS]},
+  {key:'forest',label:'Forest',options:['All',...FORESTS]},
+  {key:'forecastVersion',label:'Forecast Version',options:['All',...FORECAST_VERSIONS]},
+  {key:'targetDate',label:'Target Date',options:['All',...TARGET_DATES]},
+  {key:'severity',label:'Severity',options:['All',...SEVERITIES]},
+  {key:'range',label:'Date Range',options:[{v:'7',t:'Last 7 days'},{v:'30',t:'Last 30 days'},{v:'60',t:'Last 60 days'},{v:'90',t:'Last 90 days'},{v:'all',t:'All time'}]},
+];
+
+/* ============================== CHART HELPERS ============================== */
+function lineChart(data){
+  const w=680,h=data.height||220,padL=34,padR=14,padT=14,padB=24;
+  const innerW=w-padL-padR, innerH=h-padT-padB;
+  const allVals = data.series.flatMap(s=>s.points);
+  let minV = data.min!==undefined?data.min:Math.min(...allVals,0);
+  let maxV = data.max!==undefined?data.max:Math.max(...allVals);
+  if(maxV===minV) maxV=minV+1;
+  const pad=(maxV-minV)*0.08; maxV+=pad;
+  const n = data.series[0].points.length;
+  const x = i => padL + (innerW*(n<=1?0:i/(n-1)));
+  const y = v => padT + innerH - ((v-minV)/(maxV-minV))*innerH;
+  let svg = `<svg viewBox="0 0 ${w} ${h}" width="100%" height="${h}" preserveAspectRatio="none">`;
+  (data.bands||[]).forEach(b=>{
+    const y1=y(Math.min(b.to,maxV)), y2=y(Math.max(b.from,minV));
+    svg+=`<rect x="${padL}" y="${y1.toFixed(1)}" width="${innerW}" height="${Math.max(0,y2-y1).toFixed(1)}" fill="${b.color}" opacity="0.11"></rect>`;
+  });
+  for(let g=0;g<=3;g++){const gy=(padT+innerH*g/3).toFixed(1); svg+=`<line x1="${padL}" y1="${gy}" x2="${w-padR}" y2="${gy}" stroke="var(--border)" stroke-width="1"></line>`;}
+  data.series.forEach(s=>{
+    let pts = s.points.map((v,i)=>`${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(' ');
+    if(s.area){
+      let poly = `${x(0).toFixed(1)},${y(minV).toFixed(1)} `+pts+` ${x(n-1).toFixed(1)},${y(minV).toFixed(1)}`;
+      svg+=`<polygon points="${poly}" fill="${s.color}" opacity="0.14"></polygon>`;
+    }
+    svg+=`<polyline points="${pts}" fill="none" stroke="${s.color}" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"></polyline>`;
+    if(data.dots!==false){
+      s.points.forEach((v,i)=>{svg+=`<circle cx="${x(i).toFixed(1)}" cy="${y(v).toFixed(1)}" r="2.6" fill="${s.color}"><title>${(data.labels?data.labels[i]+': ':'')+fmt(v,1)}</title></circle>`;});
+    }
+  });
+  for(let g=0;g<=2;g++){const val=minV+(maxV-minV)*(1-g/2); svg+=`<text x="2" y="${(padT+innerH*g/2+4).toFixed(1)}" font-size="9" fill="var(--text-faint)">${fmt(val,0)}</text>`;}
+  if(data.labels){
+    const step=Math.max(1,Math.floor(n/6));
+    for(let i=0;i<n;i+=step){svg+=`<text x="${x(i).toFixed(1)}" y="${h-6}" font-size="9" fill="var(--text-faint)" text-anchor="middle">${data.labels[i]}</text>`;}
+  }
+  if(data.legend){
+    svg+='';
+  }
+  svg+='</svg>';
+  return svg;
+}
+function donutChart(segments,opts){
+  opts=opts||{};
+  const size=opts.size||150, r=opts.r||58, cx=size/2, cy=size/2, sw=opts.sw||16;
+  const total = segments.reduce((a,s)=>a+s.value,0)||1;
+  const circumference = 2*Math.PI*r;
+  let offset=0;
+  let svg=`<svg viewBox="0 0 ${size} ${size}" width="${size}" height="${size}">`;
+  svg+=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="var(--surface-3)" stroke-width="${sw}"></circle>`;
+  segments.forEach(s=>{
+    const frac=s.value/total; const len=frac*circumference;
+    svg+=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${s.color}" stroke-width="${sw}" stroke-dasharray="${len.toFixed(1)} ${(circumference-len).toFixed(1)}" stroke-dashoffset="${(-offset).toFixed(1)}" transform="rotate(-90 ${cx} ${cy})"><title>${s.label}: ${s.value}</title></circle>`;
+    offset+=len;
+  });
+  svg+=`<text x="${cx}" y="${cy-2}" text-anchor="middle" font-size="20" font-weight="700" fill="var(--text)">${total}</text>`;
+  svg+=`<text x="${cx}" y="${cy+14}" text-anchor="middle" font-size="9" fill="var(--text-faint)">total</text>`;
+  svg+='</svg>';
+  return svg;
+}
+function gaugeChart(value,opts){
+  opts=opts||{};
+  const size=opts.size||156,r=64,cx=size/2,cy=size/2,sw=14;
+  const circumference=2*Math.PI*r;
+  const frac=clamp(value,0,100)/100;
+  const band=driftBand(value);
+  let svg=`<svg viewBox="0 0 ${size} ${size}" width="${size}" height="${size}">`;
+  svg+=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="var(--surface-3)" stroke-width="${sw}"></circle>`;
+  svg+=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${band.color}" stroke-width="${sw}" stroke-linecap="round" stroke-dasharray="${(frac*circumference).toFixed(1)} ${circumference.toFixed(1)}" transform="rotate(-90 ${cx} ${cy})"></circle>`;
+  svg+=`<text x="${cx}" y="${cy-4}" text-anchor="middle" font-size="26" font-weight="700" fill="var(--text)">${fmt(value,0)}</text>`;
+  svg+=`<text x="${cx}" y="${cy+16}" text-anchor="middle" font-size="10" fill="var(--text-faint)">/ 100</text>`;
+  svg+='</svg>';
+  return {svg:svg,band:band};
+}
+function sparkline(points,color,w,h){
+  w=w||84;h=h||26;
+  const min=Math.min(...points),max=Math.max(...points);
+  const rng=(max-min)||1;
+  const x=i=>i*(w/((points.length-1)||1));
+  const y=v=>h-2-((v-min)/rng)*(h-4);
+  const pts=points.map((v,i)=>`${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(' ');
+  return `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}"><polyline points="${pts}" fill="none" stroke="${color}" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/></svg>`;
+}
+function barsListHtml(items,opts){
+  opts=opts||{};
+  const max = opts.max || Math.max.apply(null,items.map(i=>i.value).concat([1]));
+  return `<div class="bars-list">`+items.map(it=>`
+    <div class="row">
+      <div class="name">${esc(it.label)}</div>
+      <div class="track"><i style="width:${clamp(it.value/max*100,2,100)}%;background:${it.color||'var(--primary)'}"></i></div>
+      <div class="val">${it.valueLabel!==undefined?it.valueLabel:fmt(it.value,0)}</div>
+    </div>`).join('')+`</div>`;
+}
+function heatColor(v){
+  if(v<20)return '#0e8f47';
+  if(v<40)return '#8fae12';
+  if(v<70)return '#e08a1b';
+  return '#c22a3e';
+}
+function heatmapHtml(rows,cols,valueFn){
+  let html = `<div class="heat-wrap"><div class="heatgrid" style="grid-template-columns:96px repeat(${cols.length},minmax(56px,1fr));">`;
+  html+='<div></div>';
+  cols.forEach(c=>html+=`<div class="hcol-label">${esc(c)}</div>`);
+  rows.forEach(r=>{
+    html+=`<div class="hrow-label">${esc(r)}</div>`;
+    cols.forEach(c=>{
+      const v=valueFn(r,c);
+      html+=`<div class="hcell" style="background:${heatColor(v)}" title="${esc(r)} × ${esc(c)}: ${fmt(v,0)}">${fmt(v,0)}</div>`;
+    });
+  });
+  html+='</div></div>';
+  return html;
+}
+function animateValue(el,to,decimals,suffix){
+  const from=0; const dur=650; const start=performance.now();
+  function step(t){
+    const p=Math.min(1,(t-start)/dur); const eased=1-Math.pow(1-p,3);
+    el.textContent = fmt(from+(to-from)*eased,decimals===undefined?0:decimals)+(suffix||'');
+    if(p<1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  clearTimeout(window.__toastTimer);
+  window.__toastTimer=setTimeout(()=>t.classList.remove('show'),2200);
+}
+
+/* ============================== GENERIC DATATABLE ============================== */
+function renderDataTable(containerId, columns, data, st, opts){
+  opts = opts||{};
+  const container = document.getElementById(containerId);
+  if(!container) return;
+  let rows = data;
+  if(st.search){
+    const q = st.search.toLowerCase();
+    rows = rows.filter(r=> columns.some(c=> c.searchable!==false && String(c.raw?c.raw(r):(c.render?c.render(r):r[c.key])).toLowerCase().includes(q)) );
+  }
+  if(st.sortCol){
+    rows = rows.slice().sort((a,b)=>{
+      let av = opts.sortValue?opts.sortValue(a,st.sortCol):a[st.sortCol];
+      let bv = opts.sortValue?opts.sortValue(b,st.sortCol):b[st.sortCol];
+      if(av instanceof Date){av=av.getTime();bv=bv.getTime();}
+      if(typeof av==='string') return av.localeCompare(bv)*st.sortDir;
+      return ((av||0)-(bv||0))*st.sortDir;
+    });
+  }
+  const total = rows.length;
+  const pages = Math.max(1,Math.ceil(total/st.pageSize));
+  st.page = clamp(st.page,1,pages);
+  const startIdx=(st.page-1)*st.pageSize;
+  const pageRows = rows.slice(startIdx,startIdx+st.pageSize);
+
+  let html = `<table class="dt"><thead><tr>`;
+  columns.forEach(c=>{
+    const arrow = st.sortCol===c.key ? (st.sortDir===1?'▲':'▼') : '';
+    html+=`<th data-sort="${c.key}">${esc(c.label)}${arrow?`<span class="arrow">${arrow}</span>`:''}</th>`;
+  });
+  html+=`</tr></thead><tbody>`;
+  if(pageRows.length===0){
+    html+=`<tr><td colspan="${columns.length}"><div class="empty-state">No records match the current filters.</div></td></tr>`;
+  }
+  pageRows.forEach((r,idx)=>{
+    const rowKey = String(opts.rowKey?opts.rowKey(r):idx);
+    const expanded = opts.expandable && st.expanded && st.expanded.has(rowKey);
+    html+=`<tr data-key="${rowKey}" class="${expanded?'expanded':''}">`;
+    columns.forEach(c=>{ html+=`<td>${c.render?c.render(r):esc(r[c.key])}</td>`; });
+    html+=`</tr>`;
+    if(expanded && opts.expandRenderer){
+      html+=`<tr class="dt-detail"><td colspan="${columns.length}">${opts.expandRenderer(r)}</td></tr>`;
+    }
+  });
+  html+=`</tbody></table>`;
+  html+=`<div class="dt-footer"><span>Showing ${total===0?0:startIdx+1}–${Math.min(startIdx+st.pageSize,total)} of ${total}</span>
+    <div class="dt-pager">
+      <select data-role="pagesize">${[10,25,50].map(n=>`<option value="${n}" ${st.pageSize===n?'selected':''}>${n} / page</option>`).join('')}</select>
+      <button data-role="first" ${st.page===1?'disabled':''}>«</button>
+      <button data-role="prev" ${st.page===1?'disabled':''}>‹</button>
+      <span>Page ${st.page} of ${pages}</span>
+      <button data-role="next" ${st.page===pages?'disabled':''}>›</button>
+      <button data-role="last" ${st.page===pages?'disabled':''}>»</button>
+    </div></div>`;
+  container.innerHTML = html;
+
+  container.querySelectorAll('th[data-sort]').forEach(th=>{
+    th.addEventListener('click',()=>{
+      const col=th.getAttribute('data-sort');
+      if(st.sortCol===col) st.sortDir*=-1; else {st.sortCol=col; st.sortDir=1;}
+      renderDataTable(containerId,columns,data,st,opts);
+    });
+  });
+  container.querySelectorAll('tbody tr[data-key]').forEach(tr=>{
+    tr.addEventListener('click',()=>{
+      if(!opts.expandable)return;
+      const key=tr.getAttribute('data-key');
+      if(st.expanded.has(key)) st.expanded.delete(key); else {st.expanded.clear(); st.expanded.add(key);}
+      renderDataTable(containerId,columns,data,st,opts);
+    });
+  });
+  const psSel = container.querySelector('[data-role=pagesize]');
+  if(psSel) psSel.addEventListener('change',e=>{st.pageSize=Number(e.target.value);st.page=1;renderDataTable(containerId,columns,data,st,opts);});
+  const bind=(role,fn)=>{const b=container.querySelector(`[data-role=${role}]`); if(b) b.addEventListener('click',fn);};
+  bind('first',()=>{st.page=1;renderDataTable(containerId,columns,data,st,opts);});
+  bind('prev',()=>{st.page=Math.max(1,st.page-1);renderDataTable(containerId,columns,data,st,opts);});
+  bind('next',()=>{st.page=Math.min(pages,st.page+1);renderDataTable(containerId,columns,data,st,opts);});
+  bind('last',()=>{st.page=pages;renderDataTable(containerId,columns,data,st,opts);});
+  if(opts.onRendered) opts.onRendered(total);
+}
+
+/* ============================== PAGE SKELETON ============================== */
+function buildPages(){
+  document.getElementById('content').innerHTML = `
+  <section id="page-overview" class="page">
+    <div class="page-head"><div><h1>Overview</h1><p>Real-time summary of forecast drift across all scenarios and services.</p></div>
+      <div class="page-actions"><button class="btn" id="ov-refresh">${ic('refresh')}Refresh</button></div></div>
+    <div class="kpi-grid" id="ov-kpis"></div>
+    <div class="grid-2">
+      <div class="card"><div class="card-head"><h3>Drift Trend</h3><span class="muted small">30-day average Forecast Drift Score</span></div><div id="ov-trend" class="chart-box"></div></div>
+      <div class="card"><div class="card-head"><h3>Severity Distribution</h3></div><div id="ov-severity" class="chart-box"></div></div>
+    </div>
+    <div class="grid-2">
+      <div class="card"><div class="card-head"><h3>Drift Heatmap</h3><span class="muted small">Service × Scenario</span></div><div id="ov-heatmap"></div></div>
+      <div class="card"><div class="card-head"><h3>Recent Drift Events</h3><a class="link" data-nav="events">View all →</a></div><div id="ov-recent"></div></div>
+    </div>
+  </section>
+
+  <section id="page-drift" class="page">
+    <div class="page-head"><div><h1>Forecast Drift</h1><p>Composite drift score, families, heatmap and evolution.</p></div></div>
+    <div class="grid-3">
+      <div class="card center"><h3>Overall Drift Score</h3><div id="fd-gauge"></div><div id="fd-status"></div></div>
+      <div class="card"><h3>Distribution by Drift Family</h3><div id="fd-family"></div></div>
+      <div class="card"><h3>Severity Distribution</h3><div id="fd-severity"></div></div>
+    </div>
+    <div class="grid-2">
+      <div class="card"><div class="card-head"><h3>Drift Evolution</h3><span class="muted small">60-day trend with health bands</span></div><div id="fd-evolution" class="chart-box"></div></div>
+      <div class="card"><div class="card-head"><h3>Drift Heatmap</h3><span class="muted small">Service × Scenario</span></div><div id="fd-heatmap"></div></div>
+    </div>
+    <div class="grid-2">
+      <div class="card"><h3>Top Services</h3><div id="fd-topservices"></div></div>
+      <div class="card"><h3>Top Scenarios</h3><div id="fd-topscenarios"></div></div>
+    </div>
+  </section>
+
+  <section id="page-performance" class="page">
+    <div class="page-head"><div><h1>Performance Drift</h1><p>Accuracy, MAPE, Bias, RMSE, MAE, SMAPE and TTL against threshold bands.</p></div></div>
+    <div class="kpi-grid" id="pf-metrics"></div>
+    <div class="card"><div class="card-head"><h3 id="pf-chart-title">Historical Trend</h3><span class="muted small">Healthy · Watch · Warning · Critical bands</span></div><div id="pf-chart" class="chart-box tall"></div></div>
+  </section>
+
+  <section id="page-shape" class="page">
+    <div class="page-head"><div><h1>Shape Drift</h1><p>Trajectory comparison between forecast versions for the selected service.</p></div></div>
+    <div class="kpi-grid" id="sh-kpis"></div>
+    <div class="card"><div class="card-head"><h3>Forecast Version A vs Version B</h3><div class="legend" id="sh-legend"></div></div><div id="sh-chart" class="chart-box tall"></div></div>
+    <div class="card"><h3>Month-by-Month Comparison</h3><div id="sh-table"></div></div>
+  </section>
+
+  <section id="page-stability" class="page">
+    <div class="page-head"><div><h1>Stability Drift</h1><p>Value at a fixed target date across successive forecast versions.</p></div></div>
+    <div class="kpi-grid" id="st-kpis"></div>
+    <div class="grid-2">
+      <div class="card"><div class="card-head"><h3>Value at Target Date</h3><span class="muted small" id="st-target-label"></span></div><div id="st-chart" class="chart-box"></div></div>
+      <div class="card"><h3>Forecast Versions</h3><div id="st-table"></div></div>
+    </div>
+  </section>
+
+  <section id="page-volatility" class="page">
+    <div class="page-head"><div><h1>Volatility Drift</h1><p>Rolling variance, coefficient of variation and forecast oscillation.</p></div></div>
+    <div class="kpi-grid" id="vo-kpis"></div>
+    <div class="grid-2">
+      <div class="card"><div class="card-head"><h3>Rolling Variance</h3></div><div id="vo-variance" class="chart-box"></div></div>
+      <div class="card"><div class="card-head"><h3>Forecast Oscillation</h3></div><div id="vo-osc" class="chart-box"></div></div>
+    </div>
+    <div class="grid-2">
+      <div class="card"><h3>Coefficient of Variation by Service</h3><div id="vo-cov"></div></div>
+      <div class="card"><h3>Most Volatile Services</h3><div id="vo-table"></div></div>
+    </div>
+  </section>
+
+  <section id="page-events" class="page">
+    <div class="page-head"><div><h1>Forecast Drift Events</h1><p>Governed event log — <span class="mono">aegis_forecast_drift_signals</span>.</p></div></div>
+    <div class="card">
+      <div class="dt-toolbar">
+        <div class="dt-search">${ic('search')}<input id="ev-search" placeholder="Search scenario, key, service, explanation…"/></div>
+        <div class="muted small" id="ev-count"></div>
+      </div>
+      <div id="ev-table"></div>
+    </div>
+  </section>
+
+  <section id="page-timeline" class="page">
+    <div class="page-head"><div><h1>Historical Timeline</h1><p>Chronological view of forecast, drift and mitigation activity.</p></div></div>
+    <div class="chip-row" id="tl-chips"></div>
+    <div class="card"><div class="timeline" id="tl-list"></div></div>
+  </section>
+
+  <section id="page-topservices" class="page">
+    <div class="page-head"><div><h1>Top Services</h1><p>Services ranked by average Forecast Drift Score.</p></div></div>
+    <div class="card"><h3>Top 8 by Average Drift Score</h3><div id="ts-chart"></div></div>
+    <div class="card"><div id="ts-table"></div></div>
+  </section>
+
+  <section id="page-topscenarios" class="page">
+    <div class="page-head"><div><h1>Top Scenarios</h1><p>Scenarios ranked by average Forecast Drift Score and family mix.</p></div></div>
+    <div class="card"><h3>Scenarios by Average Drift Score</h3><div id="tc-chart"></div></div>
+    <div class="card"><div id="tc-table"></div></div>
+  </section>
+
+  <section id="page-settings" class="page">
+    <div class="page-head"><div><h1>Settings</h1><p>Score weights, thresholds and downstream integrations. Configuration is illustrative in this prototype.</p></div></div>
+    <div class="grid-2">
+      <div class="card"><h3>Forecast Drift Score Weights</h3><div id="cfg-weights" style="margin-top:14px;"></div></div>
+      <div class="card"><h3>Operational Thresholds</h3><div id="cfg-thresholds" style="margin-top:14px;"></div></div>
+    </div>
+    <div class="card"><h3>Downstream Integrations (Roadmap)</h3><div id="cfg-integrations" style="margin-top:6px;"></div></div>
+  </section>
+  `;
+}
+
+/* ============================== SHARED HELPERS ============================== */
+function filteredEventsExcept(exclude){
+  const f=state.filters;
+  return EVENTS.filter(e=>
+    (exclude==='scenario'||f.scenario==='All'||e.scenario===f.scenario) &&
+    (exclude==='key'||f.key==='All'||e.key===f.key) &&
+    (exclude==='service'||f.service==='All'||e.service===f.service) &&
+    (exclude==='region'||f.region==='All'||e.region===f.region) &&
+    (exclude==='forest'||f.forest==='All'||e.forest===f.forest) &&
+    (exclude==='forecastVersion'||f.forecastVersion==='All'||e.forecastVersion===f.forecastVersion) &&
+    (exclude==='targetDate'||f.targetDate==='All'||e.targetDate===f.targetDate) &&
+    (exclude==='severity'||f.severity==='All'||e.severity===f.severity) &&
+    (exclude==='range'||withinRange(e.timestamp,f.range))
+  );
+}
+function dailySeries(events,days){
+  const labels=[],vals=[];
+  for(let i=days-1;i>=0;i--){
+    const dayStart=new Date(NOW); dayStart.setHours(0,0,0,0); dayStart.setDate(dayStart.getDate()-i);
+    const dayEnd=new Date(dayStart.getTime()+86400000);
+    const dayEvents=events.filter(e=>e.timestamp>=dayStart&&e.timestamp<dayEnd);
+    const avg = dayEvents.length? dayEvents.reduce((a,e)=>a+e.score,0)/dayEvents.length : null;
+    vals.push(avg);
+    labels.push((dayStart.getMonth()+1)+'/'+dayStart.getDate());
+  }
+  let last=18+Math.random()*4;
+  for(let i=0;i<vals.length;i++){ if(vals[i]===null) vals[i]=last; else last=vals[i]; }
+  return {labels,vals};
+}
+function groupAvg(events,keyFn){
+  const map=new Map();
+  events.forEach(e=>{
+    const k=keyFn(e);
+    if(!map.has(k)) map.set(k,{sum:0,n:0});
+    const o=map.get(k); o.sum+=e.score; o.n++;
+  });
+  return Array.from(map.entries()).map(([k,o])=>({label:k,value:o.sum/o.n,count:o.n})).sort((a,b)=>b.value-a.value);
+}
+function familyColor(type){
+  return type==='Performance Drift'?'var(--primary)':type==='Shape Drift'?'var(--accent)':type==='Stability Drift'?'var(--amber)':'var(--teal)';
+}
+function sevColor(sev){
+  return sev==='Low'?'#0e8f47':sev==='Medium'?'#a3720a':sev==='High'?'#b5540f':'#c22a3e';
+}
+function badgeHtml(text,cls){return `<span class="badge ${cls}">${esc(text)}</span>`;}
+function xPos(i,n,w,padL,padR){const innerW=w-padL-padR; return padL+innerW*(n<=1?0:i/(n-1));}
+function insertOverlay(svg,rectHtml){return svg.replace('</svg>',rectHtml+'</svg>');}
+function serviceOrDefault(){return state.filters.service==='All'?SERVICES[0]:state.filters.service;}
+function scenarioOrDefault(){return state.filters.scenario==='All'?SCENARIOS[0]:state.filters.scenario;}
+function targetOrDefault(){return state.filters.targetDate==='All'?TARGET_DATES[1]:state.filters.targetDate;}
+function trendArrow(delta,goodWhenDown){
+  const good = goodWhenDown ? delta<0 : delta>0;
+  const flat = Math.abs(delta)<0.4;
+  const cls = flat?'flat':(good?'down':'up');
+  const arrow = flat?'':(delta>0?ic('arrowUp'):ic('arrowDown'));
+  return `<span class="trend ${cls}">${arrow}${fmt(Math.abs(delta),1)}</span>`;
+}
+
+/* ============================== RENDER: OVERVIEW ============================== */
+function renderOverview(){
+  const ev = filteredEvents();
+  const avgScore = ev.length? ev.reduce((a,e)=>a+e.score,0)/ev.length : 14;
+  const band = driftBand(avgScore);
+  const critical = ev.filter(e=>e.band.cls==='critical').length;
+  const watch = ev.filter(e=>e.band.cls==='watch'||e.band.cls==='warning').length;
+  const top = ev.slice().sort((a,b)=>b.score-a.score)[0];
+  const topVol = ev.filter(e=>e.driftType==='Volatility Drift').sort((a,b)=>b.score-a.score)[0];
+  const topShape = ev.filter(e=>e.driftType==='Shape Drift').sort((a,b)=>b.score-a.score)[0];
+  const last7 = ev.filter(e=>(NOW-e.timestamp)<7*86400000);
+  const prior7 = ev.filter(e=>(NOW-e.timestamp)>=7*86400000&&(NOW-e.timestamp)<14*86400000);
+  const avgLast7 = last7.length?last7.reduce((a,e)=>a+e.score,0)/last7.length:avgScore;
+  const avgPrior7 = prior7.length?prior7.reduce((a,e)=>a+e.score,0)/prior7.length:avgScore;
+  const trendDelta = avgLast7-avgPrior7;
+  const accuracyAvg = 100-avgScore*0.35-8;
+
+  const kpis = [
+    {lbl:'Forecast Health',val:clamp(accuracyAvg,52,97),suf:'%',accent:'primary',sub:'Composite accuracy across active forecasts'},
+    {lbl:'Forecast Drift Score',val:avgScore,suf:'',accent:band.cls==='healthy'?'green':band.cls==='watch'?'amber':band.cls==='warning'?'amber':'red',sub:`${badgeHtml(band.label,band.cls)}`,isHtmlSub:true},
+    {lbl:'Overall Status',valHtml:badgeHtml(band.label,band.cls),accent:band.cls==='healthy'?'green':'amber',sub:`${ev.length} events in scope`},
+    {lbl:'Largest Drift',valHtml:top?esc(top.service):'—',accent:'red',sub:top?`${top.driftType} · score ${top.score}`:'No events'},
+    {lbl:'Highest Volatility',valHtml:topVol?esc(topVol.service):'—',accent:'teal',sub:topVol?`score ${topVol.score}`:'No events'},
+    {lbl:'Largest Shape Change',valHtml:topShape?esc(topShape.service):'—',accent:'accent',sub:topShape?`score ${topShape.score}`:'No events'},
+    {lbl:'Critical Alerts',val:critical,suf:'',accent:'red',sub:`of ${ev.length} in scope`},
+    {lbl:'Forecasts Under Watch',val:watch,suf:'',accent:'amber',sub:'Watch + Warning bands'},
+    {lbl:'Drift Trend (7d)',valHtml:trendArrow(trendDelta,true),accent:trendDelta>0?'red':'green',sub:'vs prior 7-day average'},
+  ];
+  document.getElementById('ov-kpis').innerHTML = kpis.map(k=>`
+    <div class="card kpi accent-${k.accent}">
+      <div class="lbl">${esc(k.lbl)}</div>
+      <div class="value" data-num="${k.val!==undefined?k.val:''}" data-suf="${k.suf||''}">${k.valHtml?k.valHtml:(k.val!==undefined?fmt(k.val,0)+(k.suf||''):'')}</div>
+      <div class="sub">${k.isHtmlSub?k.sub:esc(k.sub)}</div>
+    </div>`).join('');
+  animateKpiNumbers('ov-kpis');
+
+  const trend = dailySeries(filteredEventsExcept('range'),30);
+  document.getElementById('ov-trend').innerHTML = lineChart({
+    series:[{points:trend.vals,color:'var(--primary)',area:true}],
+    labels:trend.labels, height:220, min:0, max:100, dots:false,
+    bands:[{from:0,to:20,color:'var(--green)'},{from:20,to:40,color:'var(--amber)'},{from:40,to:70,color:'var(--orange)'},{from:70,to:100,color:'var(--red)'}]
+  });
+
+  const sevSegs = SEVERITIES.map(s=>({label:s,value:ev.filter(e=>e.severity===s).length||0,color:sevColor(s)}));
+  document.getElementById('ov-severity').innerHTML = `<div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap;">${donutChart(sevSegs.filter(s=>s.value>0).length?sevSegs:[{label:'Low',value:1,color:sevColor('Low')}])}
+    <div class="legend" style="flex-direction:column;align-items:flex-start;gap:8px;">${sevSegs.map(s=>`<div class="li"><span class="sw" style="background:${s.color}"></span>${s.label} — ${s.value}</div>`).join('')}</div></div>`;
+
+  document.getElementById('ov-heatmap').innerHTML = heatmapHtml(SERVICES.slice(0,6),SCENARIOS,(r,c)=>{
+    const match = ev.filter(e=>e.service===r&&e.scenario===c);
+    if(match.length) return match.reduce((a,e)=>a+e.score,0)/match.length;
+    return rngFor(r+'|'+c)()*30+5;
+  });
+
+  const recent = ev.slice(0,6);
+  document.getElementById('ov-recent').innerHTML = recent.length ? `<table class="dt"><thead><tr><th>Time</th><th>Service</th><th>Type</th><th>Score</th><th>Status</th></tr></thead><tbody>${recent.map(e=>`
+    <tr data-goto="events"><td>${timeAgo(e.timestamp)}</td><td>${esc(e.service)}</td><td>${esc(e.driftType.replace(' Drift',''))}</td><td><b>${e.score}</b></td><td>${badgeHtml(e.band.label,e.band.cls)}</td></tr>`).join('')}</tbody></table>` : `<div class="empty-state">No recent events match current filters.</div>`;
+  document.getElementById('ov-recent').querySelectorAll('tr[data-goto]').forEach(tr=>tr.addEventListener('click',()=>showPage('events')));
+}
+function animateKpiNumbers(containerId){
+  document.querySelectorAll('#'+containerId+' .value[data-num]').forEach(el=>{
+    const num = el.getAttribute('data-num');
+    if(num!==''&&!isNaN(Number(num))){
+      const suf = el.getAttribute('data-suf')||'';
+      animateValue(el,Number(num),0,suf);
+    }
+  });
+}
+
+/* ============================== RENDER: FORECAST DRIFT ============================== */
+function renderDrift(){
+  const ev = filteredEvents();
+  const avgScore = ev.length? ev.reduce((a,e)=>a+e.score,0)/ev.length : 16;
+  const g = gaugeChart(avgScore,{size:150});
+  document.getElementById('fd-gauge').innerHTML = g.svg;
+  document.getElementById('fd-status').innerHTML = `<div style="margin-top:8px;">${badgeHtml(g.band.label,g.band.cls)}</div><div class="muted small" style="margin-top:6px;">${ev.length} events in current scope</div>`;
+
+  const famSegs = DRIFT_TYPES.map(t=>({label:t,value:ev.filter(e=>e.driftType===t).length,color:familyColor(t)}));
+  document.getElementById('fd-family').innerHTML = `<div style="display:flex;align-items:center;gap:18px;flex-wrap:wrap;">${donutChart(famSegs.some(s=>s.value>0)?famSegs:[{label:'Performance Drift',value:1,color:familyColor('Performance Drift')}])}
+    <div class="legend" style="flex-direction:column;align-items:flex-start;gap:8px;">${famSegs.map(s=>`<div class="li"><span class="sw" style="background:${s.color}"></span>${s.label.replace(' Drift','')} — ${s.value}</div>`).join('')}</div></div>`;
+
+  const sevSegs = SEVERITIES.map(s=>({label:s,value:ev.filter(e=>e.severity===s).length,color:sevColor(s)}));
+  document.getElementById('fd-severity').innerHTML = `<div style="display:flex;align-items:center;gap:18px;flex-wrap:wrap;">${donutChart(sevSegs.some(s=>s.value>0)?sevSegs:[{label:'Low',value:1,color:sevColor('Low')}])}
+    <div class="legend" style="flex-direction:column;align-items:flex-start;gap:8px;">${sevSegs.map(s=>`<div class="li"><span class="sw" style="background:${s.color}"></span>${s.label} — ${s.value}</div>`).join('')}</div></div>`;
+
+  const evo = dailySeries(filteredEventsExcept('range'),60);
+  document.getElementById('fd-evolution').innerHTML = lineChart({
+    series:[{points:evo.vals,color:'var(--accent)',area:true}], labels:evo.labels, height:230, min:0, max:100, dots:false,
+    bands:[{from:0,to:20,color:'var(--green)'},{from:20,to:40,color:'var(--amber)'},{from:40,to:70,color:'var(--orange)'},{from:70,to:100,color:'var(--red)'}]
+  });
+
+  document.getElementById('fd-heatmap').innerHTML = heatmapHtml(SERVICES,SCENARIOS,(r,c)=>{
+    const match = ev.filter(e=>e.service===r&&e.scenario===c);
+    if(match.length) return match.reduce((a,e)=>a+e.score,0)/match.length;
+    return rngFor(r+'|'+c+'|fd')()*30+5;
+  });
+
+  const svc = groupAvg(ev,e=>e.service).slice(0,6);
+  document.getElementById('fd-topservices').innerHTML = svc.length ? barsListHtml(svc.map(s=>({label:s.label,value:s.value,valueLabel:fmt(s.value,0),color:driftBand(s.value).color})),{max:100}) : `<div class="empty-state">No data for current filters.</div>`;
+  const scn = groupAvg(ev,e=>e.scenario);
+  document.getElementById('fd-topscenarios').innerHTML = scn.length ? barsListHtml(scn.map(s=>({label:s.label,value:s.value,valueLabel:fmt(s.value,0),color:driftBand(s.value).color})),{max:100}) : `<div class="empty-state">No data for current filters.</div>`;
+}
+
+/* ============================== RENDER: PERFORMANCE DRIFT ============================== */
+function metricSeries(m){
+  const seed = serviceOrDefault()+'-'+m.key+'-'+scenarioOrDefault();
+  const rng = rngFor(seed);
+  let v = m.base;
+  const arr=[];
+  for(let i=0;i<30;i++){
+    const drift = i>24 ? (m.invert?-1:1)*m.vol*0.10 : 0;
+    v = v + (rng()-0.5)*m.vol*0.5 + drift;
+    v = Math.max(m.invert?40:0,v);
+    arr.push(v);
+  }
+  return arr;
+}
+function metricBands(m){
+  if(m.invert){
+    return [
+      {from:0,to:m.base-2*m.vol,color:'var(--red)'},
+      {from:m.base-2*m.vol,to:m.base-1*m.vol,color:'var(--orange)'},
+      {from:m.base-1*m.vol,to:m.base-0.3*m.vol,color:'var(--amber)'},
+      {from:m.base-0.3*m.vol,to:150,color:'var(--green)'},
+    ];
+  }
+  return [
+    {from:0,to:m.base+0.3*m.vol,color:'var(--green)'},
+    {from:m.base+0.3*m.vol,to:m.base+1*m.vol,color:'var(--amber)'},
+    {from:m.base+1*m.vol,to:m.base+2*m.vol,color:'var(--orange)'},
+    {from:m.base+2*m.vol,to:m.base+6*m.vol,color:'var(--red)'},
+  ];
+}
+function renderPerformance(){
+  const cardsHtml = METRIC_DEFS.map(m=>{
+    const series = metricSeries(m);
+    const value = series[series.length-1];
+    const prev = series[series.length-8];
+    const delta = value-prev;
+    const band = metricBand(m,value);
+    const color = band.color;
+    const selected = state.perf.selected===m.key;
+    return `<div class="card kpi metric-card ${selected?'selected':''}" data-metric="${m.key}">
+      <div class="lbl">${m.label}</div>
+      <div class="value">${fmtK(value)}${m.unit}</div>
+      <div class="sub">${trendArrow(delta,m.invert)} <span style="margin-left:4px;">${badgeHtml(band.label,band.cls)}</span></div>
+      <div style="margin-top:8px;">${sparkline(series,color)}</div>
+    </div>`;
+  }).join('');
+  document.getElementById('pf-metrics').innerHTML = cardsHtml;
+  document.querySelectorAll('#pf-metrics [data-metric]').forEach(el=>{
+    el.addEventListener('click',()=>{state.perf.selected=el.getAttribute('data-metric'); renderPerformance();});
+  });
+  const m = METRIC_DEFS.find(x=>x.key===state.perf.selected) || METRIC_DEFS[1];
+  const series = metricSeries(m);
+  document.getElementById('pf-chart-title').textContent = m.label+' — Historical Trend';
+  document.getElementById('pf-chart').innerHTML = lineChart({
+    series:[{points:series,color:'var(--primary)',area:true}],
+    labels:series.map((_,i)=>'R'+(i+1)), height:260, dots:false,
+    bands:metricBands(m)
+  });
+}
+
+/* ============================== RENDER: SHAPE DRIFT ============================== */
+function renderShape(){
+  const service = serviceOrDefault();
+  const months = ['Jun','Jul','Aug','Sep','Oct','Nov','Dec','Jan'];
+  const rngA = rngFor(service+'-shapeA'+scenarioOrDefault());
+  const rngB = rngFor(service+'-shapeB'+scenarioOrDefault());
+  let a = 100+rngA()*8; const arrA=[Math.round(a)];
+  for(let i=1;i<8;i++){ a = a*(1.025+rngA()*0.018); arrA.push(Math.round(a)); }
+  const divergeIdx = randInt(rngB,2,4);
+  let b = arrA[0]; const arrB=[b];
+  for(let i=1;i<8;i++){
+    const growth = i>=divergeIdx ? (1.025+rngA()*0.018)+0.05+rngB()*0.05 : (1.025+rngA()*0.018);
+    b = (i>=divergeIdx? b : arrA[i-1]) * growth;
+    if(i<divergeIdx) b = arrA[i];
+    arrB.push(Math.round(b));
+  }
+  const pctDiff = ((arrB[7]-arrA[7])/arrA[7])*100;
+  const shapeScore = clamp(Math.abs(pctDiff)*1.5,4,98);
+  const band = driftBand(shapeScore);
+
+  document.getElementById('sh-kpis').innerHTML = `
+    <div class="card kpi accent-accent"><div class="lbl">Shape Drift Score</div><div class="value">${fmt(shapeScore,0)}</div><div class="sub">${badgeHtml(band.label,band.cls)}</div></div>
+    <div class="card kpi accent-red"><div class="lbl">Largest Curve Change</div><div class="value">${pctDiff>=0?'+':''}${fmt(pctDiff,1)}%</div><div class="sub">vs. Version A at ${months[7]}</div></div>
+    <div class="card kpi accent-primary"><div class="lbl">Divergence Starts</div><div class="value">${months[divergeIdx]}</div><div class="sub">First material trajectory change</div></div>
+    <div class="card kpi accent-teal"><div class="lbl">Service</div><div class="value" style="font-size:17px;">${esc(service)}</div><div class="sub">${esc(scenarioOrDefault())}</div></div>`;
+
+  document.getElementById('sh-legend').innerHTML = `<div class="li"><span class="sw" style="background:var(--primary)"></span>Forecast Version A</div><div class="li"><span class="sw" style="background:var(--accent)"></span>Forecast Version B</div><div class="li"><span class="sw" style="background:var(--red);opacity:.5"></span>Divergence zone</div>`;
+
+  let svg = lineChart({series:[{points:arrA,color:'var(--primary)'},{points:arrB,color:'var(--accent)'}],labels:months,height:260,dots:true});
+  const x1 = xPos(divergeIdx,8,680,34,14);
+  svg = insertOverlay(svg,`<rect x="${x1.toFixed(1)}" y="0" width="${(680-14-x1).toFixed(1)}" height="260" fill="var(--red)" opacity="0.06"></rect>`);
+  document.getElementById('sh-chart').innerHTML = svg;
+
+  document.getElementById('sh-table').innerHTML = `<table class="dt"><thead><tr><th>Month</th><th>Version A</th><th>Version B</th><th>Δ</th><th>Δ%</th></tr></thead><tbody>
+    ${months.map((mo,i)=>{const d=arrB[i]-arrA[i]; const dp=(d/arrA[i]*100);
+      return `<tr><td>${mo}</td><td>${arrA[i]}</td><td>${arrB[i]}</td><td>${d>=0?'+':''}${d}</td><td>${badgeHtml((dp>=0?'+':'')+fmt(dp,1)+'%',Math.abs(dp)<5?'healthy':Math.abs(dp)<15?'watch':Math.abs(dp)<30?'warning':'critical')}</td></tr>`;}).join('')}
+  </tbody></table>`;
+}
+
+/* ============================== RENDER: STABILITY DRIFT ============================== */
+function renderStability(){
+  const service = serviceOrDefault();
+  const target = targetOrDefault();
+  const rng = rngFor(service+'-'+target+'-stability'+scenarioOrDefault());
+  const n = FORECAST_VERSIONS.length;
+  const vals=[]; let v = 90+rng()*40;
+  for(let i=0;i<n;i++){
+    if(i===n-2) v += randInt(rng,20,55);
+    else v += (rng()-0.5)*8;
+    vals.push(Math.round(Math.max(30,v)));
+  }
+  const latest = vals[n-1], prevV = vals[n-2], first = vals[0];
+  const devPrev = latest-prevV, devFirst = latest-first;
+  const instabilityScore = clamp(Math.abs(devPrev)/first*220,3,98);
+  const band = driftBand(instabilityScore);
+
+  document.getElementById('st-target-label').textContent = 'Target date '+target;
+  document.getElementById('st-kpis').innerHTML = `
+    <div class="card kpi accent-primary"><div class="lbl">Latest Value</div><div class="value">${latest}</div><div class="sub">Forecast v${n}</div></div>
+    <div class="card kpi accent-amber"><div class="lbl">Δ vs Previous Version</div><div class="value">${devPrev>=0?'+':''}${devPrev}</div><div class="sub">${trendArrow(devPrev,false)}</div></div>
+    <div class="card kpi accent-teal"><div class="lbl">Δ vs Version 1</div><div class="value">${devFirst>=0?'+':''}${devFirst}</div><div class="sub">Baseline drift</div></div>
+    <div class="card kpi accent-red"><div class="lbl">Stability Status</div><div class="value" style="font-size:17px;">${badgeHtml(band.label,band.cls)}</div><div class="sub">Score ${fmt(instabilityScore,0)}</div></div>`;
+
+  document.getElementById('st-chart').innerHTML = lineChart({
+    series:[{points:vals,color:'var(--amber)',area:true}],
+    labels:FORECAST_VERSIONS.map(d=>d.slice(5)), height:230, dots:true
+  });
+
+  document.getElementById('st-table').innerHTML = `<table class="dt"><thead><tr><th>Version</th><th>Forecast Date</th><th>Value @ Target</th><th>Δ Prev</th><th>Δ v1</th></tr></thead><tbody>
+    ${FORECAST_VERSIONS.map((d,i)=>{const dp=i>0?vals[i]-vals[i-1]:0; const df=vals[i]-vals[0];
+      return `<tr><td>v${i+1}</td><td>${d}</td><td><b>${vals[i]}</b></td><td>${i>0?(dp>=0?'+':'')+dp:'—'}</td><td>${i>0?(df>=0?'+':'')+df:'—'}</td></tr>`;}).join('')}
+  </tbody></table>`;
+}
+
+/* ============================== RENDER: VOLATILITY DRIFT ============================== */
+function renderVolatility(){
+  const service = serviceOrDefault();
+  const rng = rngFor(service+'-vol'+scenarioOrDefault());
+  const variance=[]; let vv=1.2+rng()*1.5;
+  for(let i=0;i<30;i++){ vv = Math.max(0.2,vv+(rng()-0.48)*1.1); if(i>25) vv+=0.35; variance.push(vv); }
+  const osc=[]; let base=100; for(let i=0;i<24;i++){ base += (rng()-0.5)*14; osc.push(Math.round(base)); }
+  const covLast = variance[variance.length-1]/ (osc.reduce((a,b)=>a+b,0)/osc.length) * 22;
+  const last7=variance.slice(-7).reduce((a,b)=>a+b,0)/7, prior7=variance.slice(-14,-7).reduce((a,b)=>a+b,0)/7;
+  const trendDelta = last7-prior7;
+  const volScore = clamp(covLast*9,4,97);
+  const band = driftBand(volScore);
+
+  document.getElementById('vo-kpis').innerHTML = `
+    <div class="card kpi accent-teal"><div class="lbl">Volatility Score</div><div class="value">${fmt(volScore,0)}</div><div class="sub">${badgeHtml(band.label,band.cls)}</div></div>
+    <div class="card kpi accent-primary"><div class="lbl">Coefficient of Variation</div><div class="value">${fmt(covLast/100,2)}</div><div class="sub">${esc(service)}</div></div>
+    <div class="card kpi accent-amber"><div class="lbl">Rolling Variance (7d)</div><div class="value">${fmt(last7,2)}</div><div class="sub">${trendArrow(trendDelta,true)} vs prior 7d</div></div>
+    <div class="card kpi accent-red"><div class="lbl">Oscillation Range</div><div class="value">${Math.max(...osc)-Math.min(...osc)}</div><div class="sub">across ${osc.length} runs</div></div>`;
+
+  document.getElementById('vo-variance').innerHTML = lineChart({series:[{points:variance,color:'var(--teal)',area:true}],labels:variance.map((_,i)=>'D'+(i+1)),height:220,dots:false});
+  document.getElementById('vo-osc').innerHTML = lineChart({series:[{points:osc,color:'var(--red)'}],labels:osc.map((_,i)=>'R'+(i+1)),height:220,dots:true});
+
+  const covItems = SERVICES.map(s=>{const r=rngFor(s+'-cov'+scenarioOrDefault()); return {label:s,value:Math.round((0.1+r()*0.5)*100)};}).sort((a,b)=>b.value-a.value);
+  document.getElementById('vo-cov').innerHTML = barsListHtml(covItems.map(c=>({label:c.label,value:c.value,valueLabel:(c.value/100).toFixed(2),color:c.value>45?'var(--red)':c.value>28?'var(--orange)':'var(--teal)'})),{max:100});
+
+  document.getElementById('vo-table').innerHTML = `<table class="dt"><thead><tr><th>Service</th><th>CoV</th><th>Status</th><th>Trend</th></tr></thead><tbody>
+    ${covItems.slice(0,8).map(c=>{const b=driftBand(c.value); return `<tr><td>${esc(c.label)}</td><td class="mono">${(c.value/100).toFixed(2)}</td><td>${badgeHtml(b.label,b.cls)}</td><td>${sparkline(Array.from({length:10},(_,i)=>c.value+(rngFor(c.label+i)()-0.5)*20),b.color)}</td></tr>`;}).join('')}
+  </tbody></table>`;
+}
+
+/* ============================== RENDER: EVENTS ============================== */
+const EVENT_COLUMNS = [
+  {key:'timestamp',label:'Timestamp',render:e=>fmtDateTime(e.timestamp)},
+  {key:'scenario',label:'Scenario',render:e=>esc(e.scenario)},
+  {key:'key',label:'Key',render:e=>`<span class="mono">${esc(e.key)}</span>`},
+  {key:'service',label:'Service',render:e=>`<b>${esc(e.service)}</b>`},
+  {key:'forecastVersion',label:'Version',render:e=>esc(e.forecastVersion)},
+  {key:'driftType',label:'Drift Type',render:e=>`<span style="color:${familyColor(e.driftType)};font-weight:600;">${esc(e.driftType.replace(' Drift',''))}</span>`},
+  {key:'score',label:'Score',render:e=>`<b>${e.score}</b>`},
+  {key:'severity',label:'Severity',render:e=>badgeHtml(e.severity,sevClass(e.severity))},
+  {key:'status',label:'Status',render:e=>badgeHtml(e.status,e.status.toLowerCase())},
+  {key:'explanation',label:'Explanation',sortable:false,render:e=>`<span class="ellipsis" title="${esc(e.explanation)}">${esc(e.explanation)}</span>`},
+];
+function renderEvents(){
+  const ev = filteredEvents();
+  document.getElementById('ev-count').textContent = ev.length+' events';
+  const search = document.getElementById('ev-search');
+  if(search && search.value!==state.events.search) search.value = state.events.search;
+  renderDataTable('ev-table',EVENT_COLUMNS,ev,state.events,{
+    rowKey:e=>e.id, expandable:true,
+    expandRenderer:e=>`<div class="drow">
+        <div class="dcol"><b>Explanation</b><span>${esc(e.explanation)}</span></div>
+        <div class="dcol"><b>Region</b><span>${esc(e.region)}</span></div>
+        <div class="dcol"><b>Forest</b><span>${esc(e.forest)}</span></div>
+        <div class="dcol"><b>Target Date</b><span>${esc(e.targetDate)}</span></div>
+        <div class="dcol"><b>Event ID</b><span class="mono">${esc(e.id)}</span></div>
+        <div class="dactions">
+          <button class="btn" data-ack="${e.id}">Acknowledge</button>
+          <button class="btn primary" data-view="${e.id}">${ic('external')}View in AEGIS</button>
+        </div>
+      </div>`,
+    onRendered:()=>{
+      document.querySelectorAll('#ev-table [data-ack]').forEach(b=>b.addEventListener('click',ev2=>{ev2.stopPropagation();toast('Event acknowledged (prototype only).');}));
+      document.querySelectorAll('#ev-table [data-view]').forEach(b=>b.addEventListener('click',ev2=>{ev2.stopPropagation();toast('Drill-down will open the full AEGIS record once implemented.');}));
+    }
+  });
+  if(search){
+    search.oninput = ()=>{ state.events.search=search.value; state.events.page=1; renderEvents(); document.getElementById('ev-search').focus(); };
+  }
+}
+
+/* ============================== RENDER: TIMELINE ============================== */
+const TIMELINE_TYPES = ['Forecast generated','Drift detected','Alert triggered','Status updated'];
+function timelineIcon(type){
+  if(type==='Forecast generated') return ic('overview');
+  if(type==='Drift detected') return ic('drift');
+  if(type==='Alert triggered') return ic('bell');
+  return ic('events');
+}
+function buildTimelineItems(ev){
+  const items=[];
+  ev.forEach(e=>{
+    items.push({time:e.timestamp,type:'Drift detected',title:`${e.driftType} detected — ${e.service}`,desc:e.explanation,sev:e.severity});
+    const versionDate = new Date(e.forecastVersion);
+    items.push({time:versionDate,type:'Forecast generated',title:`Forecast ${e.forecastVersion} generated — ${e.scenario}`,desc:`${e.service} · ${e.key}`,sev:'Low'});
+    if(e.severity==='High'||e.severity==='Critical'){
+      items.push({time:new Date(e.timestamp.getTime()+3600000),type:'Alert triggered',title:`Alert raised for ${e.service}`,desc:`Severity ${e.severity} · score ${e.score}`,sev:e.severity});
+    }
+    if(e.status!=='Open'){
+      items.push({time:new Date(e.timestamp.getTime()+7200000),type:'Status updated',title:`Status set to ${e.status} — ${e.service}`,desc:e.driftType,sev:'Low'});
+    }
+  });
+  return items.sort((a,b)=>b.time-a.time);
+}
+function renderTimeline(){
+  const chips = document.getElementById('tl-chips');
+  chips.innerHTML = TIMELINE_TYPES.map(t=>`<div class="chip ${state.timeline.types.has(t)?'active':''}" data-type="${esc(t)}">${esc(t)}</div>`).join('');
+  chips.querySelectorAll('.chip').forEach(c=>c.addEventListener('click',()=>{
+    const t=c.getAttribute('data-type');
+    if(state.timeline.types.has(t)) state.timeline.types.delete(t); else state.timeline.types.add(t);
+    renderTimeline();
+  }));
+  const ev = filteredEvents().slice(0,50);
+  const items = buildTimelineItems(ev).filter(i=>state.timeline.types.has(i.type)).slice(0,45);
+  document.getElementById('tl-list').innerHTML = items.length ? items.map(i=>`
+    <div class="tl-item">
+      <div class="tl-dot" style="border-color:${sevColor(i.sev)}">${timelineIcon(i.type)}</div>
+      <div class="tl-time">${fmtDateTime(i.time)} · ${esc(i.type)}</div>
+      <div class="tl-title">${esc(i.title)}</div>
+      <div class="tl-desc">${esc(i.desc)}</div>
+    </div>`).join('') : `<div class="empty-state">No timeline activity for the selected filters.</div>`;
+}
+
+/* ============================== RENDER: TOP SERVICES / SCENARIOS ============================== */
+const RANK_COLUMNS_BASE = (labelHeader)=>[
+  {key:'rank',label:'#',sortable:false,render:(r)=>`<b>${r.rank}</b>`},
+  {key:'label',label:labelHeader},
+  {key:'value',label:'Avg Drift Score',render:r=>`<b>${fmt(r.value,0)}</b>`},
+  {key:'count',label:'Events',render:r=>r.count},
+  {key:'status',label:'Status',sortable:false,render:r=>badgeHtml(driftBand(r.value).label,driftBand(r.value).cls)},
+  {key:'trend',label:'Trend (7d)',sortable:false,render:r=>sparkline(r.spark,driftBand(r.value).color)},
+];
+function withRankAndSpark(list){
+  return list.map((r,i)=>({...r,rank:i+1,spark:Array.from({length:10},(_,k)=>clamp(r.value+(rngFor(r.label+k)()-0.5)*24,2,98))}));
+}
+function renderTopServices(){
+  const ev = filteredEvents();
+  const grouped = withRankAndSpark(groupAvg(ev,e=>e.service));
+  document.getElementById('ts-chart').innerHTML = grouped.length ? barsListHtml(grouped.slice(0,8).map(g=>({label:g.label,value:g.value,valueLabel:fmt(g.value,0),color:driftBand(g.value).color})),{max:100}) : `<div class="empty-state">No data for current filters.</div>`;
+  renderDataTable('ts-table',RANK_COLUMNS_BASE('Service'),grouped,state.topServices,{rowKey:r=>r.label});
+}
+function renderTopScenarios(){
+  const ev = filteredEvents();
+  const grouped = withRankAndSpark(groupAvg(ev,e=>e.scenario));
+  document.getElementById('tc-chart').innerHTML = grouped.length ? barsListHtml(grouped.map(g=>({label:g.label,value:g.value,valueLabel:fmt(g.value,0),color:driftBand(g.value).color})),{max:100}) : `<div class="empty-state">No data for current filters.</div>`;
+  renderDataTable('tc-table',RANK_COLUMNS_BASE('Scenario'),grouped,state.topScenarios,{rowKey:r=>r.label});
+}
+
+/* ============================== RENDER: SETTINGS ============================== */
+const WEIGHTS = {performance:20,shape:40,stability:30,volatility:10};
+function renderSettings(){
+  const rows = [
+    {k:'performance',label:'Performance Drift',color:'var(--primary)'},
+    {k:'shape',label:'Shape Drift',color:'var(--accent)'},
+    {k:'stability',label:'Stability Drift',color:'var(--amber)'},
+    {k:'volatility',label:'Volatility Drift',color:'var(--teal)'},
+  ];
+  function paint(){
+    const total = rows.reduce((a,r)=>a+WEIGHTS[r.k],0);
+    document.getElementById('cfg-weights').innerHTML = rows.map(r=>`
+      <div class="slider-row">
+        <div class="sname">${r.label}</div>
+        <input type="range" min="0" max="80" value="${WEIGHTS[r.k]}" data-w="${r.k}">
+        <div class="sval">${WEIGHTS[r.k]}%</div>
+      </div>`).join('') + `<div class="muted small" style="margin-top:4px;">Total: <b style="color:${total===100?'var(--green)':'var(--red)'}">${total}%</b> ${total===100?'— balanced':'— should sum to 100%'}</div>`;
+    document.querySelectorAll('#cfg-weights input[type=range]').forEach(inp=>{
+      inp.addEventListener('input',()=>{ WEIGHTS[inp.getAttribute('data-w')]=Number(inp.value); paint(); });
+    });
+  }
+  paint();
+
+  document.getElementById('cfg-thresholds').innerHTML = `
+    <div class="band-row" style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;">
+      ${[['0–20','Healthy','healthy'],['20–40','Watch','watch'],['40–70','Warning','warning'],['70+','Critical','critical']].map(b=>`
+        <div class="card" style="padding:12px;"><div class="muted small">${b[0]}</div><div style="margin-top:6px;">${badgeHtml(b[1],b[2])}</div></div>`).join('')}
+    </div>
+    <p class="muted small" style="margin-top:12px;">Thresholds shown are illustrative defaults from the Forecast Drift Framework blueprint and will be calibrated with stakeholders.</p>`;
+
+  const integrations = [
+    {name:'MDG Consumption',sub:'Publish governed drift signals for MDG to consume.',on:false,phase:'Phase 3'},
+    {name:'Grafana Sync',sub:'Migrate visualization layer from Power BI to Grafana.',on:false,phase:'Phase 2'},
+    {name:'IcM Automation',sub:'Automatically raise IcMs for Critical drift events.',on:false,phase:'Future'},
+    {name:'ML-based Anomaly Detection',sub:'Augment rule-based thresholds with learned anomaly models.',on:false,phase:'Future'},
+  ];
+  document.getElementById('cfg-integrations').innerHTML = integrations.map((i,idx)=>`
+    <div class="toggle-row">
+      <div><div class="tname">${esc(i.name)}</div><div class="tsub">${esc(i.sub)}</div></div>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span class="badge watch">${esc(i.phase)}</span>
+        <div class="switch" data-idx="${idx}"><i></i></div>
+      </div>
+    </div>`).join('');
+  document.querySelectorAll('#cfg-integrations .switch').forEach(sw=>{
+    sw.addEventListener('click',()=>{ sw.classList.toggle('on'); toast('This integration is on the roadmap — not yet available in the prototype.'); });
+  });
+}
+
+/* ============================== NAV / FILTER BAR / THEME ============================== */
+function renderNav(){
+  document.getElementById('navList').innerHTML = NAV.map(n=>`
+    <div class="nav-item ${state.currentPage===n.id?'active':''}" data-page="${n.id}">${ic(n.icon)}<span>${esc(n.label)}</span></div>`).join('');
+  document.querySelectorAll('.nav-item').forEach(el=>el.addEventListener('click',()=>showPage(el.getAttribute('data-page'))));
+}
+function renderFilterBar(){
+  const bar = document.getElementById('filterBar');
+  bar.innerHTML = FILTERS_CONFIG.map(f=>{
+    const opts = f.options.map(o=>{
+      if(typeof o==='object') return `<option value="${o.v}" ${state.filters[f.key]===o.v?'selected':''}>${esc(o.t)}</option>`;
+      return `<option value="${esc(o)}" ${state.filters[f.key]===o?'selected':''}>${esc(o)}</option>`;
+    }).join('');
+    return `<span class="flabel">${f.label}</span><select data-filter="${f.key}">${opts}</select>`;
+  }).join('') + `<button class="filter-reset" id="filterReset">${ic('refresh')}Reset</button><span class="filter-count" id="filterCount"></span>`;
+  bar.querySelectorAll('select[data-filter]').forEach(sel=>{
+    sel.addEventListener('change',()=>{ state.filters[sel.getAttribute('data-filter')]=sel.value; applyFilters(); });
+  });
+  document.getElementById('filterReset').addEventListener('click',()=>{
+    Object.keys(state.filters).forEach(k=> state.filters[k] = k==='range'?'60':'All');
+    renderFilterBar(); applyFilters(); toast('Filters reset.');
+  });
+  updateFilterCount();
+}
+function updateFilterCount(){
+  const el = document.getElementById('filterCount');
+  if(el) el.innerHTML = `<b>${filteredEvents().length}</b> events match`;
+}
+function applyFilters(){
+  updateFilterCount();
+  renderPage(state.currentPage);
+  toast('Filters applied.');
+}
+function setTheme(t){
+  state.theme=t;
+  document.documentElement.setAttribute('data-theme',t);
+  document.getElementById('themeLabel').textContent = t==='light'?'Light mode':'Dark mode';
+  document.getElementById('themeBtn').innerHTML = ic(t==='light'?'moon':'sun');
+  renderPage(state.currentPage);
+}
+
+/* ============================== PAGE DISPATCH ============================== */
+const RENDERERS = {
+  overview:renderOverview, drift:renderDrift, performance:renderPerformance, shape:renderShape,
+  stability:renderStability, volatility:renderVolatility, events:renderEvents, timeline:renderTimeline,
+  topservices:renderTopServices, topscenarios:renderTopScenarios, settings:renderSettings,
+};
+function renderPage(name){
+  const fn = RENDERERS[name];
+  if(fn) fn();
+}
+function showPage(name){
+  state.currentPage = name;
+  document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id==='page-'+name));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.toggle('active',n.getAttribute('data-page')===name));
+  const meta = PAGE_META[name];
+  document.getElementById('pageTitle').textContent = meta.title;
+  document.getElementById('pageCrumb').textContent = meta.crumb;
+  renderPage(name);
+  document.getElementById('content').scrollTop = 0;
+}
+
+/* ============================== INIT ============================== */
+function init(){
+  buildPages();
+  renderNav();
+  renderFilterBar();
+  setTheme('light');
+  document.getElementById('themeBtn').addEventListener('click',()=> setTheme(state.theme==='light'?'dark':'light'));
+  document.getElementById('lastRefreshed').textContent = fmtDateTime(NOW);
+  document.getElementById('ov-refresh') && document.getElementById('ov-refresh').addEventListener('click',()=>{ toast('Data refreshed (prototype snapshot).'); renderPage('overview'); });
+  document.querySelectorAll('[data-nav]').forEach(el=>el.addEventListener('click',()=>showPage(el.getAttribute('data-nav'))));
+  showPage('overview');
+  document.body.addEventListener('click',e=>{
+    const nav = e.target.closest('[data-nav]');
+    if(nav) showPage(nav.getAttribute('data-nav'));
+  });
+}
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>

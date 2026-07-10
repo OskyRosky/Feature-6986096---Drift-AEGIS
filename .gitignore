@@ -1,0 +1,96 @@
+# ==============================================================
+# AEGIS Forecast Drift — Feature 6986096
+# Local repository .gitignore
+# ==============================================================
+
+# --- Microsoft Office temporary / lock files ---
+~$*
+~$*.doc
+~$*.docx
+~$*.xls
+~$*.xlsx
+~$*.ppt
+~$*.pptx
+*.tmp
+*.laccdb
+*.~lock*
+
+# --- Power BI temporary / cache files ---
+*.pbix.tmp
+*.pbi.tmp
+*TempState*/
+*.abf
+*.ibf
+*.pbiviz.tmp
+.pbi/
+.pbicache/
+
+# --- Windows system files ---
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+Desktop.ini
+$RECYCLE.BIN/
+*.stackdump
+
+# --- macOS / cross-platform noise ---
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# --- Logs ---
+*.log
+logs/
+*.log.*
+
+# --- Temporary exports / scratch ---
+tmp/
+temp/
+exports/
+export/
+*.bak
+*.old
+
+# --- Local development caches ---
+.cache/
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+node_modules/
+
+# --- Credentials, secrets, tokens, environment & connection strings ---
+.env
+.env.*
+*.env
+secrets.*
+*.secret
+*.secrets
+*.key
+*.pem
+*.pfx
+*.p12
+*.pwd
+credentials.*
+connectionstrings.*
+connection-strings.*
+appsettings.*.local.json
+*.token
+*.tokens
+*.credentials
+
+# --- IDE / editor local configuration ---
+.vs/
+.vscode/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+.idea/
+
+# --- Generated build / output folders ---
+bin/
+obj/
+build/
+dist/
+out/
