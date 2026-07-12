@@ -1,0 +1,25 @@
+from_entity,to_entity,relationship,cardinality,join_keys,notes
+fact_forecast_values,dim_key,many-to-one,N:1,key,Each forecast row belongs to one key
+fact_forecast_values,dim_forecast_version,many-to-one,N:1,"forecast_version_date, scenario",Version axis for shape/stability/volatility
+fact_forecast_values,dim_date,many-to-one,N:1,target_date = DateTime,Target date being forecast
+fact_forecast_values,dim_scenario,many-to-one,N:1,scenario,MVP = Enterprise
+fact_forecast_values,dim_resource,many-to-one,N:1,resource,HDD only in current source table
+fact_actual_values,dim_key,many-to-one,N:1,key,Observed values per key
+fact_actual_values,dim_date,many-to-one,N:1,target_date = DateTime,Observation date
+fact_actual_values,dim_scenario,many-to-one,N:1,scenario,Actuals differ by scenario
+fact_actual_values,dim_resource,many-to-one,N:1,resource,HDD
+fact_accuracy_metrics,dim_key,many-to-one,N:1,key,Region-grain metrics = 45 keys
+fact_accuracy_metrics,dim_forecast_version,many-to-one,N:1,forecast_version = Forecast_Version,Only 3 versions retained
+fact_accuracy_metrics,dim_date,many-to-one,N:1,end_date = End_Date,Metric window end date
+dim_key,dim_region,many-to-one,N:1,region_code (derived from key prefix),Region embedded in Key; derived
+dim_key,dim_service,many-to-one,N:1,service_sk,PENDING - service dimension unresolved (G3)
+dim_forest,dim_region,many-to-one,N:1,mapped_region_code,Forest namespace maps to region (G4)
+norm_forecast_forward,fact_forecast_values,one-to-one (subset),1:1,"key, target_date, forecast_version, scenario",Deduped forward-only subset (is_forward=true)
+fact_forecast_drift_events,dim_key,many-to-one,N:1,key,Event addressable by key
+fact_forecast_drift_events,dim_scenario,many-to-one,N:1,scenario,Event scenario scope
+fact_forecast_drift_events,dim_forecast_version,many-to-one,N:1,"forecast_version, scenario",Version evaluated (detected_on)
+fact_forecast_drift_events,dim_drift_family,many-to-one,N:1,drift_type = family_code,Triggering family
+fact_forecast_drift_events,dim_date,many-to-one,N:1,detected_on,Detection timestamp/date
+fact_forecast_drift_events,cfg_drift_thresholds,many-to-one (lookup),N:1,forecast_drift_score in [min_score,max_score],Severity band assignment
+fact_forecast_drift_events,cfg_drift_weights,many-to-one (lookup),N:1,family_code,Family weight applied in score
+dim_forecast_version,dim_forecast_version,self (version pairing),1:1,prev_version_sk,Consecutive-version pairing per (key/scenario)
