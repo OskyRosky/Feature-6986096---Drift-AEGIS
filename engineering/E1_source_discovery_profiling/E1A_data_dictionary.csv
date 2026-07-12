@@ -1,29 +1,36 @@
-field_name,source_object,source_column,meaning,data_type,grain,mandatory,used_by_drift_family,reuse_from_code_improvement,needs_e1b_validation
-key,forecast_substrateBE_hdd_region,Key,Forecast key = region/entity being forecast (e.g. APC-Dedicated),string,row,Yes,"Performance,Shape,Stability,Volatility",Yes (processed as entity_key),Low
-target_date,forecast_substrateBE_hdd_region,DateTime,Future date the forecast value refers to,date,row,Yes,"Shape,Stability,Volatility",Yes (processed as date),Low
-forecast_value,forecast_substrateBE_hdd_region,Value,Predicted value where ValueType=Forecast-Mean and ModelVersion<>actual,decimal,row,Yes,"Performance,Shape,Stability,Volatility",Yes (processed as forecast_value),Low
-actual_value,forecast_substrateBE_hdd_region,Value,Observed value where ModelVersion=actual and Value>0,decimal,row,Optional,Performance,Yes (processed as actual_value),Low
-model_version,forecast_substrateBE_hdd_region,ModelVersion,Model that produced the value; literal 'actual' marks observed rows,string,row,Yes,"Performance,Shape,Stability,Volatility",Yes,Medium (one model per key in latest snapshot; confirm across versions)
-forecast_version,forecast_substrateBE_hdd_region,ForecastVersion,VERSION AXIS - identifies the forecast run/version; the dimension drift compares across,date/string,row,Yes (critical),"Shape,Stability,Volatility",PARTIAL - only latest kept in data/processed,HIGH (confirm how many historical versions exist and cadence)
-scenario,forecast_substrateBE_hdd_region,Scenario,Planning scenario (Enterprise in current scope; Basilisk etc exist),string,row,Yes,"Performance,Shape,Stability,Volatility",Yes,Medium (which scenarios in scope)
-resource,forecast_substrateBE_hdd_region,Resource,Capacity resource type (HDD in current scope),string,row,Yes,"Performance,Shape,Stability,Volatility",Yes,Medium (SSD/other resources in scope?)
-value_type,forecast_substrateBE_hdd_region,ValueType,Value semantics (Forecast-Mean used today; other types may exist),string,row,Yes,"Performance,Shape,Stability,Volatility",Yes,Low
-metric_key,forecast_substrateBE_hdd_region_metrics,Key,Key the accuracy metrics are computed for (region grain),string,per key per version per window,Yes,Performance,Yes,Low
-metric_forecast_version,forecast_substrateBE_hdd_region_metrics,Forecast_Version,Version axis for the official accuracy metrics,date/string,per version,Yes (critical),Performance,Yes,Medium (confirm multiple versions retained in metrics tables)
-mape,forecast_substrateBE_hdd_region_metrics,MAPE,Mean absolute percentage error (official upstream metric),decimal,window,Yes,Performance,Yes (official),Low
-mae,forecast_substrateBE_hdd_region_metrics,MAE,Mean absolute error,decimal,window,Optional,Performance,Yes,Low
-rmse,forecast_substrateBE_hdd_region_metrics,RMSE,Root mean squared error,decimal,window,Optional,Performance,Yes,Low
-bias,forecast_substrateBE_hdd_region_metrics,Bias,Signed bias (forecast - actual),decimal,window,Yes,Performance,Yes,Low
-bias_pct,forecast_substrateBE_hdd_region_metrics,Bias_Pct,Bias as a percentage,decimal,window,Optional,Performance,Yes,Low
-smape,forecast_substrateBE_hdd_region_metrics,SMAPE,Symmetric mean absolute percentage error,decimal,window,Optional,Performance,Yes,Low
-accuracy,forecast_substrateBE_hdd_region_metrics,Accuracy,Accuracy percentage (100 - error),decimal,window,Yes,Performance,Yes,Low
-mean_actual,forecast_substrateBE_hdd_region_metrics,Mean_Actual,Mean of actuals over the metric window,decimal,window,Optional,Performance,Yes,Low
-mean_forecast,forecast_substrateBE_hdd_region_metrics,Mean_Forecast,Mean of forecasts over the metric window,decimal,window,Optional,Performance,Yes,Low
-metric_count,forecast_substrateBE_hdd_region_metrics,Count,Number of points in the metric window,int,window,Optional,Performance,Yes,Low
-metric_start_date,forecast_substrateBE_hdd_region_metrics,Start_Date,Metric evaluation window start,date,window,Optional,Performance,Yes,Low
-metric_end_date,forecast_substrateBE_hdd_region_metrics,End_Date,Metric evaluation window end,date,window,Optional,Performance,Yes,Low
-metric_execution_date,forecast_substrateBE_hdd_region_metrics,Execution_Date,Timestamp the metric row was computed (audit/lineage),datetime,window,Optional,audit,Yes,Low
-forest_key,forecast_substrateBE_hdd_forest_metrics,Key,Forest-level key (finer than region; e.g. NAMP108),string,per key per version per window,Optional,Performance,Yes,Medium (forest vs region grain choice)
-ttl_months,vw_SubstrateBE_MonthsToLive_Snapshot,MonthsToLive,Months-to-live capacity signal (per key/date),decimal,per key per date,Optional,Performance (TTL),Referenced only (not ingested by pipeline),HIGH (not yet validated as governed source)
-service,TBD (dimension),TBD,Service dimension referenced by Blueprint UX; mapping to Key not yet confirmed,string,dimension,Optional,"Performance,Shape,Stability,Volatility",No,HIGH (confirm where Service lives vs Key/Forest/Region)
-region,derived from Key,n/a,Region dimension (appears embedded in Key e.g. APC-*),string,dimension,Optional,"Performance,Shape,Stability,Volatility",Partial,Medium (confirm region parsing/lookup)
+field_name,source_object,source_column,meaning,data_type,grain,mandatory,used_by_drift_family,reuse_or_derived,e1b_status
+key,forecast_substrateBE_hdd_region,Key,Forecast key = region/entity (e.g. APC-Dedicated),varchar,row,Yes,"Performance,Shape,Stability,Volatility",Reuse,CONFIRMED - 52 keys in fact table (45 governed); region embedded in Key prefix
+target_date,forecast_substrateBE_hdd_region,DateTime,Future date the forecast value refers to,date,row,Yes,"Shape,Stability,Volatility",Reuse,CONFIRMED - date type; forward filter needed (target vs version)
+forecast_value,forecast_substrateBE_hdd_region,Value,Predicted value (ValueType=Forecast-Mean; ModelVersion<>actual),float,row,Yes,"Performance,Shape,Stability,Volatility",Reuse,CONFIRMED
+actual_value,forecast_substrateBE_hdd_region,Value,Observed value (ModelVersion=actual; Value>0),float,row,Optional,Performance,Reuse,CONFIRMED - 547074 rows 2019-07-01..2026-05-25 (per scenario)
+model_version,forecast_substrateBE_hdd_region,ModelVersion,Model that produced the value; 'actual' marks observed,varchar,row,Yes,"Performance,Shape,Stability,Volatility",Reuse,CONFIRMED - exactly 1 model per Key per ForecastVersion (n_models=1)
+forecast_version,forecast_substrateBE_hdd_region,ForecastVersion,VERSION AXIS - the dimension drift compares across,date,row,Yes (critical),"Shape,Stability,Volatility",Reuse,CONFIRMED - 48 Enterprise versions monthly 2021-06..2026-05. CAVEAT: version 2025-06-01 rows duplicated x2 (dedupe)
+scenario,forecast_substrateBE_hdd_region,Scenario,Planning scenario,varchar,row,Yes,"Performance,Shape,Stability,Volatility",Reuse,CONFIRMED - Enterprise / Consumer / Basilisk
+resource,forecast_substrateBE_hdd_region,Resource,Capacity resource type,varchar,row,Yes,"Performance,Shape,Stability,Volatility",Reuse,CONFIRMED - only HDD in this table; other resources = separate tables (cpu/iops/ssd)
+value_type,forecast_substrateBE_hdd_region,ValueType,Value semantics,varchar,row,Yes,"Performance,Shape,Stability,Volatility",Reuse,CONFIRMED - only Forecast-Mean (no upstream intervals)
+metric_key,forecast_substrateBE_hdd_region_metrics,Key,Key the accuracy metrics are computed for (region grain),varchar,per key per version per window,Yes,Performance,Reuse,CONFIRMED - 45 keys
+metric_forecast_version,forecast_substrateBE_hdd_region_metrics,Forecast_Version,Version axis for official accuracy metrics,date,per version,Yes (critical),Performance,Reuse,CONFIRMED but SHALLOW - only 3 versions region (2026-03-07/04-16/05-01); forest table uses datetime
+mape,forecast_substrateBE_hdd_region_metrics,MAPE,Mean absolute percentage error,float,window,Yes,Performance,Reuse,CONFIRMED present
+mae,forecast_substrateBE_hdd_region_metrics,MAE,Mean absolute error,float,window,Optional,Performance,Reuse,CONFIRMED present
+rmse,forecast_substrateBE_hdd_region_metrics,RMSE,Root mean squared error,float,window,Optional,Performance,Reuse,CONFIRMED present
+bias,forecast_substrateBE_hdd_region_metrics,Bias,Signed bias (forecast - actual),float,window,Yes,Performance,Reuse,CONFIRMED present
+bias_pct,forecast_substrateBE_hdd_region_metrics,Bias_Pct,Bias as a percentage,float,window,Optional,Performance,Reuse,CONFIRMED present
+smape,forecast_substrateBE_hdd_region_metrics,SMAPE,Symmetric MAPE,float,window,Optional,Performance,Reuse,CONFIRMED present
+accuracy,forecast_substrateBE_hdd_region_metrics,Accuracy,Accuracy percentage,float,window,Yes,Performance,Reuse,CONFIRMED present
+mean_actual,forecast_substrateBE_hdd_region_metrics,Mean_Actual,Mean of actuals over window,float,window,Optional,Performance,Reuse,CONFIRMED present
+mean_forecast,forecast_substrateBE_hdd_region_metrics,Mean_Forecast,Mean of forecasts over window,float,window,Optional,Performance,Reuse,CONFIRMED present
+metric_count,forecast_substrateBE_hdd_region_metrics,Count,Number of points in the metric window,int,window,Optional,Performance,Reuse,CONFIRMED present
+metric_start_date,forecast_substrateBE_hdd_region_metrics,Start_Date,Metric evaluation window start,date,window,Optional,Performance,Reuse,CONFIRMED present
+metric_end_date,forecast_substrateBE_hdd_region_metrics,End_Date,Metric evaluation window end,date,window,Optional,Performance,Reuse,CONFIRMED present
+metric_execution_date,forecast_substrateBE_hdd_region_metrics,Execution_Date,Timestamp metric row computed (audit),datetime,window,Optional,audit,Reuse,CONFIRMED present
+forest_key,forecast_substrateBE_hdd_forest_metrics,Key,Forest-level key (e.g. APCP150),varchar,per key per version per window,Optional,Performance,Reuse,CONFIRMED - 155 keys; DISTINCT namespace from region keys; 3 versions
+ttl_months,vw_SubstrateBE_MonthsToLive_Snapshot,MonthsToLive,Months-to-live capacity signal,float,per key per date,Optional,Performance (TTL),Reference,NOT TESTED in E1B - defer to a later probe
+service,n/a (not a column),n/a,Service dimension referenced by Blueprint UX,varchar,dimension,Optional,"Performance,Shape,Stability,Volatility",Derived/Map,CONFIRMED ABSENT - no Service column in hdd_region; must map from Key or external dim
+region,derived from Key,n/a,Region dimension,varchar,dimension,Optional,"Performance,Shape,Stability,Volatility",Derived,CONFIRMED - no Region column; embedded in Key prefix (APC-/EUR-/NAM-...)
+horizon_days,DERIVED (E3),n/a,target_date minus forecast_version date (forecast lead time),int,derived per row,Yes,"Shape,Stability,Volatility",Derived,NEW - required to separate forward forecast from post-hoc frozen values
+is_forward,DERIVED (E3),n/a,Flag target_date >= forecast_version date (true forward forecast),bool,derived per row,Yes,"Shape,Stability,Volatility",Derived,NEW - Stability/Shape/Volatility must use forward cells only
+value_delta,DERIVED (E3),n/a,Value change vs previous version for same Key+target_date,float,per Key+target across versions,Yes,Stability,Derived,NEW - Stability Drift core signal
+value_delta_pct,DERIVED (E3),n/a,Percent value change vs previous version,float,per Key+target across versions,Yes,Stability,Derived,NEW
+shape_distance,DERIVED (E3),n/a,Distance between forecast curves of consecutive versions,float,per Key across versions,Yes,Shape,Derived,NEW - Shape Drift core signal
+rolling_cov,DERIVED (E3),n/a,Rolling variance / coefficient of variation across last N versions,float,per Key+target across versions,Yes,Volatility,Derived,NEW - Volatility Drift core signal
+metric_delta,DERIVED (E3),n/a,Change in MAPE/Bias/Accuracy across Forecast_Version per Key,float,per Key across metric versions,Yes,Performance,Derived,NEW - Performance Drift (limited to 3 metric versions unless recomputed)

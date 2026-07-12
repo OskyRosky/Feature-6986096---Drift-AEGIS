@@ -9,7 +9,7 @@
 | **E0** | Foundation — Blueprint, Mockup, Git, Governance | Docs/setup | ✅ Complete |
 | **E1** | Source Discovery & Data Profiling | Discover (no calc) | ◑ In progress |
 | ├ E1A | Document Discovery & Reuse (no live SQL) | Docs from existing knowledge | ✅ Complete |
-| └ E1B | Live Data Validation (read-only SQL) | Confirm hypotheses | ⏳ Pending SQL access |
+| └ E1B | Live Data Validation (read-only SQL) | Confirm hypotheses | ✅ Complete (all 4 families computable) |
 | **E2** | Forecast Drift Information Model (tables, grain, relations, lineage) | Design | ⏳ |
 | **E3** | Mathematical Drift Model (formulas + known-answer fixtures) | Math | ⏳ |
 | **E4** | Output Schema Design — `aegis_forecast_drift_signals` (design only) | Design | ⏳ |
