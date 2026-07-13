@@ -1,0 +1,35 @@
+formula_id,family,name,role,expression,inputs,output_field,config_params,eligibility
+P-01,Performance,metric delta,primary,delta = m_n - m_prev,"m_n, m_prev",metric_delta,none,>=2 metric versions
+P-02,Performance,metric delta pct,primary,delta_pct = (m_n - m_prev)/max(abs(m_prev),eps),"m_n, m_prev, eps",metric_delta_pct,eps,m_prev not null
+P-03,Performance,near-zero gate,primary,raw = 0 if abs(delta) < perf_min_abs_delta,"delta, perf_min_abs_delta",raw_perf,perf_min_abs_delta=0.02,none
+P-04,Performance,unfavorable relative change,primary,r_perf = max(0, dir_unfav * delta_pct),"delta_pct, direction",r_perf,direction rule (lower/higher better),gate passed
+P-05,Performance,performance score,primary,P = piecewise(r_perf; 0.10,0.25,0.50,1.00),r_perf,performance_score,"anchors_P=0.10/0.25/0.50/1.00",>=2 versions
+P-06,Performance,accuracy direction,secondary,unfavorable if Accuracy_n < Accuracy_prev,"Accuracy_n, Accuracy_prev",perf_direction_accuracy,none,accuracy present
+P-07,Performance,bias direction,secondary,sign(Bias_Pct) indicates over/under-forecast,Bias_Pct,bias_direction,none,bias present
+S-01,Shape,curve level,primary,L = max(mean_t |F_prev(t)|, eps),"F_prev over T, eps",shape_level,eps,|T|>=shape_min_points
+S-02,Shape,relative curve RMSE,primary,r_shape = sqrt(sum w_t (F_n-F_prev)^2 / sum w_t)/L,"F_n, F_prev over T, w_t, L",shape_raw_distance,"w_t (uniform default), shape_horizon_weighting=off",|T|>=4
+S-03,Shape,shape score,primary,S = piecewise(r_shape; 0.05,0.10,0.20,0.40),r_shape,shape_score,anchors_S=0.05/0.10/0.20/0.40,eligible
+S-04,Shape,max curve delta,secondary,max_t |F_n(t)-F_prev(t)|,"F_n, F_prev",shape_max_delta,none,eligible
+S-05,Shape,curve delta pct,secondary,shape_max_delta / |F_prev at argmax|,"shape_max_delta, F_prev",shape_delta_pct,none,eligible
+S-06,Shape,divergence start,secondary,first t where |(F_n-F_prev)/F_prev| > shape_div_pct,"F_n, F_prev, shape_div_pct",divergence_start_date,shape_div_pct=0.05,eligible
+Sb-01,Stability,value delta,primary,F_vn(t) - F_v(n-1)(t),forward series,value_delta,none,>=2 versions forward
+Sb-02,Stability,value delta pct,primary,value_delta / max(abs(F_v(n-1)),eps),"value_delta, F_v(n-1), eps",value_delta_pct,"eps, stab_min_abs",base>=stab_min_abs
+Sb-03,Stability,stability score,primary,St = piecewise(|value_delta_pct|; 0.03,0.07,0.15,0.40),value_delta_pct,stability_score,anchors_St=0.03/0.07/0.15/0.40,eligible
+Sb-04,Stability,cumulative revision pct,secondary,(F_vn - F_v1)/max(abs(F_v1),eps),"F_vn, F_v1",cumulative_revision_pct,eps,>=3 versions
+Sb-05,Stability,structural break,secondary,flag if |value_delta_pct| >= stab_jump_pct,value_delta_pct,structural_break_flag,stab_jump_pct=0.15,eligible
+Sb-06,Stability,per-key aggregation,primary,St_key = max_t St(t) (or 90th pct),St over targets,stability_score_key,stab_agg=max,eligible
+V-01,Volatility,coefficient of variation,primary,CoV = stdev_sample(x)/max(abs(mean(x)),eps),last N forward values,cov,"vol_window_N=6, eps",>=4 versions
+V-02,Volatility,volatility score,primary,V = piecewise(CoV; 0.03,0.07,0.15,0.30),CoV,volatility_score,anchors_V=0.03/0.07/0.15/0.30,eligible
+V-03,Volatility,MAD over median,companion,median(|x - median(x)|)/max(abs(median(x)),eps),x,mad_over_median,eps,eligible
+V-04,Volatility,mean abs revision,companion,mean(|x_i - x_(i-1)|),x,mean_abs_revision,none,eligible
+V-05,Volatility,sign change frequency,companion,#sign_changes(diff x)/(N-2),x,sign_change_freq,none,>=3 versions
+V-06,Volatility,classification,companion,stable/variable/erratic by CoV bands (+single_spike if MAD low),"CoV, mad_over_median",volatility_class,anchors_V,eligible
+N-01,Common,piecewise normalization,core,"piecewise-linear through (0,0),(a20,20),(a40,40),(a70,70),(a100,100) clamp[0,100]","r, a20,a40,a70,a100",score_0_100,per-family anchors,r>=0
+C-01,Composite,drift score,core,FDS = sum(w_f*score_f over avail)/sum(w_f over avail),"family scores, weights, availability",forecast_drift_score,weights 0.20/0.40/0.30/0.10,>=1 family
+C-02,Composite,coverage,core,100*sum(w_avail)/sum(w_all),"weights, availability",score_coverage_pct,weights,none
+C-03,Composite,dominant family,core,argmax_f(w_f*score_f),"family scores, weights",dominant_drift_family,weights,>=1 family
+C-04,Composite,confidence,core,HIGH/MEDIUM/LOW by coverage,score_coverage_pct,confidence,conf_bands=100/60,none
+T-01,Event,status band,core,Healthy[0,20) Watch[20,40) Warning[40,70) Critical[70,100],forecast_drift_score,drift_status,band edges,none
+T-02,Event,event creation,core,event if FDS>=event_threshold OR any family>=family_event_threshold,"FDS, family scores",create_event,"event_threshold=40, family_event_threshold=70",none
+T-03,Event,persistence,core,consecutive versions status>=Warning,status history,persistence,persistence_min=2,none
+T-04,Event,cooldown,core,suppress duplicate within cooldown_versions unless severity up,"open events, severity",event_suppressed,cooldown_versions=1,none

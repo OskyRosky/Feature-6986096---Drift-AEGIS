@@ -6,7 +6,7 @@ Last updated: 2026-07-12
 > Microsoft internal / confidential. Engineering stages (E-prefix) build the product; product/document versions (V1/V2/V3) are separate. See `engineering/ROADMAP.md`.
 
 ## Current stage
-**E2 — Forecast Drift Information Model: COMPLETE.** Next: **E3 — Mathematical Drift Model** (needs authorization).
+**E3 — Mathematical Drift Model: COMPLETE.** Next: **E4 — Output Schema Design** (needs authorization).
 
 ## Stage status
 | Stage | Name | Status |
@@ -15,8 +15,8 @@ Last updated: 2026-07-12
 | E1A | Source Discovery & Data Profiling — Document Discovery & Reuse | ✅ Complete |
 | E1B | Source Discovery & Data Profiling — Live Data Validation | ✅ Complete (all 4 families computable) |
 | E2 | Forecast Drift Information Model | ✅ Complete |
-| E3 | Mathematical Drift Model | ⏳ Next (needs auth) |
-| E4 | Output Schema Design | ⏳ |
+| E3 | Mathematical Drift Model | ✅ Complete |
+| E4 | Output Schema Design | ⏳ Next (needs auth) |
 | E5 | SQL Implementation & Validation | ⏳ |
 | E6 | Power BI MVP | ⏳ |
 | E7 | Grafana Production Dashboard | ⏳ |
