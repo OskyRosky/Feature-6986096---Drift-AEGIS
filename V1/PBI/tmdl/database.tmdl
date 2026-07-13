@@ -1,0 +1,4 @@
+/// AEGIS Forecast Drift - consume-only model over governed Python datasets (E6)
+database AEGIS_Forecast_Drift
+	compatibilityLevel: 1567
+

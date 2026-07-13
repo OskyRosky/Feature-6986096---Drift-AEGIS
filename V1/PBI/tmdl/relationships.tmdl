@@ -10,3 +10,7 @@ relationship rel_signals_to_runs
 	fromColumn: forecast_drift_signals.calculation_run_id
 	toColumn: forecast_drift_runs.calculation_run_id
 
+relationship rel_signals_to_calendar
+	fromColumn: forecast_drift_signals.forecast_version
+	toColumn: Calendar.Date
+

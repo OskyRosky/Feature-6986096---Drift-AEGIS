@@ -7,13 +7,14 @@ Last updated: 2026-07-13
 
 ## Current stage
 **E6 — Power BI MVP (local, consume-only): PARTIAL.** Governed semantic model
-authored via Power BI MCP over `V1/data/processed/current/`: 5 tables, shared
-`DriftDataFolder` parameter, 3 active relationships (+Calendar manual), 24
-presentation-only measures (no DAX business logic), exported to importable TMDL
-(`V1/powerbi/tmdl/`). 11 MVP pages + AEGIS sidebar fully specified; row counts
-match E5B (168/672/71/1). Remaining: manual `.pbix` visual authoring in Power BI
-Desktop. Token: E6_POWER_BI_MVP_PARTIAL. Next: finish `.pbix` visuals, then E7
-(Grafana, consume-only).
+`AEGIS_Forecast_Drift` authored via Power BI MCP over `V1/data/processed/current/`:
+5 tables, shared `DriftDataFolder` parameter, **4 active relationships** (incl.
+Calendar), 24 presentation-only measures (no DAX business logic), exported +
+corrected to importable TMDL (`V1/PBI/tmdl/`; re-import validated: 5 tables / 24
+measures / 4 rels). Official file `V1/PBI/AEGIS_Forecast_Drift.pbix`. 11 pages +
+AEGIS sidebar specified; row counts match E5B (168/672/71/1). Remaining: resolve
+the pending Desktop MCP change, confirm the in-model refresh, and author `.pbix`
+visuals. Token: E6_POWER_BI_MVP_PARTIAL. Next: finish visuals, then E7 (Grafana).
 
 ## Stage status
 | Stage | Name | Status |

@@ -10,8 +10,9 @@
 
 ## Source
 Model was authored via the Power BI MCP (offline TOM model
-`AEGIS_Forecast_Drift_MVP`, compatibility 1567) and exported to importable TMDL
-at `V1/powerbi/tmdl/` (9 files). No `.pbix` visuals yet — see
+`AEGIS_Forecast_Drift`, compatibility 1567) and exported to importable TMDL
+at `V1/PBI/tmdl/`. The corrected TMDL was re-imported to validate it loads
+cleanly (5 tables, 24 measures, 4 active relationships). No `.pbix` visuals yet — see
 `E6_page_specifications.md` for the manual report layer.
 
 ## Tables (star schema)
@@ -32,7 +33,7 @@ at `V1/powerbi/tmdl/` (9 files). No `.pbix` visuals yet — see
 - `drift_event_id` — surrogate key of a signal; join for family_scores and
   event_history (many) → signals (one).
 - `calculation_run_id` — signals (many) → runs (one).
-- `forecast_version` — signals (many) → Calendar[Date] (one) [manual, see below].
+- `forecast_version` — signals (many) → Calendar[Date] (one).
 
 ## Relationships (cardinality / direction)
 | From (many) | To (one) | Column | Cardinality | Cross-filter | Active |
@@ -40,7 +41,7 @@ at `V1/powerbi/tmdl/` (9 files). No `.pbix` visuals yet — see
 | forecast_drift_family_scores | forecast_drift_signals | drift_event_id | many→one | single | Yes |
 | forecast_drift_event_history | forecast_drift_signals | drift_event_id | many→one | single | Yes |
 | forecast_drift_signals | forecast_drift_runs | calculation_run_id | many→one | single | Yes |
-| forecast_drift_signals | Calendar | forecast_version → Date | many→one | single | **Manual** (calculated table materializes only in Desktop) |
+| forecast_drift_signals | Calendar | forecast_version → Date | many→one | single | Yes (Calendar columns defined in TMDL; validated on import) |
 
 No many-to-many. No ambiguous paths. Single-direction filters (dimension →
 fact). The Calendar relationship is created after first load in Power BI Desktop

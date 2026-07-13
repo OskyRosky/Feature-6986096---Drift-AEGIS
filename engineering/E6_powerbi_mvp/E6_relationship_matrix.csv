@@ -2,4 +2,4 @@ relationship_name,from_table,from_column,to_table,to_column,from_cardinality,to_
 rel_family_to_signals,forecast_drift_family_scores,drift_event_id,forecast_drift_signals,drift_event_id,many,one,single,TRUE,created,4 family rows per signal
 rel_events_to_signals,forecast_drift_event_history,drift_event_id,forecast_drift_signals,drift_event_id,many,one,single,TRUE,created,event history to signal
 rel_signals_to_runs,forecast_drift_signals,calculation_run_id,forecast_drift_runs,calculation_run_id,many,one,single,TRUE,created,signals to run lineage
-rel_signals_to_calendar,forecast_drift_signals,forecast_version,Calendar,Date,many,one,single,TRUE,manual_post_import,DAX calculated table materializes only in Power BI Desktop; create relationship after first load
+rel_signals_to_calendar,forecast_drift_signals,forecast_version,Calendar,Date,many,one,single,TRUE,created,Calendar columns defined in TMDL (Date/Year/MonthNo/Month/YearMonth); relationship active; validated on TMDL import

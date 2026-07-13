@@ -30,7 +30,7 @@ Exit code `0` = success; outputs written atomically to
 ## 3. Refresh Power BI
 ### First-time setup (once)
 1. Open **Power BI Desktop**.
-2. Import the semantic model from `V1/powerbi/tmdl/`:
+2. Import the semantic model from `V1/PBI/tmdl/`:
    - Preferred: **Tabular Editor** → open the TMDL folder → save to a new model,
      or use *Get Data → more → TMDL* / Power BI project (PBIP) import; or
    - Recreate the connection by pointing the `DriftDataFolder` parameter to your
@@ -43,7 +43,7 @@ Exit code `0` = success; outputs written atomically to
    calculated `Calendar` table materializes only now, in Desktop).
 6. Build the report pages per `E6_page_specifications.md` and the sidebar per
    `E6_sidebar_navigation_spec.md`. Save as
-   `V1/powerbi/AEGIS_Forecast_Drift_MVP.pbix`.
+   `V1/PBI/AEGIS_Forecast_Drift.pbix`.
 
 ### Routine refresh (after a new Python run)
 - Power BI Desktop → **Home → Refresh**. No model changes needed; stable file

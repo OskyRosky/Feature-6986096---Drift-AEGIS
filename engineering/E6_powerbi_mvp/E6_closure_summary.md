@@ -12,14 +12,16 @@ in Python. No SQL, no Grafana, no cloud, no commit, no engine changes.
 ## 2. What was completed
 A complete, importable **semantic model** authored via the Power BI MCP (offline
 TOM, compatibility 1567) over the four governed CSVs: 5 tables, a shared folder
-parameter, 3 active relationships (+1 documented manual), and 24 presentation
-measures — exported to TMDL at `V1/powerbi/tmdl/`. Full page specifications (11
+parameter, 4 active relationships (incl. Calendar), and 24 presentation
+measures — exported + corrected to importable TMDL at `V1/PBI/tmdl/` (re-import
+validated: 5 tables / 24 measures / 4 relationships). Names/paths corrected to
+`AEGIS_Forecast_Drift` and `V1/PBI/`. Full page specifications (11
 pages), sidebar/navigation spec, relationship matrix, measure catalog, data
 validation, refresh runbook and known limitations were produced. The `.pbix`
 visual layer is fully specified for manual authoring in Power BI Desktop.
 
 ## 3. Files created or modified
-- Model (TMDL, MCP export): `V1/powerbi/tmdl/` → database.tmdl, model.tmdl,
+- Model (TMDL, corrected + import-validated): `V1/PBI/tmdl/` → database.tmdl, model.tmdl,
   expressions.tmdl, relationships.tmdl, Calendar.tmdl, forecast_drift_signals.tmdl,
   forecast_drift_family_scores.tmdl, forecast_drift_event_history.tmdl,
   forecast_drift_runs.tmdl.
@@ -36,9 +38,9 @@ Shared M parameter `DriftDataFolder` (single path per machine). Import mode.
 
 ## 5. Relationships
 Star schema, single-direction, many→one: family→signals (drift_event_id),
-events→signals (drift_event_id), signals→runs (calculation_run_id). Calendar→
-signals[forecast_version] = created manually after first Desktop load (calculated
-table). No ambiguity, no many-to-many.
+events→signals (drift_event_id), signals→runs (calculation_run_id), signals
+[forecast_version]→Calendar[Date]. All 4 active (Calendar columns defined in
+TMDL; validated on import). No ambiguity, no many-to-many.
 
 ## 6. Measures
 24 presentation-only measures (counts, averages of already-computed scores,
@@ -101,13 +103,13 @@ Desktop is the identified remaining manual step (no headless `.pbix` visual
 build available).
 
 ## 16. Next step
-Open Power BI Desktop, import `V1/powerbi/tmdl/`, set `DriftDataFolder`, refresh,
+Open Power BI Desktop, import `V1/PBI/tmdl/`, set `DriftDataFolder`, refresh,
 add the Calendar relationship, and build the 11 pages + sidebar per the specs;
-save `V1/powerbi/AEGIS_Forecast_Drift_MVP.pbix`. Then E7 (Grafana) may reuse the
+save `V1/PBI/AEGIS_Forecast_Drift.pbix`. Then E7 (Grafana) may reuse the
 same governed layer.
 
 ## 17. Git status
-Not committed. New: `engineering/E6_powerbi_mvp/*`, `V1/powerbi/tmdl/*`; modified
+Not committed. New: `engineering/E6_powerbi_mvp/*`, `V1/PBI/tmdl/*`; modified
 `ROADMAP.md`, `PROJECT_STATUS.md`. `V1/data/` remains git-ignored (no real data).
 
 ## 18. Executive summary

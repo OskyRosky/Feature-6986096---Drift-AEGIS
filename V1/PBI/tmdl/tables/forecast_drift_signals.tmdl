@@ -338,5 +338,5 @@ table forecast_drift_signals
 
 	partition signals = m
 		mode: import
-		source = let Source = Csv.Document(File.Contents(DriftDataFolder & "forecast_drift_signals.csv"), [Delimiter=",", Encoding=65001, QuoteStyle=QuoteStyle.Csv]), Prom = Table.PromoteHeaders(Source, [PromoteAllScalars=true]) in Prom
+		source = let Source = Csv.Document(File.Contents(DriftDataFolder & "forecast_drift_signals.csv"), [Delimiter=",", Encoding=65001, QuoteStyle=QuoteStyle.Csv]), Prom = Table.PromoteHeaders(Source, [PromoteAllScalars=true]), Clean = Table.ReplaceValue(Prom, "", null, Replacer.ReplaceValue, Table.ColumnNames(Prom)) in Clean
 
