@@ -1,0 +1,9 @@
+table_name,purpose,grain,primary_key,natural_unique_key,row_estimate_mvp,mvp_or_future
+aegis_forecast_drift_signals,Governed drift signal/event per version evaluation,One row per (calculation_version scenario forecast_key forecast_version),drift_event_id (BIGINT IDENTITY),"(calculation_version, scenario, forecast_key, forecast_version, drift_type)",~2K-25K,MVP
+aegis_forecast_drift_family_scores,Per-family score + family-specific raw metrics (tidy long),One row per (drift_event_id drift_family),family_score_id (BIGINT IDENTITY),"(drift_event_id, drift_family)",~4x signals,MVP
+aegis_forecast_drift_event_history,Append-only operational lifecycle trail,One row per (drift_event_id status change),event_history_id (BIGINT IDENTITY),none (append-only),~1-5x events,MVP
+aegis_forecast_drift_run,Calculation run lineage + idempotency anchor,One row per run,calculation_run_id (BIGINT IDENTITY),"(calculation_version, run_started_at)",tens,MVP
+aegis_drift_threshold_config,Governed anchors + bands + eligibility per family/metric,One row per (config_version drift_family metric_name),threshold_config_id (INT IDENTITY),"(config_version, drift_family, metric_name)",tens,MVP
+aegis_drift_weight_config,Governed family weights (sum 100 per version),One row per (config_version drift_family),weight_config_id (INT IDENTITY),"(config_version, drift_family)",tens,MVP
+aegis_drift_formula_config,Governed formula/engine parameters per formula version,One row per formula_version,formula_version (VARCHAR),formula_version,units,MVP
+aegis_forecast_drift_explanations,Long/multi-language explanations,One row per (drift_event_id language),explanation_id,"(drift_event_id, language)",n/a,FUTURE (MVP uses inline explanation column)

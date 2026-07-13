@@ -1,0 +1,38 @@
+e3_field,e3_formula_id,inputs,math_output,physical_column,physical_table,sql_type,nullability,eligibility_rule,not_computable_reason,associated_config
+metric_name,P-*,dominant family metric,label,metric_name,aegis_forecast_drift_signals,VARCHAR(30),NULL,performance eligible,none,threshold_config(metric_name)
+metric_value,P-*,source metric,current value,metric_value,aegis_forecast_drift_signals,DECIMAL(18,6),NULL,>=2 versions,INSUFFICIENT_VERSIONS,-
+previous_metric_value,P-*,source metric,prior value,previous_metric_value,aegis_forecast_drift_signals,DECIMAL(18,6),NULL,>=2 versions,INSUFFICIENT_VERSIONS,-
+metric_delta,P-01,current-prior,delta,metric_delta,aegis_forecast_drift_signals,DECIMAL(18,6),NULL,>=2 versions,INSUFFICIENT_VERSIONS,-
+metric_delta_pct,P-02,delta/prior,relative delta,metric_delta_pct,aegis_forecast_drift_signals,DECIMAL(9,4),NULL,prior>=eps,NEAR_ZERO_BASE,perf_min_abs_delta
+performance_score,P-05,r_perf,0-100,performance_drift_score,aegis_forecast_drift_signals,DECIMAL(5,2),NULL,>=2 metric versions,INSUFFICIENT_VERSIONS,anchors_P
+shape_raw_distance,S-02,curve diffs,relative RMSE,shape_distance,aegis_forecast_drift_family_scores,DECIMAL(9,4),NULL,>=4 fwd points,INSUFFICIENT_POINTS,-
+shape_score,S-03,r_shape,0-100,shape_drift_score,aegis_forecast_drift_signals,DECIMAL(5,2),NULL,eligible,INSUFFICIENT_POINTS,anchors_S
+shape_max_delta,S-04,curve diffs,max abs,max_curve_delta,aegis_forecast_drift_family_scores,DECIMAL(18,6),NULL,eligible,-,-
+shape_delta_pct,S-05,max delta/base,percent,max_curve_delta_pct,aegis_forecast_drift_family_scores,DECIMAL(9,4),NULL,eligible,-,-
+divergence_start_date,S-06,first breach,date,divergence_start_date,aegis_forecast_drift_family_scores,DATE,NULL,eligible,-,shape_div_pct
+value_delta,Sb-01,version pair,delta,value_delta,aegis_forecast_drift_family_scores,DECIMAL(18,6),NULL,>=2 versions forward,INSUFFICIENT_VERSIONS,-
+value_delta_pct,Sb-02,delta/base,percent,value_delta_pct,aegis_forecast_drift_family_scores,DECIMAL(9,4),NULL,base>=stab_min_abs,NEAR_ZERO_BASE,stab_min_abs
+stability_score,Sb-03,|value_delta_pct|,0-100,stability_drift_score,aegis_forecast_drift_signals,DECIMAL(5,2),NULL,eligible,PAST_TARGET_ONLY,anchors_St
+cumulative_revision_pct,Sb-04,latest vs first,percent,cumulative_revision_pct,aegis_forecast_drift_family_scores,DECIMAL(9,4),NULL,>=3 versions,INSUFFICIENT_VERSIONS,-
+structural_break_flag,Sb-05,threshold,flag,structural_break_flag,aegis_forecast_drift_family_scores,BIT,NULL,eligible,-,stab_jump_pct
+cov,V-01,last N,coefficient of variation,rolling_cov,aegis_forecast_drift_family_scores,DECIMAL(9,4),NULL,>=4 versions,INSUFFICIENT_VERSIONS,vol_window_N
+rolling_stddev,V-01,last N,sample std,rolling_stddev,aegis_forecast_drift_family_scores,DECIMAL(18,6),NULL,>=4 versions,INSUFFICIENT_VERSIONS,vol_window_N
+volatility_score,V-02,cov,0-100,volatility_drift_score,aegis_forecast_drift_signals,DECIMAL(5,2),NULL,eligible,NEAR_ZERO_MEAN,anchors_V
+mad_over_median,V-03,robust,ratio,rolling_mad,aegis_forecast_drift_family_scores,DECIMAL(9,4),NULL,eligible,-,-
+mean_abs_revision,V-04,consecutive,mean abs diff,(via rolling_stddev companion),aegis_forecast_drift_family_scores,DECIMAL(18,6),NULL,eligible,-,-
+sign_change_freq,V-05,diffs,frequency,sign_change_freq,aegis_forecast_drift_family_scores,DECIMAL(5,4),NULL,>=3 versions,-,-
+oscillation_count,V-05,diffs,count,oscillation_count,aegis_forecast_drift_family_scores,INT,NULL,>=3 versions,-,-
+volatility_class,V-06,cov bands,label,volatility_class,aegis_forecast_drift_family_scores,VARCHAR(20),NULL,eligible,-,anchors_V
+forecast_drift_score,C-01,family scores,0-100,forecast_drift_score,aegis_forecast_drift_signals,DECIMAL(5,2),NOT NULL,>=1 family,ALL_FAMILIES_NOT_COMPUTABLE,weights
+score_coverage_pct,C-02,avail weights,percent,score_coverage_pct,aegis_forecast_drift_signals,DECIMAL(5,2),NOT NULL,-,-,weights
+confidence,C-04,coverage,label,confidence_level,aegis_forecast_drift_signals,VARCHAR(10),NOT NULL,-,-,conf_bands
+dominant_drift_family,C-03,argmax,label,dominant_drift_family,aegis_forecast_drift_signals,VARCHAR(20),NULL,>=1 family,-,weights
+contributing_family,C-*,contribution,list,(reason_code / explanation),aegis_forecast_drift_signals,VARCHAR,NULL,-,-,contrib_min_pct
+missing_family_flag,C-*,not computable,list,missing_family_flag,aegis_forecast_drift_signals,VARCHAR(50),NULL,-,-,-
+drift_status,T-01,band,label,drift_status,aegis_forecast_drift_signals,VARCHAR(20),NOT NULL,-,-,threshold bands
+severity,T-*,band,label,severity,aegis_forecast_drift_signals,VARCHAR(20),NULL,event,-,event_threshold
+persistence,T-03,consecutive,type,persistence_type,aegis_forecast_drift_signals,VARCHAR(20),NULL,-,-,persistence_min
+single_spike_flag,T-03,persistence=1,flag,(persistence_type=single_spike),aegis_forecast_drift_signals,VARCHAR(20),NULL,-,-,persistence_min
+explanation,E3,composed,text,explanation,aegis_forecast_drift_signals,VARCHAR(1000),NULL,-,-,-
+version_count,eligibility,count,int,version_count,aegis_forecast_drift_family_scores,INT,NULL,-,-,min_versions
+horizon_point_count,eligibility,count,int,horizon_point_count,aegis_forecast_drift_family_scores,INT,NULL,-,-,shape_min_points

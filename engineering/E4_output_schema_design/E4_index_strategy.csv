@@ -1,0 +1,14 @@
+index_name,table_name,index_type,key_columns,include_columns,purpose,cost_or_risk,mvp_or_future
+PK_aegis_forecast_drift_signals,aegis_forecast_drift_signals,CLUSTERED (PK),drift_event_id,,Monotonic surrogate clustering; no fragmentation,Low,MVP
+IX_signals_scenario_key_version,aegis_forecast_drift_signals,NONCLUSTERED,"scenario, forecast_key, forecast_version","forecast_drift_score, drift_status, severity, drift_type",Dimensional filter (Overview/drilldown),Low write overhead,MVP
+IX_signals_detected_on,aegis_forecast_drift_signals,NONCLUSTERED,"detected_on DESC","scenario, forecast_key, drift_type, severity, forecast_drift_score",Timeline / recent events,Low,MVP
+IX_signals_type_severity,aegis_forecast_drift_signals,NONCLUSTERED,"drift_type, severity, detected_on","forecast_key, scenario, forecast_drift_score",Per-family tabs + severity distribution,Low,MVP
+IX_signals_critical_current,aegis_forecast_drift_signals,NONCLUSTERED (filtered),"detected_on DESC","scenario, forecast_key, drift_type","WHERE severity='Critical' AND is_current=1 -> recent critical alerts",Small filtered index,MVP
+IX_signals_events_only,aegis_forecast_drift_signals,NONCLUSTERED (filtered),"detected_on DESC","scenario, forecast_key, drift_type, severity, event_status","WHERE is_event=1 -> Events page",Small filtered index,MVP
+IX_signals_key_target,aegis_forecast_drift_signals,NONCLUSTERED,"forecast_key, target_date","forecast_version, stability_drift_score",Stability drilldown by target date,Low,MVP
+IX_family_scores_event,aegis_forecast_drift_family_scores,NONCLUSTERED,"drift_event_id, drift_family","family_score, eligibility_status",Join detail to header,Low,MVP
+IX_family_scores_family,aegis_forecast_drift_family_scores,NONCLUSTERED,"drift_family, family_score",,Per-family heatmap aggregation,Low,MVP
+IX_history_event,aegis_forecast_drift_event_history,NONCLUSTERED,"drift_event_id, changed_at DESC",,Lifecycle trail lookup,Low,MVP
+IX_threshold_active,aegis_drift_threshold_config,NONCLUSTERED (filtered),"drift_family, metric_name","anchor_a20, anchor_a40, anchor_a70, anchor_a100 WHERE is_active=1",Active anchor lookup,Trivial,MVP
+NCCI_signals_analytics,aegis_forecast_drift_signals,NONCLUSTERED COLUMNSTORE,"(analytics columns)",,Heavy aggregation (Top Services/Scenarios heatmaps) at scale,Extra storage + maintenance; only if volume grows,FUTURE
+PARTITION_signals_by_month,aegis_forecast_drift_signals,PARTITION SCHEME,detected_on (monthly),,Manage large history / retention,Overhead not justified at MVP volume,FUTURE

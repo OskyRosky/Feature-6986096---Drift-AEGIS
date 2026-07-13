@@ -1,0 +1,23 @@
+mockup_page,visual,required_fields,source_table_or_view,aggregation,default_filters,mvp_availability
+Overview,Overall drift status KPIs,"forecast_drift_score, drift_status, severity",vw_aegis_forecast_drift_current,latest per key x scenario,is_current=1,MVP
+Overview,Drift Trend,"detected_on, forecast_drift_score",vw_aegis_forecast_drift_timeline,avg/max by date,scenario in scope,MVP
+Overview,Severity Distribution,"severity, count",vw_aegis_forecast_drift_summary,count by severity,is_current=1,MVP
+Overview,Drift Heatmap,"scenario/key, drift_family, family_score",vw_aegis_forecast_drift_family_scores,max score by key x family,latest run,MVP
+Overview,Recent Drift Events,"detected_on, forecast_key, drift_type, severity",vw_aegis_forecast_drift_events,top N recent,is_event=1,MVP
+Forecast Drift,Overall Drift Score,forecast_drift_score,vw_aegis_forecast_drift_current,avg/max,scope,MVP
+Forecast Drift,Distribution by Drift Family,"drift_family, family_score",vw_aegis_forecast_drift_family_scores,avg by family,latest,MVP
+Forecast Drift,Severity Distribution,severity,vw_aegis_forecast_drift_summary,count by severity,latest,MVP
+Forecast Drift,Drift Evolution,"detected_on, forecast_drift_score",vw_aegis_forecast_drift_timeline,series,scope,MVP
+Forecast Drift,Drift Heatmap,"key, family, score",vw_aegis_forecast_drift_family_scores,pivot,latest,MVP
+Forecast Drift,Top Services,"service, forecast_drift_score",vw_aegis_forecast_drift_summary,avg by service,is_current=1,PARTIAL (service pending G3)
+Forecast Drift,Top Scenarios,"scenario, forecast_drift_score",vw_aegis_forecast_drift_summary,avg by scenario,is_current=1,MVP
+Performance Drift,Historical Trend,"detected_on, performance_drift_score, metric_name, metric_value",vw_aegis_forecast_drift_family_scores + signals,series,drift_family=performance,MVP (shallow 3 versions)
+Shape Drift,Version A vs B / Month-by-Month,"shape_distance, max_curve_delta, divergence_start_date",aegis_forecast_drift_family_scores,per version pair,drift_family=shape,MVP
+Stability Drift,Value at Target Date / Forecast Versions,"value_delta, value_delta_pct, cumulative_revision_pct, target_date",aegis_forecast_drift_family_scores,per target across versions,drift_family=stability,MVP
+Volatility Drift,Rolling Variance / Oscillation / CoV,"rolling_cov, rolling_stddev, oscillation_count, volatility_class",aegis_forecast_drift_family_scores,per key x target window,drift_family=volatility,MVP
+Forecast Drift Events,Historical Timeline,"detected_on, forecast_key, drift_type, severity, event_status",vw_aegis_forecast_drift_events,timeline,is_event=1,MVP
+Top Services,Top 8 by Average Drift Score,"service, forecast_drift_score",vw_aegis_forecast_drift_summary,avg by service top 8,is_current=1,PARTIAL (service pending G3)
+Top Scenarios,Scenarios by Average Drift Score,"scenario, forecast_drift_score",vw_aegis_forecast_drift_summary,avg by scenario,is_current=1,MVP
+Settings,Forecast Drift Score Weights,"drift_family, weight_pct",aegis_drift_weight_config,active config,is_active=1,MVP
+Settings,Operational Thresholds,"drift_family, anchors, bands, event_threshold",aegis_drift_threshold_config + aegis_drift_formula_config,active config,is_active=1,MVP
+Settings,Downstream Integrations (Roadmap),n/a,n/a,n/a,n/a,FUTURE

@@ -12,8 +12,8 @@
 | └ E1B | Live Data Validation (read-only SQL) | Confirm hypotheses | ✅ Complete (all 4 families computable) |
 | **E2** | Forecast Drift Information Model (tables, grain, relations, lineage) | Design | ✅ Complete |
 | **E3** | Mathematical Drift Model (formulas + known-answer fixtures) | Math | ✅ Complete |
-| **E4** | Output Schema Design — `aegis_forecast_drift_signals` (design only) | Design | ⏳ Next (needs auth) |
-| **E5** | SQL Implementation & Validation (views/CTEs/procs + validate vs fixtures) | Build | ⏳ |
+| **E4** | Output Schema Design — `aegis_forecast_drift_signals` (design only) | Design | ✅ Complete |
+| **E5** | SQL Implementation & Validation (views/CTEs/procs + validate vs fixtures) | Build | ⏳ Next (needs auth) |
 | **E6** | Power BI MVP (consume only) | Viz | ⏳ |
 | **E7** | Grafana Production Dashboard (same SQL, new viz) | Production | ⏳ |
 | **E8** | Production Deployment & Governance (refresh, automation, docs) | Ops | ⏳ |

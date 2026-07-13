@@ -1,0 +1,138 @@
+table_name,column_name,description,sql_type,length_precision_scale,nullable,default_value,source_or_derivation,validation_rule,example,classification
+aegis_forecast_drift_signals,drift_event_id,Surrogate primary key,BIGINT IDENTITY(1,1),19,NOT NULL,identity,generated,PK,10025,identifier
+aegis_forecast_drift_signals,event_natural_key,Human-readable concatenated natural key,VARCHAR,300,NOT NULL,none,"calc_version|scenario|key|forecast_version|drift_type",unique with calc_version,"v1|Enterprise|APC-Dedicated|2026-05-01|shape",identifier
+aegis_forecast_drift_signals,record_hash,Deterministic hash of natural key + payload for idempotency,BINARY,32,NOT NULL,none,SHA2_256(natural key + score payload),non-null,0x9F...,identifier
+aegis_forecast_drift_signals,calculation_run_id,FK to the run that produced the row,BIGINT,19,NOT NULL,none,FK aegis_forecast_drift_run,FK,5012,lineage
+aegis_forecast_drift_signals,calculation_version,Logical calc version label,VARCHAR,20,NOT NULL,none,run metadata,part of natural key,v1.0,identifier
+aegis_forecast_drift_signals,detected_on,UTC timestamp signal was computed,DATETIME2(3),,NOT NULL,SYSUTCDATETIME(),engine,UTC,2026-07-12T10:00:00,audit
+aegis_forecast_drift_signals,scenario,Planning scenario,VARCHAR,50,NOT NULL,none,source Scenario,IN dim_scenario,Enterprise,dimension
+aegis_forecast_drift_signals,forecast_key,Forecast key (region grain),VARCHAR,100,NOT NULL,none,source Key,non-empty,APC-Dedicated,dimension
+aegis_forecast_drift_signals,service,Service dimension (pending mapping),VARCHAR,100,NULL,NULL,derived/mapped (G3),optional,NULL,dimension
+aegis_forecast_drift_signals,region,Region parsed from key,VARCHAR,50,NULL,NULL,derived from Key prefix,optional,APC,dimension
+aegis_forecast_drift_signals,forest,Forest entity (pending mapping),VARCHAR,50,NULL,NULL,forest namespace (G4),optional,NULL,dimension
+aegis_forecast_drift_signals,resource,Capacity resource,VARCHAR,20,NOT NULL,'HDD',source Resource,IN (HDD...),HDD,dimension
+aegis_forecast_drift_signals,forecast_version,Current forecast version evaluated,DATE,,NOT NULL,none,source ForecastVersion,part of natural key,2026-05-01,dimension
+aegis_forecast_drift_signals,previous_forecast_version,Prior version paired,DATE,,NULL,NULL,version_rank pairing,< forecast_version,2026-04-06,dimension
+aegis_forecast_drift_signals,forecast_date,Version generation date,DATE,,NULL,NULL,source,optional,2026-05-01,dimension
+aegis_forecast_drift_signals,target_date,Target date (stability/shape point-level events),DATE,,NULL,NULL,source DateTime,forward-only,2027-06-30,dimension
+aegis_forecast_drift_signals,window_start_date,Evaluation window start,DATE,,NULL,NULL,derived,<= window_end,2026-05-01,dimension
+aegis_forecast_drift_signals,window_end_date,Evaluation window end,DATE,,NULL,NULL,derived,>= window_start,2026-07-11,dimension
+aegis_forecast_drift_signals,drift_type,Event classification (dominant family or composite),VARCHAR,20,NOT NULL,none,dominant family,IN (performance/shape/stability/volatility/composite),shape,status
+aegis_forecast_drift_signals,dominant_drift_family,Family with max weighted contribution,VARCHAR,20,NULL,NULL,argmax(w*score),IN families,shape,status
+aegis_forecast_drift_signals,drift_status,Band of forecast_drift_score,VARCHAR,20,NOT NULL,none,band lookup,IN (Healthy/Watch/Warning/Critical),Critical,status
+aegis_forecast_drift_signals,severity,Event severity,VARCHAR,20,NULL,NULL,= drift_status when event,IN (Watch/Warning/Critical),Critical,status
+aegis_forecast_drift_signals,persistence_type,single_spike or sustained,VARCHAR,20,NULL,NULL,persistence counter,IN (single_spike/sustained),sustained,status
+aegis_forecast_drift_signals,event_status,Operational lifecycle current state,VARCHAR,20,NULL,NULL,lifecycle,IN (Open/Acknowledged/Investigating/Resolved/Suppressed),Open,status
+aegis_forecast_drift_signals,is_event,Signal crossed event threshold,BIT,,NOT NULL,0,event rule,0 or 1,1,status
+aegis_forecast_drift_signals,metric_name,Headline source metric (dominant),VARCHAR,30,NULL,NULL,dominant family metric,optional,MAPE,source metric
+aegis_forecast_drift_signals,metric_value,Current headline metric value,DECIMAL,18-6,NULL,NULL,source,-,0.70,source metric
+aegis_forecast_drift_signals,previous_metric_value,Prior headline metric value,DECIMAL,18-6,NULL,NULL,source,-,0.45,source metric
+aegis_forecast_drift_signals,metric_delta,Absolute metric change,DECIMAL,18-6,NULL,NULL,E3 P-01,-,0.25,derived metric
+aegis_forecast_drift_signals,metric_delta_pct,Relative metric change,DECIMAL,9-4,NULL,NULL,E3 P-02,-,0.5556,derived metric
+aegis_forecast_drift_signals,performance_drift_score,Performance family score,DECIMAL,5-2,NULL,NULL,E3 P-05,0-100 or NULL,73.30,score
+aegis_forecast_drift_signals,shape_drift_score,Shape family score,DECIMAL,5-2,NULL,NULL,E3 S-03,0-100 or NULL,77.60,score
+aegis_forecast_drift_signals,stability_drift_score,Stability family score,DECIMAL,5-2,NULL,NULL,E3 Sb-03,0-100 or NULL,86.70,score
+aegis_forecast_drift_signals,volatility_drift_score,Volatility family score,DECIMAL,5-2,NULL,NULL,E3 V-02,0-100 or NULL,83.90,score
+aegis_forecast_drift_signals,forecast_drift_score,Composite drift score,DECIMAL,5-2,NOT NULL,none,E3 C-01,0-100,80.10,score
+aegis_forecast_drift_signals,score_coverage_pct,Percent of weight covered by computable families,DECIMAL,5-2,NOT NULL,none,E3 C-02,0-100,100.00,score
+aegis_forecast_drift_signals,confidence_level,Confidence from coverage,VARCHAR,10,NOT NULL,none,E3 C-04,IN (HIGH/MEDIUM/LOW),HIGH,status
+aegis_forecast_drift_signals,missing_family_flag,List of NOT_COMPUTABLE families,VARCHAR,50,NULL,NULL,E3 composite,csv list,volatility,status
+aegis_forecast_drift_signals,reason_code,Machine reason code,VARCHAR,40,NULL,NULL,engine,coded,SHAPE_DIVERGENCE,lineage
+aegis_forecast_drift_signals,explanation,Human-readable explanation,VARCHAR,1000,NULL,NULL,E3 explanation,-,"Trajectory diverged...",derived metric
+aegis_forecast_drift_signals,recommended_action,Suggested next action,VARCHAR,400,NULL,NULL,rules,-,Investigate shape change,derived metric
+aegis_forecast_drift_signals,source_database,Source DB name,VARCHAR,128,NOT NULL,none,lineage,-,(source db),lineage
+aegis_forecast_drift_signals,source_schema,Source schema,VARCHAR,128,NOT NULL,'dbo',lineage,-,dbo,lineage
+aegis_forecast_drift_signals,source_object,Source table/view,VARCHAR,128,NOT NULL,none,lineage,-,forecast_substrateBE_hdd_region,lineage
+aegis_forecast_drift_signals,source_forecast_version,Max source version used,DATE,,NULL,NULL,lineage,-,2026-05-01,lineage
+aegis_forecast_drift_signals,source_row_count,Rows consumed for the signal,BIGINT,19,NULL,NULL,lineage,>=0,48,lineage
+aegis_forecast_drift_signals,normalization_version,Normalization method version,VARCHAR,20,NOT NULL,none,cfg,-,piecewise-1.0,lineage
+aegis_forecast_drift_signals,formula_version,FK to formula config,VARCHAR,20,NOT NULL,none,FK aegis_drift_formula_config,FK,f1.0,lineage
+aegis_forecast_drift_signals,threshold_config_id,FK to threshold config,INT,10,NOT NULL,none,FK aegis_drift_threshold_config,FK,3,lineage
+aegis_forecast_drift_signals,weight_config_id,FK to weight config,INT,10,NOT NULL,none,FK aegis_drift_weight_config,FK,2,lineage
+aegis_forecast_drift_signals,created_at,Row create UTC,DATETIME2(3),,NOT NULL,SYSUTCDATETIME(),audit,-,2026-07-12T10:00:00,audit
+aegis_forecast_drift_signals,created_by,Creator principal/process,VARCHAR,100,NOT NULL,SUSER_SNAME(),audit,-,aegis_drift_job,audit
+aegis_forecast_drift_signals,updated_at,Row update UTC,DATETIME2(3),,NULL,NULL,audit,-,NULL,audit
+aegis_forecast_drift_signals,updated_by,Updater principal,VARCHAR,100,NULL,NULL,audit,-,NULL,audit
+aegis_forecast_drift_signals,is_current,Latest version of the signal,BIT,,NOT NULL,1,SCD-2 style,0 or 1,1,audit
+aegis_forecast_drift_family_scores,family_score_id,PK,BIGINT IDENTITY,19,NOT NULL,identity,generated,PK,50021,identifier
+aegis_forecast_drift_family_scores,drift_event_id,FK to main signal,BIGINT,19,NOT NULL,none,FK signals,FK,10025,lineage
+aegis_forecast_drift_family_scores,drift_family,Family name,VARCHAR,20,NOT NULL,none,fixed set,IN families,shape,dimension
+aegis_forecast_drift_family_scores,family_score,Normalized 0-100 (NULL=NOT_COMPUTABLE),DECIMAL,5-2,NULL,NULL,E3 score,0-100 or NULL,77.60,score
+aegis_forecast_drift_family_scores,raw_magnitude,Scale-invariant raw r before normalization,DECIMAL,18-6,NULL,NULL,E3 raw,-,0.2509,derived metric
+aegis_forecast_drift_family_scores,eligibility_status,COMPUTED or NOT_COMPUTABLE,VARCHAR,20,NOT NULL,'COMPUTED',E3 eligibility,IN (COMPUTED/NOT_COMPUTABLE),COMPUTED,status
+aegis_forecast_drift_family_scores,not_computable_reason,Reason if not computable,VARCHAR,60,NULL,NULL,E3 rules,-,INSUFFICIENT_VERSIONS,status
+aegis_forecast_drift_family_scores,version_count,Versions used,INT,10,NULL,NULL,E3,>=0,48,derived metric
+aegis_forecast_drift_family_scores,horizon_point_count,Overlapping forward points (shape),INT,10,NULL,NULL,E3 shape,>=0,4,derived metric
+aegis_forecast_drift_family_scores,shape_distance,Relative curve RMSE,DECIMAL,9-4,NULL,NULL,E3 S-02,>=0,0.2509,derived metric
+aegis_forecast_drift_family_scores,divergence_start_date,First divergence target date,DATE,,NULL,NULL,E3 S-06,-,2027-06-30,derived metric
+aegis_forecast_drift_family_scores,max_curve_delta,Max absolute curve delta,DECIMAL,18-6,NULL,NULL,E3 S-04,-,50,derived metric
+aegis_forecast_drift_family_scores,max_curve_delta_pct,Max curve delta percent,DECIMAL,9-4,NULL,NULL,E3 S-05,-,0.435,derived metric
+aegis_forecast_drift_family_scores,value_delta,Latest revision absolute,DECIMAL,18-6,NULL,NULL,E3 Sb-01,-,35,derived metric
+aegis_forecast_drift_family_scores,value_delta_pct,Latest revision percent,DECIMAL,9-4,NULL,NULL,E3 Sb-02,-,0.2893,derived metric
+aegis_forecast_drift_family_scores,cumulative_revision_pct,Cumulative revision vs first,DECIMAL,9-4,NULL,NULL,E3 Sb-04,-,0.30,derived metric
+aegis_forecast_drift_family_scores,structural_break_flag,Structural break detected,BIT,,NULL,NULL,E3 Sb-05,0 or 1,1,status
+aegis_forecast_drift_family_scores,rolling_stddev,Rolling sample std,DECIMAL,18-6,NULL,NULL,E3 V,-,24.27,derived metric
+aegis_forecast_drift_family_scores,rolling_cov,Coefficient of variation,DECIMAL,9-4,NULL,NULL,E3 V-01,>=0,0.2197,derived metric
+aegis_forecast_drift_family_scores,rolling_mad,MAD over median (robust),DECIMAL,9-4,NULL,NULL,E3 V-03,-,0.0099,derived metric
+aegis_forecast_drift_family_scores,oscillation_count,Sign changes count,INT,10,NULL,NULL,E3 V-05,>=0,2,derived metric
+aegis_forecast_drift_family_scores,sign_change_freq,Sign change frequency,DECIMAL,5-4,NULL,NULL,E3 V-05,0-1,0.5,derived metric
+aegis_forecast_drift_family_scores,volatility_class,stable/variable/erratic,VARCHAR,20,NULL,NULL,E3 V-06,IN set,erratic,status
+aegis_forecast_drift_event_history,event_history_id,PK,BIGINT IDENTITY,19,NOT NULL,identity,generated,PK,90011,identifier
+aegis_forecast_drift_event_history,drift_event_id,FK to main signal,BIGINT,19,NOT NULL,none,FK signals,FK,10025,lineage
+aegis_forecast_drift_event_history,old_status,Previous lifecycle state,VARCHAR,20,NULL,NULL,lifecycle,-,Open,status
+aegis_forecast_drift_event_history,new_status,New lifecycle state,VARCHAR,20,NOT NULL,none,lifecycle,IN lifecycle set,Acknowledged,status
+aegis_forecast_drift_event_history,changed_at,Change UTC,DATETIME2(3),,NOT NULL,SYSUTCDATETIME(),audit,-,2026-07-12T11:00:00,audit
+aegis_forecast_drift_event_history,changed_by,Actor,VARCHAR,100,NOT NULL,none,audit,-,analyst@ms,audit
+aegis_forecast_drift_event_history,note,Change note,VARCHAR,500,NULL,NULL,operator,-,Under review,audit
+aegis_forecast_drift_run,calculation_run_id,PK,BIGINT IDENTITY,19,NOT NULL,identity,generated,PK,5012,identifier
+aegis_forecast_drift_run,calculation_version,Logical calc version,VARCHAR,20,NOT NULL,none,run,-,v1.0,identifier
+aegis_forecast_drift_run,formula_version,Formula config used,VARCHAR,20,NOT NULL,none,FK formula config,FK,f1.0,lineage
+aegis_forecast_drift_run,threshold_config_id,Threshold config used,INT,10,NOT NULL,none,FK,FK,3,lineage
+aegis_forecast_drift_run,weight_config_id,Weight config used,INT,10,NOT NULL,none,FK,FK,2,lineage
+aegis_forecast_drift_run,run_started_at,Start UTC,DATETIME2(3),,NOT NULL,none,audit,-,2026-07-12T09:50:00,audit
+aegis_forecast_drift_run,run_finished_at,End UTC,DATETIME2(3),,NULL,NULL,audit,-,2026-07-12T10:05:00,audit
+aegis_forecast_drift_run,source_forecast_version_max,Max source version consumed,DATE,,NULL,NULL,lineage,-,2026-05-01,lineage
+aegis_forecast_drift_run,signals_written,Signals produced,BIGINT,19,NULL,NULL,run stats,>=0,2400,audit
+aegis_forecast_drift_run,events_created,Events created,BIGINT,19,NULL,NULL,run stats,>=0,120,audit
+aegis_forecast_drift_run,run_status,Run outcome,VARCHAR,20,NOT NULL,none,run,IN (Success/Failed/Partial),Success,status
+aegis_forecast_drift_run,created_by,Run principal,VARCHAR,100,NOT NULL,none,audit,-,aegis_drift_job,audit
+aegis_drift_threshold_config,threshold_config_id,PK,INT IDENTITY,10,NOT NULL,identity,generated,PK,3,identifier
+aegis_drift_threshold_config,config_version,Config version label,VARCHAR,20,NOT NULL,none,governance,-,t1.0,identifier
+aegis_drift_threshold_config,drift_family,Family,VARCHAR,20,NOT NULL,none,fixed,IN families,shape,dimension
+aegis_drift_threshold_config,metric_name,Metric (performance rows),VARCHAR,30,NULL,NULL,-,optional,MAPE,dimension
+aegis_drift_threshold_config,anchor_a20,Anchor for score 20,DECIMAL,9-4,NOT NULL,none,E3 cfg,>0,0.05,derived metric
+aegis_drift_threshold_config,anchor_a40,Anchor for score 40,DECIMAL,9-4,NOT NULL,none,E3 cfg,>a20,0.10,derived metric
+aegis_drift_threshold_config,anchor_a70,Anchor for score 70,DECIMAL,9-4,NOT NULL,none,E3 cfg,>a40,0.20,derived metric
+aegis_drift_threshold_config,anchor_a100,Anchor for score 100,DECIMAL,9-4,NOT NULL,none,E3 cfg,>a70,0.40,derived metric
+aegis_drift_threshold_config,band_watch_min,Watch lower edge,DECIMAL,5-2,NOT NULL,20,bands,0-100,20,derived metric
+aegis_drift_threshold_config,band_warning_min,Warning lower edge,DECIMAL,5-2,NOT NULL,40,bands,0-100,40,derived metric
+aegis_drift_threshold_config,band_critical_min,Critical lower edge,DECIMAL,5-2,NOT NULL,70,bands,0-100,70,derived metric
+aegis_drift_threshold_config,min_versions,Min versions eligibility,INT,10,NOT NULL,2,E3,>=2,4,derived metric
+aegis_drift_threshold_config,window_n,Volatility window,INT,10,NULL,NULL,E3,>=min_versions,6,derived metric
+aegis_drift_threshold_config,gate_value,Near-zero gate,DECIMAL,9-4,NULL,NULL,E3,>=0,0.02,derived metric
+aegis_drift_threshold_config,effective_from,Effective start,DATE,,NOT NULL,none,governance,-,2026-07-01,audit
+aegis_drift_threshold_config,effective_to,Effective end,DATE,,NULL,NULL,governance,> from,NULL,audit
+aegis_drift_threshold_config,is_active,Active flag,BIT,,NOT NULL,1,governance,0 or 1,1,audit
+aegis_drift_threshold_config,approved_by,Approver,VARCHAR,100,NULL,NULL,governance,-,Boon,audit
+aegis_drift_threshold_config,created_at,Create UTC,DATETIME2(3),,NOT NULL,SYSUTCDATETIME(),audit,-,-,audit
+aegis_drift_threshold_config,created_by,Creator,VARCHAR,100,NOT NULL,none,audit,-,-,audit
+aegis_drift_weight_config,weight_config_id,PK,INT IDENTITY,10,NOT NULL,identity,generated,PK,2,identifier
+aegis_drift_weight_config,config_version,Config version,VARCHAR,20,NOT NULL,none,governance,-,w1.0,identifier
+aegis_drift_weight_config,drift_family,Family,VARCHAR,20,NOT NULL,none,fixed,IN families,shape,dimension
+aegis_drift_weight_config,weight_pct,Family weight percent,DECIMAL,5-2,NOT NULL,none,E3,0-100 sum=100 per version,40.00,derived metric
+aegis_drift_weight_config,effective_from,Effective start,DATE,,NOT NULL,none,governance,-,2026-07-01,audit
+aegis_drift_weight_config,effective_to,Effective end,DATE,,NULL,NULL,governance,> from,NULL,audit
+aegis_drift_weight_config,is_active,Active flag,BIT,,NOT NULL,1,governance,0 or 1,1,audit
+aegis_drift_weight_config,created_at,Create UTC,DATETIME2(3),,NOT NULL,SYSUTCDATETIME(),audit,-,-,audit
+aegis_drift_weight_config,created_by,Creator,VARCHAR,100,NOT NULL,none,audit,-,-,audit
+aegis_drift_formula_config,formula_version,PK config version,VARCHAR,20,NOT NULL,none,governance,PK,f1.0,identifier
+aegis_drift_formula_config,normalization_method,Normalization strategy,VARCHAR,40,NOT NULL,none,E3,-,piecewise_linear_anchored,lineage
+aegis_drift_formula_config,event_threshold,Composite event threshold,DECIMAL,5-2,NOT NULL,40,E3,0-100,40,derived metric
+aegis_drift_formula_config,family_event_threshold,Family event threshold,DECIMAL,5-2,NOT NULL,70,E3,0-100,70,derived metric
+aegis_drift_formula_config,persistence_min,Min consecutive for sustained,INT,10,NOT NULL,2,E3,>=1,2,derived metric
+aegis_drift_formula_config,cooldown_versions,Cooldown versions,INT,10,NOT NULL,1,E3,>=0,1,derived metric
+aegis_drift_formula_config,missing_family_policy,Missing family handling,VARCHAR,40,NOT NULL,'renormalize_available',E3,-,renormalize_available,lineage
+aegis_drift_formula_config,description,Notes,VARCHAR,500,NULL,NULL,governance,-,MVP formulas,lineage
+aegis_drift_formula_config,effective_from,Effective start,DATE,,NOT NULL,none,governance,-,2026-07-01,audit
+aegis_drift_formula_config,effective_to,Effective end,DATE,,NULL,NULL,governance,> from,NULL,audit
+aegis_drift_formula_config,is_active,Active flag,BIT,,NOT NULL,1,governance,0 or 1,1,audit

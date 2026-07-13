@@ -1,0 +1,40 @@
+constraint_name,table_name,type,definition,rationale
+PK_aegis_forecast_drift_signals,aegis_forecast_drift_signals,PRIMARY KEY,drift_event_id (clustered),Compact monotonic surrogate; best clustered key and FK target
+UQ_signals_natural,aegis_forecast_drift_signals,UNIQUE,"(calculation_version, scenario, forecast_key, forecast_version, drift_type)",Prevents duplicate events; idempotency anchor
+UQ_signals_hash,aegis_forecast_drift_signals,UNIQUE,record_hash,Deterministic change detection for reprocessing
+CK_signals_scores_range,aegis_forecast_drift_signals,CHECK,"each *_drift_score BETWEEN 0 AND 100 OR NULL; forecast_drift_score BETWEEN 0 AND 100",Scores bounded 0-100
+CK_signals_coverage,aegis_forecast_drift_signals,CHECK,score_coverage_pct BETWEEN 0 AND 100,Coverage percent bounded
+CK_signals_status,aegis_forecast_drift_signals,CHECK,drift_status IN (Healthy,Watch,Warning,Critical),Enumerated status
+CK_signals_severity,aegis_forecast_drift_signals,CHECK,severity IN (Watch,Warning,Critical) OR NULL,Severity only when event
+CK_signals_drift_type,aegis_forecast_drift_signals,CHECK,drift_type IN (performance,shape,stability,volatility,composite),Enumerated family
+CK_signals_confidence,aegis_forecast_drift_signals,CHECK,confidence_level IN (HIGH,MEDIUM,LOW),Enumerated confidence
+CK_signals_event_status,aegis_forecast_drift_signals,CHECK,event_status IN (Open,Acknowledged,Investigating,Resolved,Suppressed) OR NULL,Lifecycle enumeration
+FK_signals_run,aegis_forecast_drift_signals,FOREIGN KEY,calculation_run_id -> aegis_forecast_drift_run,Run lineage
+FK_signals_threshold,aegis_forecast_drift_signals,FOREIGN KEY,threshold_config_id -> aegis_drift_threshold_config,Config traceability
+FK_signals_weight,aegis_forecast_drift_signals,FOREIGN KEY,weight_config_id -> aegis_drift_weight_config,Config traceability
+FK_signals_formula,aegis_forecast_drift_signals,FOREIGN KEY,formula_version -> aegis_drift_formula_config,Config traceability
+FK_dim_scenario_optional,aegis_forecast_drift_signals,FOREIGN KEY (deferred),scenario -> dim_scenario,Optional; enable when dims materialized (do not block MVP)
+FK_dim_key_optional,aegis_forecast_drift_signals,FOREIGN KEY (deferred),forecast_key -> dim_key,Optional; deferred
+FK_dim_service_optional,aegis_forecast_drift_signals,FOREIGN KEY (deferred),service -> dim_service,Deferred (G3 pending) - denormalized text for MVP
+PK_family_scores,aegis_forecast_drift_family_scores,PRIMARY KEY,family_score_id,Surrogate PK
+UQ_family_scores,aegis_forecast_drift_family_scores,UNIQUE,"(drift_event_id, drift_family)",One row per family per signal
+CK_family_score_range,aegis_forecast_drift_family_scores,CHECK,family_score BETWEEN 0 AND 100 OR NULL,Bounded score; NULL = NOT_COMPUTABLE
+CK_family_eligibility,aegis_forecast_drift_family_scores,CHECK,eligibility_status IN (COMPUTED,NOT_COMPUTABLE),Enumerated
+CK_family_name,aegis_forecast_drift_family_scores,CHECK,drift_family IN (performance,shape,stability,volatility),Enumerated
+FK_family_signal,aegis_forecast_drift_family_scores,FOREIGN KEY,drift_event_id -> aegis_forecast_drift_signals,Detail to header
+PK_event_history,aegis_forecast_drift_event_history,PRIMARY KEY,event_history_id,Surrogate PK
+FK_history_signal,aegis_forecast_drift_event_history,FOREIGN KEY,drift_event_id -> aegis_forecast_drift_signals,Trail to event
+CK_history_status,aegis_forecast_drift_event_history,CHECK,new_status IN (Open,Acknowledged,Investigating,Resolved,Suppressed),Lifecycle enumeration
+PK_run,aegis_forecast_drift_run,PRIMARY KEY,calculation_run_id,Surrogate PK
+CK_run_status,aegis_forecast_drift_run,CHECK,run_status IN (Success,Failed,Partial),Enumerated
+PK_threshold_config,aegis_drift_threshold_config,PRIMARY KEY,threshold_config_id,Surrogate PK
+UQ_threshold_config,aegis_drift_threshold_config,UNIQUE,"(config_version, drift_family, metric_name)",One anchor set per family/metric/version
+CK_threshold_anchor_order,aegis_drift_threshold_config,CHECK,anchor_a20 < anchor_a40 AND anchor_a40 < anchor_a70 AND anchor_a70 < anchor_a100,Monotonic anchors
+CK_threshold_effective,aegis_drift_threshold_config,CHECK,effective_to IS NULL OR effective_to > effective_from,Temporal integrity
+UX_threshold_active,aegis_drift_threshold_config,UNIQUE (filtered),"(drift_family, metric_name) WHERE is_active=1",One active config per family/metric
+PK_weight_config,aegis_drift_weight_config,PRIMARY KEY,weight_config_id,Surrogate PK
+UQ_weight_config,aegis_drift_weight_config,UNIQUE,"(config_version, drift_family)",One weight per family per version
+CK_weight_range,aegis_drift_weight_config,CHECK,weight_pct BETWEEN 0 AND 100,Bounded weight
+INTENT_weight_sum_100,aegis_drift_weight_config,BUSINESS RULE,SUM(weight_pct) per config_version = 100,Enforced via app/trigger (cross-row; not a table CHECK)
+PK_formula_config,aegis_drift_formula_config,PRIMARY KEY,formula_version,Natural PK (version label)
+CK_formula_thresholds,aegis_drift_formula_config,CHECK,event_threshold BETWEEN 0 AND 100 AND family_event_threshold BETWEEN 0 AND 100,Bounded
