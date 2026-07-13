@@ -64,5 +64,5 @@ def export_all(out_dir: Path, signals: pd.DataFrame, family_scores: pd.DataFrame
     meta.update(extra_meta)
     with (out_dir / "run_metadata.json").open("w", encoding="utf-8") as f:
         json.dump(meta, f, indent=2, default=str)
-    log.info("exported %s (parquet=%s)", out_dir, HAS_PARQUET)
+    log.info("exported %s dataset files (parquet=%s)", sum(len(v) for v in written.values()), HAS_PARQUET)
     return meta

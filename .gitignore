@@ -94,3 +94,14 @@ obj/
 build/
 dist/
 out/
+
+# --- Governed data outputs (derived from real Tesseract data — never commit) ---
+V1/data/
+V2/data/
+V3/data/
+data/processed/
+data/raw/
+*.parquet
+*_fixture_results.csv
+_data_quality_checks.csv
+run_metadata.json

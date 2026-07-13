@@ -21,6 +21,10 @@ def normalize_forecasts(forecasts: pd.DataFrame) -> tuple[pd.DataFrame, dict]:
     """Apply dedupe (G1), forward-only (G6), version_rank, region parse."""
     df = forecasts.copy()
     stats = {"rows_in": len(df)}
+    # E5B (I1): case-fold Key to merge case variants (e.g. CAN-GO LOCAL vs CAN-Go Local)
+    stats["distinct_keys_raw"] = int(df["Key"].nunique())
+    df["Key"] = df["Key"].astype(str).str.strip().str.upper()
+    stats["distinct_keys_canonical"] = int(df["Key"].nunique())
     df["target_date"] = pd.to_datetime(df["target_date"], errors="coerce")
     df["forecast_version"] = pd.to_datetime(df["forecast_version"], errors="coerce")
     df = df.dropna(subset=["target_date", "forecast_version", "forecast_value"])
@@ -73,6 +77,7 @@ def normalize_metrics(metrics: pd.DataFrame) -> pd.DataFrame:
     df = metrics.copy()
     if df.empty:
         return df
+    df["Key"] = df["Key"].astype(str).str.strip().str.upper()  # E5B (I1): case-fold
     df["forecast_version"] = pd.to_datetime(df["forecast_version"], errors="coerce").dt.date
     df = df.dropna(subset=["forecast_version"])
     df = df.sort_values(["Key", "forecast_version"])
