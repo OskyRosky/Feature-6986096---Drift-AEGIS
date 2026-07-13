@@ -1,0 +1,20 @@
+check,expected,actual,result,notes
+signals_row_count,168,168,PASS,forecast_drift_signals.csv rows (E5B live)
+family_scores_row_count,672,672,PASS,4 family rows per signal
+event_history_row_count,71,71,PASS,matches events created
+runs_row_count,1,1,PASS,one row per refresh
+family_rows_equals_4x_signals,672,672,PASS,168 x 4
+model_tables_created,5,5,PASS,signals/family/events/runs/Calendar
+relationships_active,3,3,PASS,family->signals, events->signals, signals->runs (Calendar manual)
+ambiguous_relationships,0,0,PASS,single-direction star; no many-to-many
+measures_created,24,24,PASS,presentation-only aggregations/lookups
+business_logic_recomputed_in_dax,0,0,PASS,no E3 formula/threshold/pairing/severity in DAX
+drift_scores_modified,no,no,PASS,scores read as-is from CSV
+drift_status_modified,no,no,PASS,status read as-is from CSV
+latest_snapshot_logic,is_current=1,is_current=1,PASS,all current rows flagged
+shared_parameter_path,DriftDataFolder,DriftDataFolder,PASS,single folder param; no per-table hard-coded path
+top_services_partial,PARTIAL,PARTIAL,PASS,G3 Service unsourced; forecast_key proxy + data-gap note
+pages_specified,11,11,PASS,Overview..Settings fully specified
+tmdl_exported,yes,yes,PASS,V1/powerbi/tmdl (9 files)
+pbix_visuals_authored,manual,pending,PARTIAL,report/visual layer requires Power BI Desktop
+data_in_git,ignored,ignored,PASS,V1/data ignored; TMDL is model definition only

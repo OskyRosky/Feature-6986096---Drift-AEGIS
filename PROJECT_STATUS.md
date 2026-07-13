@@ -6,13 +6,14 @@ Last updated: 2026-07-13
 > Microsoft internal / confidential. Engineering stages (E-prefix) build the product; product/document versions (V1/V2/V3) are separate. See `engineering/ROADMAP.md`.
 
 ## Current stage
-**E5B — Production Dataset Validation & Export Hardening: COMPLETE.** Offline
-hardening (I1 canonicalization, I2 UTF-8 logging, I3 deep Performance, atomic
-export, `run_refresh` runner, 18/18 checks, idempotency, frozen contract) **and**
-the expanded live read-only run against Tesseract validated: ran twice (exit 0),
-18/18 checks, canonicalization 21→12, deep coverage 156/168, cross-run
-idempotent, 168 governed signals, no SQL writes. Next: **E6 — Power BI MVP**
-(local, consume-only). Token: E5B_DATASET_VALIDATION_EXPORT_HARDENING_COMPLETED.
+**E6 — Power BI MVP (local, consume-only): PARTIAL.** Governed semantic model
+authored via Power BI MCP over `V1/data/processed/current/`: 5 tables, shared
+`DriftDataFolder` parameter, 3 active relationships (+Calendar manual), 24
+presentation-only measures (no DAX business logic), exported to importable TMDL
+(`V1/powerbi/tmdl/`). 11 MVP pages + AEGIS sidebar fully specified; row counts
+match E5B (168/672/71/1). Remaining: manual `.pbix` visual authoring in Power BI
+Desktop. Token: E6_POWER_BI_MVP_PARTIAL. Next: finish `.pbix` visuals, then E7
+(Grafana, consume-only).
 
 ## Stage status
 | Stage | Name | Status |
@@ -25,7 +26,7 @@ idempotent, 168 governed signals, no SQL writes. Next: **E6 — Power BI MVP**
 | E4 | Output Schema Design | ✅ Complete |
 | E5A | Python Drift Engine | ✅ Complete |
 | E5B | Production Dataset Validation & Export Hardening | ✅ Complete (offline + live validated) |
-| E6 | Power BI MVP (local, consume-only) | ⏳ Next |
+| E6 | Power BI MVP (local, consume-only) | ◑ Partial (model + measures + specs + TMDL; .pbix visuals manual) |
 | E7 | Grafana MVP (local, consume-only) | ⏳ |
 | E8 | Cloud Deployment & Governance | ⏳ |
 

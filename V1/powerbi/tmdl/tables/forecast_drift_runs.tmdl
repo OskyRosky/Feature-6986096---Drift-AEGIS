@@ -1,0 +1,125 @@
+/// One row per refresh run (lineage + runtime + checks). Consume-only.
+table forecast_drift_runs
+	lineageTag: ee2bae55-0c9a-4e8e-8982-0e92e7ea8590
+
+	measure 'Latest Refresh' = MAX ( forecast_drift_runs[run_finished_at] )
+		formatString: yyyy-mm-dd hh:nn
+		lineageTag: 4b63796e-b4bc-48e7-b8e7-87b9caa34859
+
+	measure 'Latest Calculation Version' = MAXX ( forecast_drift_runs, forecast_drift_runs[calculation_version] )
+		lineageTag: 2701b637-5655-4f4c-baff-118b3b35e1e9
+
+	measure 'Performance Mode' = SELECTEDVALUE ( forecast_drift_runs[perf_mode], MAXX ( forecast_drift_runs, forecast_drift_runs[perf_mode] ) )
+		lineageTag: f024d1d9-639e-49a7-abed-66f9c308285a
+
+	measure 'Data Quality Status' = MAXX ( forecast_drift_runs, forecast_drift_runs[checks_passed] ) & "/" & MAXX ( forecast_drift_runs, forecast_drift_runs[checks_total] )
+		lineageTag: 19da7387-c850-4957-9245-502533fd167f
+
+	measure 'Idempotent Flag' = SELECTEDVALUE ( forecast_drift_runs[idempotent], MAXX ( forecast_drift_runs, forecast_drift_runs[idempotent] ) )
+		lineageTag: fb0d1a77-8cdf-49aa-a723-dc55d2e1617a
+
+	measure 'Signals Written (run)' = SUM ( forecast_drift_runs[signals_written] )
+		formatString: #,0
+		lineageTag: 3b774db5-4e4a-4557-ad6c-e3dcb495b33d
+
+	column calculation_run_id
+		dataType: int64
+		lineageTag: a183584b-1ae1-4688-a51f-cce5c23462ef
+		summarizeBy: none
+		sourceColumn: calculation_run_id
+
+	column calculation_version
+		dataType: string
+		lineageTag: 0e3cd5fa-5280-433e-9029-879d60ad8111
+		sourceColumn: calculation_version
+
+	column formula_version
+		dataType: string
+		lineageTag: 1726d2b2-df48-4e4f-86b7-d9f0a6ae87bc
+		sourceColumn: formula_version
+
+	column threshold_config_id
+		dataType: string
+		lineageTag: a2aaff08-ef4c-4edb-9b33-75d1125af26f
+		sourceColumn: threshold_config_id
+
+	column weight_config_id
+		dataType: string
+		lineageTag: 1640037f-0024-4530-862a-4415b1a21335
+		sourceColumn: weight_config_id
+
+	column run_started_at
+		dataType: dateTime
+		lineageTag: 8c4d40fd-6760-4e40-88bd-e8cc0fdbafac
+		sourceColumn: run_started_at
+
+	column run_finished_at
+		dataType: dateTime
+		lineageTag: 8a4838c5-22b5-45d1-9f6e-cf2a214539bc
+		sourceColumn: run_finished_at
+
+	column source_forecast_version_max
+		dataType: dateTime
+		lineageTag: d6915ddf-823f-4b21-9250-0dce4f898727
+		sourceColumn: source_forecast_version_max
+
+	column signals_written
+		dataType: int64
+		lineageTag: ac7424f6-7f94-4613-85bd-539e5ae55def
+		summarizeBy: none
+		sourceColumn: signals_written
+
+	column events_created
+		dataType: int64
+		lineageTag: 200befe3-6628-48ac-a177-23ef99a02fdf
+		summarizeBy: none
+		sourceColumn: events_created
+
+	column runtime_seconds
+		dataType: double
+		lineageTag: a86e095f-0019-4460-88d3-8a0848840d2b
+		summarizeBy: none
+		sourceColumn: runtime_seconds
+
+	column peak_memory_mb
+		dataType: double
+		lineageTag: 480520a0-4b47-49e1-81e1-2c559810e24d
+		summarizeBy: none
+		sourceColumn: peak_memory_mb
+
+	column checks_passed
+		dataType: int64
+		lineageTag: 59d5c402-5cac-4f00-9008-192e1fba9025
+		summarizeBy: none
+		sourceColumn: checks_passed
+
+	column checks_total
+		dataType: int64
+		lineageTag: 82d9eb40-0dc7-4e10-bed1-a528595817f8
+		summarizeBy: none
+		sourceColumn: checks_total
+
+	column idempotent
+		dataType: string
+		lineageTag: 426d1141-fedf-4bc2-a5b4-3988d191777a
+		sourceColumn: idempotent
+
+	column perf_mode
+		dataType: string
+		lineageTag: 61b49875-5313-46de-b56b-b7ab75464b57
+		sourceColumn: perf_mode
+
+	column run_status
+		dataType: string
+		lineageTag: e96c022a-020b-4934-b069-75102d2e84da
+		sourceColumn: run_status
+
+	column created_by
+		dataType: string
+		lineageTag: 6816b2a9-3c66-4a3b-9a49-ec3184aa46dc
+		sourceColumn: created_by
+
+	partition runs = m
+		mode: import
+		source = let Source = Csv.Document(File.Contents(DriftDataFolder & "forecast_drift_runs.csv"), [Delimiter=",", Encoding=65001, QuoteStyle=QuoteStyle.Csv]), Prom = Table.PromoteHeaders(Source, [PromoteAllScalars=true]) in Prom
+

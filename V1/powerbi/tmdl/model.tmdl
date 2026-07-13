@@ -1,0 +1,16 @@
+model AEGIS_Forecast_Drift_MVP
+	culture: en-US
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	sourceQueryCulture: en-US
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+annotation PBI_ProTooling = ["MCP-PBIModeling"]
+
+ref table forecast_drift_signals
+ref table forecast_drift_family_scores
+ref table forecast_drift_event_history
+ref table forecast_drift_runs
+ref table Calendar
+

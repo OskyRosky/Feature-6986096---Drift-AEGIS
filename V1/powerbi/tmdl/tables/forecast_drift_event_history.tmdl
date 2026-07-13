@@ -1,0 +1,45 @@
+/// Event status transitions. Consume-only.
+table forecast_drift_event_history
+	lineageTag: 266bfaa1-5c58-448a-9c3d-f779123e10d0
+
+	column event_history_id
+		dataType: int64
+		lineageTag: 60e007cd-8576-4b71-86e8-b606da2093f5
+		summarizeBy: none
+		sourceColumn: event_history_id
+
+	column drift_event_id
+		dataType: int64
+		lineageTag: 63c54c0d-2b2e-4aa6-b183-190fdabe3fb6
+		summarizeBy: none
+		sourceColumn: drift_event_id
+
+	column old_status
+		dataType: string
+		lineageTag: 2727a602-22c6-41dd-8845-ea480f60506c
+		sourceColumn: old_status
+
+	column new_status
+		dataType: string
+		lineageTag: b9dddb2c-b985-4e19-b8db-0377dfb3f2fd
+		sourceColumn: new_status
+
+	column changed_at
+		dataType: dateTime
+		lineageTag: 08f31f63-1840-44fa-bd5c-7aa574347f45
+		sourceColumn: changed_at
+
+	column changed_by
+		dataType: string
+		lineageTag: 6544e20a-a9fe-46ee-a20a-927f21b07318
+		sourceColumn: changed_by
+
+	column note
+		dataType: string
+		lineageTag: 69edfa3d-bada-4c57-810d-72f1fec4174f
+		sourceColumn: note
+
+	partition events = m
+		mode: import
+		source = let Source = Csv.Document(File.Contents(DriftDataFolder & "forecast_drift_event_history.csv"), [Delimiter=",", Encoding=65001, QuoteStyle=QuoteStyle.Csv]), Prom = Table.PromoteHeaders(Source, [PromoteAllScalars=true]) in Prom
+

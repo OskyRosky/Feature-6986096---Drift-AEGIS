@@ -1,0 +1,25 @@
+measure_name,home_table,dax_expression,format,category,recomputes_business_logic
+Total Signals,forecast_drift_signals,COUNTROWS(forecast_drift_signals),"#,0",count,No
+Total Events,forecast_drift_signals,"CALCULATE(COUNTROWS(forecast_drift_signals),forecast_drift_signals[is_event]=1)","#,0",count,No
+Event Rate %,forecast_drift_signals,"DIVIDE([Total Events],[Total Signals])",0.0%,ratio,No
+Average Forecast Drift Score,forecast_drift_signals,AVERAGE(forecast_drift_signals[forecast_drift_score]),0.0,average,No (averages an already-computed score)
+Critical Count,forecast_drift_signals,"CALCULATE(COUNTROWS(forecast_drift_signals),forecast_drift_signals[drift_status]=""Critical"")","#,0",count,No
+Warning Count,forecast_drift_signals,"CALCULATE(COUNTROWS(forecast_drift_signals),forecast_drift_signals[drift_status]=""Warning"")","#,0",count,No
+Watch Count,forecast_drift_signals,"CALCULATE(COUNTROWS(forecast_drift_signals),forecast_drift_signals[drift_status]=""Watch"")","#,0",count,No
+Healthy Count,forecast_drift_signals,"CALCULATE(COUNTROWS(forecast_drift_signals),forecast_drift_signals[drift_status]=""Healthy"")","#,0",count,No
+Critical Event Count,forecast_drift_signals,"CALCULATE([Total Events],forecast_drift_signals[drift_status]=""Critical"")","#,0",count,No
+Warning Event Count,forecast_drift_signals,"CALCULATE([Total Events],forecast_drift_signals[drift_status]=""Warning"")","#,0",count,No
+Distinct Keys,forecast_drift_signals,DISTINCTCOUNT(forecast_drift_signals[forecast_key]),"#,0",count,No
+Distinct Scenarios,forecast_drift_signals,DISTINCTCOUNT(forecast_drift_signals[scenario]),"#,0",count,No
+Avg Performance Score,forecast_drift_family_scores,"CALCULATE(AVERAGE(forecast_drift_family_scores[family_score]),forecast_drift_family_scores[drift_family]=""performance"")",0.0,average,No
+Avg Shape Score,forecast_drift_family_scores,"CALCULATE(AVERAGE(forecast_drift_family_scores[family_score]),forecast_drift_family_scores[drift_family]=""shape"")",0.0,average,No
+Avg Stability Score,forecast_drift_family_scores,"CALCULATE(AVERAGE(forecast_drift_family_scores[family_score]),forecast_drift_family_scores[drift_family]=""stability"")",0.0,average,No
+Avg Volatility Score,forecast_drift_family_scores,"CALCULATE(AVERAGE(forecast_drift_family_scores[family_score]),forecast_drift_family_scores[drift_family]=""volatility"")",0.0,average,No
+NOT_COMPUTABLE Count,forecast_drift_family_scores,"CALCULATE(COUNTROWS(forecast_drift_family_scores),forecast_drift_family_scores[eligibility_status]=""NOT_COMPUTABLE"")","#,0",count,No
+Computed Family Count,forecast_drift_family_scores,"CALCULATE(COUNTROWS(forecast_drift_family_scores),forecast_drift_family_scores[eligibility_status]=""COMPUTED"")","#,0",count,No
+Latest Refresh,forecast_drift_runs,MAX(forecast_drift_runs[run_finished_at]),yyyy-mm-dd hh:nn,lineage,No
+Latest Calculation Version,forecast_drift_runs,"MAXX(forecast_drift_runs,forecast_drift_runs[calculation_version])",text,lineage,No
+Performance Mode,forecast_drift_runs,"SELECTEDVALUE(forecast_drift_runs[perf_mode],MAXX(forecast_drift_runs,forecast_drift_runs[perf_mode]))",text,lineage,No
+Data Quality Status,forecast_drift_runs,"MAXX(forecast_drift_runs,forecast_drift_runs[checks_passed]) & ""/"" & MAXX(forecast_drift_runs,forecast_drift_runs[checks_total])",text,lineage,No
+Idempotent Flag,forecast_drift_runs,"SELECTEDVALUE(forecast_drift_runs[idempotent],MAXX(forecast_drift_runs,forecast_drift_runs[idempotent]))",text,lineage,No
+Signals Written (run),forecast_drift_runs,SUM(forecast_drift_runs[signals_written]),"#,0",lineage,No

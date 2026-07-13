@@ -1,0 +1,168 @@
+/// Family detail: 4 rows per signal (performance/shape/stability/volatility). Consume-only.
+table forecast_drift_family_scores
+	lineageTag: 526f0587-219e-4c39-b440-995a243e864f
+
+	measure 'Avg Performance Score' = CALCULATE ( AVERAGE ( forecast_drift_family_scores[family_score] ), forecast_drift_family_scores[drift_family] = "performance" )
+		formatString: 0.0
+		lineageTag: 038b4af3-9ff0-4ad3-abda-7329a5f08169
+
+	measure 'Avg Shape Score' = CALCULATE ( AVERAGE ( forecast_drift_family_scores[family_score] ), forecast_drift_family_scores[drift_family] = "shape" )
+		formatString: 0.0
+		lineageTag: 8927f182-a3c6-4d8d-a2bd-c30eafdfe0d0
+
+	measure 'Avg Stability Score' = CALCULATE ( AVERAGE ( forecast_drift_family_scores[family_score] ), forecast_drift_family_scores[drift_family] = "stability" )
+		formatString: 0.0
+		lineageTag: cee0c5fd-a2f5-46ff-be89-c0224226e6ef
+
+	measure 'Avg Volatility Score' = CALCULATE ( AVERAGE ( forecast_drift_family_scores[family_score] ), forecast_drift_family_scores[drift_family] = "volatility" )
+		formatString: 0.0
+		lineageTag: e2810698-89f9-4d62-84c1-6dcae3542381
+
+	measure 'NOT_COMPUTABLE Count' = CALCULATE ( COUNTROWS ( forecast_drift_family_scores ), forecast_drift_family_scores[eligibility_status] = "NOT_COMPUTABLE" )
+		formatString: #,0
+		lineageTag: 3103da5f-dd25-48d8-be31-7b8229b1c548
+
+	measure 'Computed Family Count' = CALCULATE ( COUNTROWS ( forecast_drift_family_scores ), forecast_drift_family_scores[eligibility_status] = "COMPUTED" )
+		formatString: #,0
+		lineageTag: 77f9a878-e02a-4021-b77a-a40e344db5d1
+
+	column drift_event_id
+		dataType: int64
+		lineageTag: 679e7529-669b-4d15-8a44-b798bcad25e8
+		summarizeBy: none
+		sourceColumn: drift_event_id
+
+	column forecast_key
+		dataType: string
+		lineageTag: e0f9f49d-b055-4fb4-af28-97bd6e3f94f2
+		sourceColumn: forecast_key
+
+	column forecast_version
+		dataType: dateTime
+		lineageTag: dfbdc0c0-8b90-4a70-8982-d5a2a1569ad9
+		sourceColumn: forecast_version
+
+	column drift_family
+		dataType: string
+		lineageTag: a7ca540e-24f1-4ec1-8689-28a110c13ca3
+		sourceColumn: drift_family
+
+	column family_score
+		dataType: double
+		lineageTag: 7bee8305-4293-48af-bcfe-b90a1177ae65
+		summarizeBy: none
+		sourceColumn: family_score
+
+	column raw_magnitude
+		dataType: double
+		lineageTag: e92b6693-61d9-424f-80d6-cd2b75abb452
+		summarizeBy: none
+		sourceColumn: raw_magnitude
+
+	column eligibility_status
+		dataType: string
+		lineageTag: 31d1be3a-ec23-401c-9bb3-dbdb288b90aa
+		sourceColumn: eligibility_status
+
+	column not_computable_reason
+		dataType: string
+		lineageTag: 81e4f96c-13b7-46e9-af4f-4f96cc71bef1
+		sourceColumn: not_computable_reason
+
+	column version_count
+		dataType: int64
+		lineageTag: 2adb6486-a8b1-40ae-8f1e-9959d0dbc798
+		summarizeBy: none
+		sourceColumn: version_count
+
+	column horizon_point_count
+		dataType: int64
+		lineageTag: 2058a2a6-79c7-4a69-8ec1-4174c31dd82b
+		summarizeBy: none
+		sourceColumn: horizon_point_count
+
+	column shape_distance
+		dataType: double
+		lineageTag: 1f4997b0-539f-4678-92d3-5462cb9092b9
+		summarizeBy: none
+		sourceColumn: shape_distance
+
+	column divergence_start_date
+		dataType: dateTime
+		lineageTag: 7274ecb2-7a64-4bf3-a0ca-21897be63c1e
+		sourceColumn: divergence_start_date
+
+	column max_curve_delta
+		dataType: double
+		lineageTag: a81d9189-47f7-4225-a76a-f642066e34ae
+		summarizeBy: none
+		sourceColumn: max_curve_delta
+
+	column max_curve_delta_pct
+		dataType: double
+		lineageTag: e12b0a28-3f57-4214-9e4a-c4b5ff168077
+		summarizeBy: none
+		sourceColumn: max_curve_delta_pct
+
+	column value_delta
+		dataType: double
+		lineageTag: 5bae4244-e6f8-46a8-8f29-1ac55bdddcbd
+		summarizeBy: none
+		sourceColumn: value_delta
+
+	column value_delta_pct
+		dataType: double
+		lineageTag: af97981a-960e-43a1-a55a-a8a1c2e3aa9e
+		summarizeBy: none
+		sourceColumn: value_delta_pct
+
+	column cumulative_revision_pct
+		dataType: double
+		lineageTag: 2c1e1f87-d352-43e8-8ac0-184d7b67fed4
+		summarizeBy: none
+		sourceColumn: cumulative_revision_pct
+
+	column structural_break_flag
+		dataType: string
+		lineageTag: 6b9b78a8-e948-4f84-8fc8-c49a1c192ab4
+		sourceColumn: structural_break_flag
+
+	column rolling_stddev
+		dataType: double
+		lineageTag: fbceb3e4-03d0-4d60-bd89-36e664202548
+		summarizeBy: none
+		sourceColumn: rolling_stddev
+
+	column rolling_cov
+		dataType: double
+		lineageTag: b269712a-1ef0-4046-a035-b7c90a287ab9
+		summarizeBy: none
+		sourceColumn: rolling_cov
+
+	column rolling_mad
+		dataType: double
+		lineageTag: f5df56e6-4cd7-47d8-ac78-e29d69b4e861
+		summarizeBy: none
+		sourceColumn: rolling_mad
+
+	column oscillation_count
+		dataType: int64
+		lineageTag: 7a7ecad2-96a9-43f0-b1e4-3b79a969ee6b
+		summarizeBy: none
+		sourceColumn: oscillation_count
+
+	column sign_change_freq
+		dataType: double
+		lineageTag: 300dce20-0ace-45ff-8c45-7a4360140b6c
+		summarizeBy: none
+		sourceColumn: sign_change_freq
+
+	column volatility_class
+		dataType: string
+		lineageTag: 119d7d90-09b4-4978-b2d7-8d08da4593b0
+		sourceColumn: volatility_class
+
+	partition family = m
+		mode: import
+		source = let Source = Csv.Document(File.Contents(DriftDataFolder & "forecast_drift_family_scores.csv"), [Delimiter=",", Encoding=65001, QuoteStyle=QuoteStyle.Csv]), Prom = Table.PromoteHeaders(Source, [PromoteAllScalars=true]) in Prom
+

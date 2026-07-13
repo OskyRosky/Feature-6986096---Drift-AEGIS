@@ -1,0 +1,342 @@
+/// Primary fact: one governed drift signal per (calculation_version, scenario, forecast_key, forecast_version). Produced by the Python Drift Engine (E5B). Consume-only.
+table forecast_drift_signals
+	lineageTag: 2feba281-b58f-4dc8-b9f4-f17e33dee0ac
+
+	/// Count of governed signal rows (presentation).
+	measure 'Total Signals' = COUNTROWS ( forecast_drift_signals )
+		formatString: #,0
+		lineageTag: 7fb04425-c841-4d9d-b2b4-ad01ee024b39
+
+	measure 'Total Events' = CALCULATE ( COUNTROWS ( forecast_drift_signals ), forecast_drift_signals[is_event] = 1 )
+		formatString: #,0
+		lineageTag: 31badf06-d094-4a5b-ac6b-cc673dfa83e7
+
+	measure 'Event Rate %' = DIVIDE ( [Total Events], [Total Signals] )
+		formatString: 0.0%
+		lineageTag: 46c76c35-4807-4ef3-9a6a-791b81682a5f
+
+	measure 'Average Forecast Drift Score' = AVERAGE ( forecast_drift_signals[forecast_drift_score] )
+		formatString: 0.0
+		lineageTag: 667260c2-c7dd-44f2-b71c-fad7f22cb9c5
+
+	measure 'Critical Count' = CALCULATE ( COUNTROWS ( forecast_drift_signals ), forecast_drift_signals[drift_status] = "Critical" )
+		formatString: #,0
+		lineageTag: edd30361-7f89-4a04-8ccd-4022e670d74d
+
+	measure 'Warning Count' = CALCULATE ( COUNTROWS ( forecast_drift_signals ), forecast_drift_signals[drift_status] = "Warning" )
+		formatString: #,0
+		lineageTag: 107dd3e8-53be-48e0-aa23-0c934046f5db
+
+	measure 'Watch Count' = CALCULATE ( COUNTROWS ( forecast_drift_signals ), forecast_drift_signals[drift_status] = "Watch" )
+		formatString: #,0
+		lineageTag: 2703b1c1-8779-47d4-88c5-778a014a53e1
+
+	measure 'Healthy Count' = CALCULATE ( COUNTROWS ( forecast_drift_signals ), forecast_drift_signals[drift_status] = "Healthy" )
+		formatString: #,0
+		lineageTag: 820a1344-c793-45c2-9316-1f0a431617db
+
+	measure 'Critical Event Count' = CALCULATE ( [Total Events], forecast_drift_signals[drift_status] = "Critical" )
+		formatString: #,0
+		lineageTag: ecbc2186-1894-408e-bfdb-33b8905f6522
+
+	measure 'Warning Event Count' = CALCULATE ( [Total Events], forecast_drift_signals[drift_status] = "Warning" )
+		formatString: #,0
+		lineageTag: ce7af0e8-5396-49ae-bbd3-325a8fb52470
+
+	measure 'Distinct Keys' = DISTINCTCOUNT ( forecast_drift_signals[forecast_key] )
+		formatString: #,0
+		lineageTag: b7c3d680-6cb6-4c41-8db0-0ad732bcb2eb
+
+	measure 'Distinct Scenarios' = DISTINCTCOUNT ( forecast_drift_signals[scenario] )
+		formatString: #,0
+		lineageTag: 85404fcc-ab21-42ba-9d62-b35c0c43afd0
+
+	column drift_event_id
+		dataType: int64
+		lineageTag: b3c54f52-9331-4099-b4ad-9a022c20a4f0
+		summarizeBy: none
+		sourceColumn: drift_event_id
+
+	column event_natural_key
+		dataType: string
+		lineageTag: c4a3f66c-deba-4a3a-9716-8dc67e97ab9d
+		sourceColumn: event_natural_key
+
+	column record_hash
+		dataType: string
+		lineageTag: 2d46a836-1af9-496f-8673-1adb462cd00b
+		sourceColumn: record_hash
+
+	column calculation_run_id
+		dataType: int64
+		lineageTag: bac2e5d2-f574-4810-b053-4b138c6ca691
+		summarizeBy: none
+		sourceColumn: calculation_run_id
+
+	column calculation_version
+		dataType: string
+		lineageTag: 9091ddbb-acbe-45b9-9abe-4ae0b62fafbd
+		sourceColumn: calculation_version
+
+	column detected_on
+		dataType: dateTime
+		lineageTag: 07caab36-8fc5-4452-b3b0-2808de21c7d3
+		sourceColumn: detected_on
+
+	column scenario
+		dataType: string
+		lineageTag: 1a1c5e05-3f32-407f-80a0-56b01b087931
+		sourceColumn: scenario
+
+	column forecast_key
+		dataType: string
+		lineageTag: 8fed187e-5d4d-4cc0-bd27-bcb4bfda5360
+		sourceColumn: forecast_key
+
+	column forecast_key_raw
+		dataType: string
+		lineageTag: 3fe978f2-7a83-4609-b996-0e5d87298c8e
+		sourceColumn: forecast_key_raw
+
+	column service
+		dataType: string
+		lineageTag: 044f17db-1337-465b-905e-148d8f4b93ed
+		sourceColumn: service
+
+	column region
+		dataType: string
+		lineageTag: 4a9bcce4-fa10-4396-bfea-680653b20026
+		sourceColumn: region
+
+	column forest
+		dataType: string
+		lineageTag: ee898702-173b-4507-a269-05df181aab5a
+		sourceColumn: forest
+
+	column resource
+		dataType: string
+		lineageTag: ea2ad351-9a59-4ecc-97cb-301772e98e15
+		sourceColumn: resource
+
+	column forecast_version
+		dataType: dateTime
+		lineageTag: fd51d335-1b85-46c3-89a5-3406faacfb0d
+		sourceColumn: forecast_version
+
+	column previous_forecast_version
+		dataType: dateTime
+		lineageTag: 268466cb-5340-4f55-bac9-a1aa429476dd
+		sourceColumn: previous_forecast_version
+
+	column target_date
+		dataType: dateTime
+		lineageTag: dca3b810-f01f-4f17-9de1-5a0f63f763b4
+		sourceColumn: target_date
+
+	column drift_type
+		dataType: string
+		lineageTag: 094bfc72-1725-46da-933a-7d7ac6bb983d
+		sourceColumn: drift_type
+
+	column dominant_drift_family
+		dataType: string
+		lineageTag: b0e78b69-569c-42c6-9eef-cccb44d8541e
+		sourceColumn: dominant_drift_family
+
+	column drift_status
+		dataType: string
+		lineageTag: 0fd30fb6-3fda-4044-a6f9-2d2e71600aa1
+		sourceColumn: drift_status
+
+	column severity
+		dataType: string
+		lineageTag: d42e8a78-5863-42dd-86a3-bbfc4baa314f
+		sourceColumn: severity
+
+	column persistence_type
+		dataType: string
+		lineageTag: ceaf7810-1876-4f9b-abc2-02f7b347a42a
+		sourceColumn: persistence_type
+
+	column event_status
+		dataType: string
+		lineageTag: 9c9810e0-fc17-4eca-b762-771c3a6e2260
+		sourceColumn: event_status
+
+	column is_event
+		dataType: int64
+		lineageTag: e47e859a-b32f-4200-9992-b23eb5ee7ae0
+		summarizeBy: none
+		sourceColumn: is_event
+
+	column metric_name
+		dataType: string
+		lineageTag: b8db4a9d-55db-400c-bc1a-8f0e65a477c4
+		sourceColumn: metric_name
+
+	column metric_value
+		dataType: double
+		lineageTag: 4a1dd8dd-e6dc-4718-a593-4f5218571140
+		summarizeBy: none
+		sourceColumn: metric_value
+
+	column previous_metric_value
+		dataType: double
+		lineageTag: 9dfb87cf-13b9-464b-97b3-733c2021f7b4
+		summarizeBy: none
+		sourceColumn: previous_metric_value
+
+	column metric_delta
+		dataType: double
+		lineageTag: 03595f1e-969b-446f-962b-0db5a11541bc
+		summarizeBy: none
+		sourceColumn: metric_delta
+
+	column metric_delta_pct
+		dataType: double
+		lineageTag: a0bd2333-aaa2-41d8-8ef0-6e69949dbf07
+		summarizeBy: none
+		sourceColumn: metric_delta_pct
+
+	column performance_drift_score
+		dataType: double
+		lineageTag: 4bae7352-fb9b-4f55-b63b-f3cf8f4ccd97
+		summarizeBy: none
+		sourceColumn: performance_drift_score
+
+	column shape_drift_score
+		dataType: double
+		lineageTag: 8febab27-f45a-4806-963e-58ec64401ed0
+		summarizeBy: none
+		sourceColumn: shape_drift_score
+
+	column stability_drift_score
+		dataType: double
+		lineageTag: 62c886ad-8f17-42ca-8004-34316e8b74d1
+		summarizeBy: none
+		sourceColumn: stability_drift_score
+
+	column volatility_drift_score
+		dataType: double
+		lineageTag: 7d542004-5355-4b23-b616-678fe922ec42
+		summarizeBy: none
+		sourceColumn: volatility_drift_score
+
+	column forecast_drift_score
+		dataType: double
+		lineageTag: 37cd9b7a-789c-43d3-a419-fb9b197d78a0
+		summarizeBy: none
+		sourceColumn: forecast_drift_score
+
+	column score_coverage_pct
+		dataType: double
+		lineageTag: 62647421-1ad3-4e51-865e-b064314114ce
+		summarizeBy: none
+		sourceColumn: score_coverage_pct
+
+	column confidence_level
+		dataType: string
+		lineageTag: 8a8fb993-3ea1-41a3-a29e-9bc2db3f9b3d
+		sourceColumn: confidence_level
+
+	column missing_family_flag
+		dataType: string
+		lineageTag: ba5b53ef-fd11-460a-9c87-29f9bf0576cb
+		sourceColumn: missing_family_flag
+
+	column reason_code
+		dataType: string
+		lineageTag: e1e88e55-5647-48ff-ab2b-fce1f23e0f15
+		sourceColumn: reason_code
+
+	column explanation
+		dataType: string
+		lineageTag: 86d3744e-70c1-4440-8870-8b1af911f170
+		sourceColumn: explanation
+
+	column recommended_action
+		dataType: string
+		lineageTag: 51826df3-0fc0-4374-b9e7-6a659a458547
+		sourceColumn: recommended_action
+
+	column source_database
+		dataType: string
+		lineageTag: 70110471-7f94-4b9b-817e-b31e669ee2fd
+		sourceColumn: source_database
+
+	column source_schema
+		dataType: string
+		lineageTag: fbb1a61c-2820-45cb-aa92-65e029b5dc7e
+		sourceColumn: source_schema
+
+	column source_object
+		dataType: string
+		lineageTag: dc131c55-353b-43d7-8876-25798e72e7c3
+		sourceColumn: source_object
+
+	column source_forecast_version
+		dataType: dateTime
+		lineageTag: 242fb316-b0be-45c9-9e64-7a06cc8f12de
+		sourceColumn: source_forecast_version
+
+	column source_row_count
+		dataType: int64
+		lineageTag: 39f9891c-3290-406c-ab62-e2af1512c859
+		summarizeBy: none
+		sourceColumn: source_row_count
+
+	column normalization_version
+		dataType: string
+		lineageTag: 0d61e057-7e98-40cb-96cd-b577b76aa852
+		sourceColumn: normalization_version
+
+	column formula_version
+		dataType: string
+		lineageTag: 0fb47122-5d95-4a5f-89ae-1dab55aad928
+		sourceColumn: formula_version
+
+	column performance_mode
+		dataType: string
+		lineageTag: 5db48064-8cfc-4eb7-a417-a5098b023fe1
+		sourceColumn: performance_mode
+
+	column threshold_config_id
+		dataType: string
+		lineageTag: cb804cc9-c3e5-4032-9d6a-36e424d9a5c2
+		sourceColumn: threshold_config_id
+
+	column weight_config_id
+		dataType: string
+		lineageTag: 11836a77-56b7-42b9-b846-116ef9d1ee8c
+		sourceColumn: weight_config_id
+
+	column created_at
+		dataType: dateTime
+		lineageTag: 3d71fd83-2a4a-439d-bd63-04ba0a4f76ee
+		sourceColumn: created_at
+
+	column created_by
+		dataType: string
+		lineageTag: 73b1127c-9408-4cdb-af99-b2791cbcfc6b
+		sourceColumn: created_by
+
+	column updated_at
+		dataType: dateTime
+		lineageTag: e604de86-fc6f-47a4-b2f7-f2f1e23edca2
+		sourceColumn: updated_at
+
+	column updated_by
+		dataType: string
+		lineageTag: 824a7878-a2d2-4f9b-a260-da4f460b5fad
+		sourceColumn: updated_by
+
+	column is_current
+		dataType: int64
+		lineageTag: 88c57c3d-17fb-488a-b6fa-fa19ab4f7f4b
+		summarizeBy: none
+		sourceColumn: is_current
+
+	partition signals = m
+		mode: import
+		source = let Source = Csv.Document(File.Contents(DriftDataFolder & "forecast_drift_signals.csv"), [Delimiter=",", Encoding=65001, QuoteStyle=QuoteStyle.Csv]), Prom = Table.PromoteHeaders(Source, [PromoteAllScalars=true]) in Prom
+

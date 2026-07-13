@@ -1,0 +1,4 @@
+/// Folder holding the governed Python Drift datasets (V1/data/processed/current). Change this single value per machine; all tables read from it.
+expression DriftDataFolder = "C:\Users\oscarau\OneDrive - Microsoft\Desktop\Microsoft - Projects\2026\Integrate Cross‑Functional Capacity Feedback Signals to Align and Improve Capacity Mitigation Actions (Feature 6986096)\V1\data\processed\current\" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+	lineageTag: c93a890a-8aca-4b4a-9898-4e642c479a55
+

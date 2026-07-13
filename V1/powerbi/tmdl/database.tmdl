@@ -1,0 +1,4 @@
+/// AEGIS Forecast Drift MVP - consume-only model over governed Python datasets (E6)
+database AEGIS_Forecast_Drift_MVP
+	compatibilityLevel: 1567
+

@@ -16,7 +16,7 @@
 | **E5** | SQL Implementation & Validation (views/CTEs/procs + validate vs fixtures) | Build | ✅ Complete |
 | ├ E5A | Python Drift Engine (read-only ingest + calc + governed datasets) | Build | ✅ Complete |
 | └ E5B | **Production Dataset Validation & Export Hardening** (canonicalization, atomic export, refresh runner, contract) | Build | ✅ Complete — offline hardening + expanded live read-only run validated (2026-07-13) |
-| **E6** | Power BI MVP (consume only) | Viz | ⏳ |
+| **E6** | Power BI MVP (consume only) | Viz | ◑ In progress — semantic model + relationships + 24 measures + TMDL export + 11 page specs done (MCP); .pbix visuals manual (PARTIAL) |
 | **E7** | Grafana Production Dashboard (same SQL, new viz) | Production | ⏳ |
 | **E8** | Production Deployment & Governance (refresh, automation, docs) | Ops | ⏳ |
 

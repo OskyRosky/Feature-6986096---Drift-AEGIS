@@ -1,0 +1,8 @@
+/// Date table for time intelligence over forecast_version. Consume-only (structure only, no business logic).
+table Calendar
+	lineageTag: 66428e31-b89a-46e9-bb2f-936cc3dcca5a
+
+	partition Calendar = calculated
+		mode: import
+		source = ADDCOLUMNS ( CALENDAR ( DATE ( YEAR ( MIN ( forecast_drift_signals[forecast_version] ) ), 1, 1 ), DATE ( YEAR ( MAX ( forecast_drift_signals[forecast_version] ) ), 12, 31 ) ), "Year", YEAR ( [Date] ), "MonthNo", MONTH ( [Date] ), "Month", FORMAT ( [Date], "MMM" ), "YearMonth", FORMAT ( [Date], "YYYY-MM" ) )
+

@@ -1,0 +1,12 @@
+relationship rel_family_to_signals
+	fromColumn: forecast_drift_family_scores.drift_event_id
+	toColumn: forecast_drift_signals.drift_event_id
+
+relationship rel_events_to_signals
+	fromColumn: forecast_drift_event_history.drift_event_id
+	toColumn: forecast_drift_signals.drift_event_id
+
+relationship rel_signals_to_runs
+	fromColumn: forecast_drift_signals.calculation_run_id
+	toColumn: forecast_drift_runs.calculation_run_id
+
