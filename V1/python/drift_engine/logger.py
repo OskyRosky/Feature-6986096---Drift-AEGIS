@@ -16,13 +16,21 @@ _FMT = "%(asctime)s %(levelname)s %(name)s: %(message)s"
 _LOG_DIR = Path(__file__).resolve().parents[2] / "logs"  # V1/logs (gitignored)
 
 
+def ensure_utf8_stdout() -> None:
+    """Force sys.stdout/stderr to UTF-8 so U+2011 etc. never break a cp1252 console.
+
+    Safe to call multiple times and from scripts/tests that do not init a logger.
+    """
+    for stream in (sys.stdout, sys.stderr):
+        try:
+            stream.reconfigure(encoding="utf-8", errors="replace")
+        except Exception:  # pragma: no cover - already utf-8 or not reconfigurable
+            pass
+
+
 def _make_stream_handler() -> logging.Handler:
-    stream = sys.stdout
-    try:  # force UTF-8 so U+2011 etc. never break a cp1252 console
-        stream.reconfigure(encoding="utf-8", errors="replace")
-    except Exception:  # pragma: no cover
-        pass
-    h = logging.StreamHandler(stream)
+    ensure_utf8_stdout()
+    h = logging.StreamHandler(sys.stdout)
     h.setFormatter(logging.Formatter(_FMT))
     return h
 

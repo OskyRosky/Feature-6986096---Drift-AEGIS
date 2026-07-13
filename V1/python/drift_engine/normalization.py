@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import pandas as pd
 
+from .canonicalize import add_canonical_keys, collision_report
 from .config.settings import DUPLICATE_FORECAST_VERSION
 from .logger import get_logger
 
@@ -21,10 +22,20 @@ def normalize_forecasts(forecasts: pd.DataFrame) -> tuple[pd.DataFrame, dict]:
     """Apply dedupe (G1), forward-only (G6), version_rank, region parse."""
     df = forecasts.copy()
     stats = {"rows_in": len(df)}
-    # E5B (I1): case-fold Key to merge case variants (e.g. CAN-GO LOCAL vs CAN-Go Local)
-    stats["distinct_keys_raw"] = int(df["Key"].nunique())
-    df["Key"] = df["Key"].astype(str).str.strip().str.upper()
-    stats["distinct_keys_canonical"] = int(df["Key"].nunique())
+    # E5B (I1): non-destructive canonicalization. Preserve the exact original in
+    # forecast_key_raw, derive forecast_key_canonical (trim + collapse spaces +
+    # upper), and route all downstream grouping through the canonical form. The
+    # active grouping column "Key" is set to the canonical value so version
+    # pairing merges case/whitespace variants; the raw value is never lost.
+    df = add_canonical_keys(df, key_col="Key")
+    report = collision_report(df)
+    stats["distinct_keys_raw"] = report["distinct_keys_raw"]
+    stats["distinct_keys_canonical"] = report["distinct_keys_canonical"]
+    stats["keys_merged"] = report["keys_merged"]
+    stats["collision_groups"] = report["collision_groups"]
+    stats["suspicious_merges"] = report["suspicious_merges"]
+    stats["key_collision_report"] = report["merges"]
+    df["Key"] = df["forecast_key_canonical"]
     df["target_date"] = pd.to_datetime(df["target_date"], errors="coerce")
     df["forecast_version"] = pd.to_datetime(df["forecast_version"], errors="coerce")
     df = df.dropna(subset=["target_date", "forecast_version", "forecast_value"])
@@ -77,7 +88,9 @@ def normalize_metrics(metrics: pd.DataFrame) -> pd.DataFrame:
     df = metrics.copy()
     if df.empty:
         return df
-    df["Key"] = df["Key"].astype(str).str.strip().str.upper()  # E5B (I1): case-fold
+    # E5B (I1): canonicalize to the same key space as forecasts (raw preserved).
+    df = add_canonical_keys(df, key_col="Key")
+    df["Key"] = df["forecast_key_canonical"]
     df["forecast_version"] = pd.to_datetime(df["forecast_version"], errors="coerce").dt.date
     df = df.dropna(subset=["forecast_version"])
     df = df.sort_values(["Key", "forecast_version"])

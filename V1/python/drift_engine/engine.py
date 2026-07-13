@@ -29,6 +29,7 @@ from .composite import composite, is_event, severity_of, persistence_type
 from .families import performance_drift, shape_drift, stability_drift, volatility_drift
 from .logger import get_logger
 from .normalization import consecutive_version_pairs
+from .performance_deep import deep_mape_by_version
 
 log = get_logger("drift_engine.engine")
 
@@ -55,13 +56,41 @@ def _metric_perf(metrics: pd.DataFrame, key: str, version) -> dict:
     return performance_drift(now, prev, metric_name="MAPE", lower_is_better=True)
 
 
-def compute_signals(df_fwd: pd.DataFrame, metrics: pd.DataFrame, run_id: int) -> tuple[pd.DataFrame, pd.DataFrame]:
+def _deep_perf(deep_mapes: dict, version) -> dict:
+    """Performance drift from deep-recomputed MAPE (I3) when this + prior version exist."""
+    if not deep_mapes:
+        return {"score": None, "eligibility_status": "NOT_COMPUTABLE", "not_computable_reason": "NO_ACTUALS"}
+    versions = sorted(deep_mapes)
+    if version not in versions:
+        return {"score": None, "eligibility_status": "NOT_COMPUTABLE", "not_computable_reason": "NO_REALIZED_OVERLAP"}
+    i = versions.index(version)
+    if i == 0:
+        return {"score": None, "eligibility_status": "NOT_COMPUTABLE", "not_computable_reason": "INSUFFICIENT_VERSIONS"}
+    now = float(deep_mapes[versions[i]]["mape"])
+    prev = float(deep_mapes[versions[i - 1]]["mape"])
+    return performance_drift(now, prev, metric_name="MAPE_deep", lower_is_better=True)
+
+
+def compute_signals(df_fwd: pd.DataFrame, metrics: pd.DataFrame, run_id: int,
+                    perf_mode: str = "shallow", actuals: pd.DataFrame | None = None) -> tuple[pd.DataFrame, pd.DataFrame]:
     now_ts = datetime.now(timezone.utc)
     signals = []
     family_rows = []
+    perf_mode = (perf_mode or "shallow").lower()
 
     for key, sub in df_fwd.groupby("Key"):
         region = sub["region"].iloc[0]
+        # E5B (I1): key is the canonical form; keep the most frequent original
+        # spelling as raw for lineage (never lose the source value).
+        if "forecast_key_raw" in sub.columns:
+            raw_key = sub["forecast_key_raw"].value_counts().index[0]
+        else:
+            raw_key = key
+        # E5B (I3): deep Performance recompute source (aligned to fact versions).
+        deep_mapes = {}
+        if perf_mode == "deep" and actuals is not None and not actuals.empty:
+            akey = actuals[actuals["Key"] == key] if "Key" in actuals.columns else actuals
+            deep_mapes = deep_mape_by_version(sub, akey)
         piv = sub.pivot_table(index="target_date", columns="forecast_version", values="forecast_value", aggfunc="first")
         versions = sorted(piv.columns)
         for i in range(1, len(versions)):
@@ -94,8 +123,11 @@ def compute_signals(df_fwd: pd.DataFrame, metrics: pd.DataFrame, run_id: int) ->
                     if vo.get("score") is not None and (best_vol.get("score") is None or vo["score"] > best_vol["score"]):
                         best_vol = {**vo, "target_date": t}
 
-            # --- Performance (from official metrics) ---
-            perf = _metric_perf(metrics, key, v_n)
+            # --- Performance (shallow=official metrics, deep=recomputed MAPE) ---
+            if perf_mode == "deep":
+                perf = _deep_perf(deep_mapes, v_n)
+            else:
+                perf = _metric_perf(metrics, key, v_n)
 
             fam_scores = {
                 "performance": perf.get("score"),
@@ -132,6 +164,7 @@ def compute_signals(df_fwd: pd.DataFrame, metrics: pd.DataFrame, run_id: int) ->
                 "detected_on": now_ts.isoformat(),
                 "scenario": SCENARIO_SCOPE,
                 "forecast_key": key,
+                "forecast_key_raw": raw_key,
                 "service": None,
                 "region": region,
                 "forest": None,
@@ -169,6 +202,7 @@ def compute_signals(df_fwd: pd.DataFrame, metrics: pd.DataFrame, run_id: int) ->
                 "source_row_count": int(len(sub)),
                 "normalization_version": NORMALIZATION_VERSION,
                 "formula_version": FORMULA_VERSION,
+                "performance_mode": perf_mode,
                 "threshold_config_id": THRESHOLD_CONFIG_VERSION,
                 "weight_config_id": WEIGHT_CONFIG_VERSION,
                 "created_at": now_ts.isoformat(),

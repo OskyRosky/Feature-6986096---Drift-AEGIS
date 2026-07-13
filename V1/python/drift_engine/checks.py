@@ -53,4 +53,26 @@ def run_checks(signals: pd.DataFrame, family_scores: pd.DataFrame) -> list[dict]
     add("confidence_valid", signals["confidence_level"].isin(["HIGH", "MEDIUM", "LOW"]).all() if not signals.empty else True)
     # status enumeration
     add("status_valid", signals["drift_status"].isin(["Healthy", "Watch", "Warning", "Critical", "Unknown"]).all() if not signals.empty else True)
+
+    # --- E5B additional checks ---
+    if not signals.empty:
+        # I1: canonical key present and equals the active forecast_key
+        has_raw = "forecast_key_raw" in signals.columns
+        add("forecast_key_raw_present", has_raw, "" if has_raw else "missing forecast_key_raw")
+        canon_ok = (signals["forecast_key"].astype(str) == signals["forecast_key"].astype(str).str.strip().str.upper()).all()
+        add("forecast_key_is_canonical", bool(canon_ok))
+        # severity only set on events; null otherwise
+        sev_ok = ((signals["is_event"] == 1) | (signals["severity"].isna())).all()
+        add("severity_only_on_events", bool(sev_ok))
+        # performance_mode enumerated
+        if "performance_mode" in signals.columns:
+            add("performance_mode_valid", signals["performance_mode"].isin(["shallow", "deep"]).all())
+    if not family_scores.empty:
+        # NOT_COMPUTABLE families must have a null family_score
+        nc = family_scores["eligibility_status"] == "NOT_COMPUTABLE"
+        nc_score_ok = family_scores.loc[nc, "family_score"].isna().all() if nc.any() else True
+        add("not_computable_has_null_score", bool(nc_score_ok))
+        # eligibility enumerated
+        elig_ok = family_scores["eligibility_status"].isin(["COMPUTED", "NOT_COMPUTABLE"]).all()
+        add("eligibility_status_valid", bool(elig_ok))
     return r

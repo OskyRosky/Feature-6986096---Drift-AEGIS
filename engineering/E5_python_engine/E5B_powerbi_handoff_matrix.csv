@@ -1,0 +1,34 @@
+capability,owner,layer,notes
+Extraction (read-only SELECT from Tesseract),Python,drift_engine.ingestion,SELECT only; never in BI
+Key canonicalization & case-folding (I1),Python,drift_engine.canonicalize,raw+canonical preserved
+Deduplication (G1),Python,drift_engine.normalization,natural-grain dedupe
+Forward-only filter (G6),Python,drift_engine.normalization,target_date>=forecast_version
+Version pairing / version_rank,Python,drift_engine.normalization,consecutive versions per key
+Performance Drift (shallow & deep),Python,drift_engine.families+performance_deep,perf_mode explicit
+Shape Drift,Python,drift_engine.families,curve RMSE / level
+Stability Drift,Python,drift_engine.families,latest revision %
+Volatility Drift,Python,drift_engine.families,CoV over window N
+0-100 normalization,Python,drift_engine.scoring,piecewise anchors
+Composite drift score,Python,drift_engine.composite,renormalized weights
+Coverage & confidence,Python,drift_engine.composite,HIGH>=90 / MEDIUM>=60
+Severity & drift_status,Python,drift_engine.composite+scoring,status bands
+Thresholds / gates,Python,drift_engine.config.settings,no magic numbers
+Dominant family,Python,drift_engine.composite,weighted contribution
+Event logic (is_event/persistence/cooldown),Python,drift_engine.composite+engine,event thresholds
+Explanations,Python,drift_engine.families+engine,reason_code + text
+NOT_COMPUTABLE handling,Python,drift_engine.families,null score + reason
+Lineage & versioning,Python,drift_engine.engine+export,calc/formula/threshold/weight versions
+Record hashes,Python,drift_engine.engine,sha256 idempotent
+Data quality checks,Python,drift_engine.checks,18 checks
+Counts / sums / averages of computed scores,Power BI,measures,presentation only
+Rankings / top-N,Power BI,measures,over computed scores
+Filters (region/scenario/status/date),Power BI,slicers,no recompute
+Latest snapshot (is_current),Power BI,filter,reads is_current flag
+Cumulative counts (event volume over time),Power BI,measures,over event_history
+Visual labels / formatting / conditional format,Power BI,visuals,presentation only
+Navigation / bookmarks / page navigation / tooltips,Power BI,report,presentation only
+Sidebar / drill-through,Power BI,report,presentation only
+Recompute any Drift score / severity / threshold,FORBIDDEN,-,must read Python outputs
+Reimplement E3 family formulas,FORBIDDEN,-,governance violation
+Re-pair versions / re-dedupe / re-canonicalize,FORBIDDEN,-,Python owns normalization
+Recompute events / persistence / cooldown,FORBIDDEN,-,Python owns event logic

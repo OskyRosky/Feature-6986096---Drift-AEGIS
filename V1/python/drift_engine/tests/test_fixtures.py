@@ -83,16 +83,19 @@ def run_all():
 if __name__ == "__main__":
     import csv
 
+    from drift_engine.logger import ensure_utf8_stdout
+    ensure_utf8_stdout()  # I2: safe on cp1252 consoles
+
     rows = run_all()
     for r in rows:
         print(r["fixture"], r["result"], r["score_got"], "vs", r["score_expected"], r["status_got"])
     n_pass = sum(1 for r in rows if r["result"] == "PASS")
     print(f"\n{n_pass}/{len(rows)} fixtures PASS")
-    out = Path(__file__).resolve().parents[3] / "data" / "processed" / "_fixture_results.csv"
+    out = Path(__file__).resolve().parents[3] / "data" / "processed" / "validation" / "_fixture_results.csv"
     out.parent.mkdir(parents=True, exist_ok=True)
     with out.open("w", newline="", encoding="utf-8") as f:
         w = csv.DictWriter(f, fieldnames=list(rows[0].keys()))
         w.writeheader()
         w.writerows(rows)
-    print("wrote", out)
+    print("wrote", out.name)  # relative name only (no U+2011 path to console)
     sys.exit(0 if n_pass == len(rows) else 1)

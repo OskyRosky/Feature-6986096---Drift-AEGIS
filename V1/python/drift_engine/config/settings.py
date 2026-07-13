@@ -87,13 +87,25 @@ FAMILIES = ("performance", "shape", "stability", "volatility")
 
 @dataclass
 class SampleConfig:
-    """Controlled real-sample run parameters (read-only)."""
+    """Controlled real-sample run parameters (read-only).
+
+    E5A default = 3 keys / 8 versions. E5B expanded (still controlled, NOT full
+    history) = ``SampleConfig.expanded()`` -> 12 keys / 15 versions.
+    ``perf_mode`` selects the Performance source: 'shallow' (official metrics,
+    E5A) or 'deep' (MAPE recomputed from forecasts+actuals, E5B/I3).
+    """
 
     scenario: str = SCENARIO_SCOPE
     resource: str = RESOURCE_SCOPE
     n_keys: int = 3
     n_versions: int = 8
     keys: list[str] = field(default_factory=list)  # empty => auto-pick top keys
+    perf_mode: str = "shallow"
+
+    @classmethod
+    def expanded(cls) -> "SampleConfig":
+        """E5B expanded-but-controlled sample (Enterprise/HDD, 12 keys, 15 versions)."""
+        return cls(n_keys=12, n_versions=15, perf_mode="shallow")
 
 
 @dataclass

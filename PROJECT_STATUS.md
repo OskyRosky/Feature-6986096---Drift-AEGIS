@@ -1,12 +1,17 @@
 # PROJECT STATUS — AEGIS Forecast Drift Framework
 
 **Feature 6986096 — Integrate Cross-Functional Capacity Feedback Signals to Align and Improve Capacity Mitigation Actions**
-Last updated: 2026-07-12
+Last updated: 2026-07-13
 
 > Microsoft internal / confidential. Engineering stages (E-prefix) build the product; product/document versions (V1/V2/V3) are separate. See `engineering/ROADMAP.md`.
 
 ## Current stage
-**E5A — Python Drift Engine: COMPLETE** (read-only engine, 7/7 fixtures, real sample 12/12 checks, idempotent). Next: **E5B — SQL Implementation & Validation** (needs authorization).
+**E5B — Production Dataset Validation & Export Hardening: PARTIAL** (offline code
+hardening + deterministic validation complete: I1 canonicalization, I2 UTF-8
+logging, I3 deep Performance, atomic export, `run_refresh` runner, 18/18 checks,
+triple-run idempotency, frozen contract, Power BI boundary). Remaining: run the
+**live expanded real sample** (read-only, VPN+MFA) to flip to COMPLETED. Not
+E5B = SQL: no DDL, no SQL tables/views, no writes to Tesseract.
 
 ## Stage status
 | Stage | Name | Status |
@@ -18,10 +23,10 @@ Last updated: 2026-07-12
 | E3 | Mathematical Drift Model | ✅ Complete |
 | E4 | Output Schema Design | ✅ Complete |
 | E5A | Python Drift Engine | ✅ Complete |
-| E5B | SQL Implementation & Validation | ⏳ Next (needs auth) |
-| E6 | Power BI MVP | ⏳ |
-| E7 | Grafana Production Dashboard | ⏳ |
-| E8 | Production Deployment & Governance | ⏳ |
+| E5B | Production Dataset Validation & Export Hardening | ◑ Partial (offline done; live sample pending) |
+| E6 | Power BI MVP (local, consume-only) | ⏳ |
+| E7 | Grafana MVP (local, consume-only) | ⏳ |
+| E8 | Cloud Deployment & Governance | ⏳ |
 
 ## Key validated facts (E1B)
 - Source `forecast_substrateBE_hdd_region`: 48 monthly Enterprise ForecastVersions (2021-06 → 2026-05); 177,898 multi-version (Key, target) cells; one model per Key×version.
