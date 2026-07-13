@@ -47,10 +47,10 @@ Status distribution shift (expected — deeper Performance changes the composite
   (unknown) accuracy definition; deep uses an explicit, auditable MAPE. This is
   a **documented** difference, surfaced via `performance_mode`, not a silent swap.
 
-## Recommendation for E6 (Power BI MVP)
-Ship **shallow** as the default productive mode for the first Power BI MVP
-(fully governed, cheap, matches the official metric), and expose **deep** as an
-explicitly-labelled alternative calculation for coverage analysis. Decide the
-productive default after the live expanded sample confirms deep coverage and
-cost on real actuals. Power BI must never recompute either — it reads
-`performance_drift_score` + `performance_mode` as given.
+## Live confirmation (2026-07-13)
+On the real Enterprise/HDD sample (12 keys, 15 versions), deep mode produced
+**Performance coverage 156/168** signals (shape 168/168, stability 168/168,
+volatility 144/168) — confirming that deep recompute lifts Performance coverage
+substantially on real data, aligned to fact versions. Both live runs produced
+identical record hashes (idempotent). `performance_mode=deep` recorded on every
+signal.

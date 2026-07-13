@@ -53,5 +53,12 @@ Two questions matter:
 ## Conclusion
 The signal count is **not** inflated: it is the intended per-`(key, version)`
 aggregation, now backed by explicit, auditable counters at each transformation
-step and by canonicalization that collapses case/whitespace variants. The live
-expanded sample reproduces these counters against real data for final sign-off.
+step and by canonicalization that collapses case/whitespace variants.
+
+### Live confirmation (2026-07-13)
+Real Enterprise/HDD sample (12 keys, 15 versions), reproduced on both runs:
+- rows_in 575,484 → after_dedupe 531,696 (43,788 duplicate rows removed, G1) →
+  forward-only 265,824.
+- distinct_keys_raw 21 → canonical 12 (9 merged).
+- signals 168, family 672 (168×4), events 71; grain_unique + record_hash_unique
+  + four_families_per_signal all PASS on real data.

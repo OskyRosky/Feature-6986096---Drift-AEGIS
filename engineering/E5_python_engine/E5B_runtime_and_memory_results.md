@@ -44,6 +44,20 @@ from the E5A controlled sample are included for reference.
 | forecast_drift_runs.csv | 441 |
 | metadata/run_metadata.json | 3,583 |
 
+## Live expanded run (real Tesseract, 2026-07-13)
+| Metric | Run 1 | Run 2 |
+| --- | --- | --- |
+| scope | Enterprise/HDD, 12 keys, 15 versions, deep | same |
+| forecast rows → forward | 575,484 → 265,824 | same |
+| signals | 168 | 168 |
+| total runtime | 434.73 s | 829.37 s |
+| peak memory | 422 MB | 422 MB |
+| exit code | 0 | 0 |
+
+Deep mode over 265,824 forward rows dominates runtime (per-(key,version) MAPE
+joins); run 2 was slower due to machine load, same memory. This confirms the
+bottleneck analysis: at larger scale, vectorize the deep join and stream by key.
+
 ## Note
 Full-history runtime/memory are **not** validated here (full history is not
 authorized). The expanded live sample will provide the first real deep-mode

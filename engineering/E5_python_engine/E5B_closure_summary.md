@@ -8,7 +8,7 @@
 
 | Item | Status |
 | --- | --- |
-| E5B overall | PARTIAL |
+| E5B overall | COMPLETED |
 | Python hardening | COMPLETED |
 | Key canonicalization | COMPLETED |
 | Unicode logging | COMPLETED |
@@ -16,20 +16,32 @@
 | Dataset contract | COMPLETED |
 | Data quality offline | COMPLETED |
 | Idempotency offline | COMPLETED |
-| Expanded live sample | PENDING |
-| Ready for E6 | CONDITIONAL |
+| Expanded live sample | COMPLETED |
+| Ready for E6 | YES |
 
-**`Ready for E6 = CONDITIONAL` means:** the engineering handoff to Power BI is
-technically complete — the dataset contract is frozen, file names and folder
-layout are stable, the Python↔Power BI boundary is documented, and every governed
-dataset can be produced reproducibly. E6 *could* start against these outputs
-right now.
+**`Ready for E6 = YES`:** the expanded live read-only run against Tesseract
+completed successfully (exit 0, twice), producing real governed datasets in
+`current/` with 18/18 checks and cross-run idempotency. Power BI can now be
+modelled on real data, not synthetic. The engineering handoff (frozen contract,
+stable names, documented boundary) is complete and backed by a live dataset.
 
-The condition is that the outputs validated so far come from a **deterministic
-synthetic fixture** (offline), not from live Tesseract data. Until the expanded
-live sample runs and populates `current/` with real governed data, a Power BI MVP
-would be modelled on synthetic rows. So E6 is unblocked in engineering terms but
-should wait for the single pending step, so the MVP consumes a real dataset.
+### Live expanded run — real-data results (2026-07-13)
+| Metric | Value |
+| --- | --- |
+| Scope | Enterprise / HDD, 12 keys, 15 versions, deep mode |
+| Exit code | 0 (both runs) |
+| Forecast rows → forward-only | 575,484 → 265,824 (dedupe 531,696) |
+| Actuals / metrics rows | 111,648 / 1,080 |
+| Keys raw → canonical (merged) | 21 → 12 (9 merged, 0 suspicious) |
+| Signals / family rows / events | 168 / 672 / 71 |
+| Status dist | Healthy 82 · Watch 38 · Warning 34 · Critical 14 |
+| Family coverage | perf 156/168 · shape 168/168 · stab 168/168 · vol 144/168 |
+| Checks | 18/18 PASS |
+| Grain unique / hashes unique | yes / yes |
+| Scores 0–100 / NaN–Inf | in range / none |
+| Cross-run idempotency | identical aggregate hash `3590574a…0710a9` |
+| Runtime / peak memory | 434.73 s (run1), 829.37 s (run2) / 422 MB |
+| Git | `V1/data/` ignored (no real data committed) |
 
 ## 2. What is fully completed
 
@@ -50,28 +62,28 @@ should wait for the single pending step, so the MVP consumes a real dataset.
 
 ## 3. What is still pending
 
+The only real blocker (expanded live run) is now **DONE**. Remaining items are
+non-blocking enhancements.
+
 | Pending item | Why it matters | Blocking? | Action |
 | --- | --- | --- | --- |
-| **Expanded live run against Tesseract** | confirms canonicalization, grain, coverage, runtime on real data; produces the real dataset E6 will consume | **YES — only real blocker** | run `run_refresh --source live --profile expanded --perf-mode deep` (VPN+MFA) |
 | pyarrow install | enables Parquet output + round-trip check | No | `pip install pyarrow` (authorize) |
 | pytest install | run fixtures under pytest | No | optional `pip install pytest` |
-| Default shallow/deep decision | sets Performance coverage in E6 | No | decide after live sample; default shallow |
+| Default shallow/deep decision | sets Performance coverage in E6 | No | deep validated live (156/168); confirm productive default in E6 |
 | G3 Service dimension | Top Services page partial in E6 | No | nullable `service` present; add when sourced |
 | G4 forest mapping | grouping/UX only | No | nullable `forest` present; add mapping later |
 | G7 TTL view | out of drift scope | No | future |
-| Final calibration of anchors/weights/thresholds | tune on real distributions | No | after live/full-history data (needs auth) |
+| Final calibration of anchors/weights/thresholds | tune on real distributions | No | after full-history data (needs auth) |
 
 ## 4. Decision on E6
 
 - **Can E6 start technically?** Yes — contract frozen, stable names/layout,
   boundary documented, datasets reproducible.
-- **Should E6 start before the live run?** No.
-- **Risk if we start early?** The Power BI MVP would be built and demoed on
-  synthetic rows; relationships, cardinality, edge cases and Top Services (G3)
-  could be mis-shaped versus real data, forcing rework once the live dataset lands.
-
-**Recommendation:** do **not** start E6 until the expanded live run is closed, so
-the Power BI MVP consumes a **real** governed dataset, not only synthetic data.
+- **Is the live dataset available?** Yes — the expanded live run produced real
+  governed data in `current/` (168 signals, 12 canonical keys, 18/18 checks).
+- **Recommendation:** E6 (Power BI MVP) is cleared to start against the real
+  `current/` datasets. Keep it consume-only per the boundary matrix; treat Top
+  Services as partial until G3 (Service dimension) is sourced.
 
 ## 5. Exact closeout action
 
@@ -103,30 +115,29 @@ the Power BI MVP consumes a **real** governed dataset, not only synthetic data.
 
 ## 7. Final outcome
 
-Current outcome:
-E5B_OBJECTIVE_PARTIALLY_ACHIEVED
+Outcome:
+E5B_OBJECTIVE_ACHIEVED
 
-Current token:
-E5B_DATASET_VALIDATION_EXPORT_HARDENING_PARTIAL
+Token:
+E5B_DATASET_VALIDATION_EXPORT_HARDENING_COMPLETED
 
-Condition to change to COMPLETED:
-Successful expanded live run against Tesseract with validation checks passed.
+Condition met: the expanded live read-only run against Tesseract completed twice
+with exit 0, 18/18 checks, all four families exercised, deep Performance,
+audited canonicalization (21→12), and cross-run idempotency — no SQL writes.
 
 ## 8. One-paragraph executive summary
 
-The Forecast Drift engine is now hardened and governed: keys are canonicalized
-without data loss (I1), Unicode logging is fixed (I2), Performance gained a deep
-recompute mode lifting coverage from 13/85 to 78/85 (I3), outputs are written
-atomically into a stable layout (Parquet-preferred, CSV-fallback), a single
-`run_refresh` entrypoint drives the pipeline with clear exit codes and no
-overwrite-on-failure, and 18/18 data-quality checks plus triple-run idempotency
-pass — all validated on a deterministic synthetic fixture, with nothing written
-to SQL and no real data in Git. What is missing is one thing only: the expanded
-**live** read-only run against Tesseract, which will replace synthetic outputs
-with real governed data. E5B stays PARTIAL precisely because that live dataset
-does not yet exist. The exact next step is to connect the VPN, set the DB env
-vars, and run `run_refresh --source live --profile expanded --perf-mode deep`,
-then validate and flip the token to COMPLETED.
+The Forecast Drift engine is hardened, governed and now proven on real data:
+keys are canonicalized without loss (live: 21→12, 9 merged) (I1), Unicode
+logging is fixed (I2), Performance runs a deep recompute (live coverage 156/168)
+(I3), outputs are written atomically into a stable layout (CSV; Parquet-ready),
+a single `run_refresh` entrypoint drives the pipeline with clear exit codes and
+no overwrite-on-failure, and the expanded live read-only run against Tesseract
+completed twice (exit 0) with 18/18 data-quality checks, all four families
+exercised, and identical cross-run record hashes — 168 governed signals over
+265,824 forward rows, nothing written to SQL, no real data in Git. E5B is
+COMPLETED. The next step is E6 — the Power BI MVP consuming these real governed
+`current/` datasets as a pure consumer.
 
 ---
 
@@ -245,17 +256,16 @@ read/aggregate/filter/visualize; recomputing E3 formulas is forbidden.
 ## 18. Open issues
 See `E5B_open_issues.md`. Blocking-for-COMPLETED: O1 (live expanded sample).
 
-## 19. Validation against E5B success criteria
-case-folding ✅ · logging Unicode ✅ · grain/counts explained ✅ · expanded sample
-(offline ✅ / live ⏳) · runtime+memory ✅ · deep Performance ✅ · CSV/Parquet
-strategy ✅ · contract frozen ✅ · reproducible refresh ✅ · atomicity+fallback ✅ ·
-extended idempotency ✅ · data quality ✅ · Python/PBI boundary ✅ · E6 can start ✅ ·
-no SQL writes ✅.
+**19. Validation against E5B success criteria** — case-folding ✅ · logging Unicode
+✅ · grain/counts explained ✅ · expanded sample (offline ✅ / live ✅) · runtime+memory
+✅ · deep Performance ✅ · CSV/Parquet strategy ✅ · contract frozen ✅ · reproducible
+refresh ✅ · atomicity+fallback ✅ · extended idempotency ✅ · data quality ✅ ·
+Python/PBI boundary ✅ · E6 can start ✅ · no SQL writes ✅.
 
 ## 20. Explicit outcome
-**E5B_OBJECTIVE_PARTIALLY_ACHIEVED** — all code hardening + design + deterministic
-offline validation complete; the single remaining item is the **live expanded
-real sample** through the hardened pipeline (needs operator VPN + Entra MFA).
+**E5B_OBJECTIVE_ACHIEVED** — all code hardening + design + deterministic offline
+validation complete, and the expanded live real sample ran successfully against
+Tesseract (read-only, deep, twice, 18/18 checks, cross-run idempotent).
 
 ## 21. Next recommended step
 Operator runs the live expanded sample, then we confirm real canonicalization,
@@ -286,6 +296,6 @@ only remaining step to full completion is running the ready expanded sample live
 against Tesseract (read-only) to confirm the numbers on real data.
 
 ## Status token
-**E5B_DATASET_VALIDATION_EXPORT_HARDENING_PARTIAL** — offline hardening +
-validation complete; live expanded real sample pending operator DB session. No
-SQL/DDL/writes; no Power BI/Grafana; no commit; no full-history run.
+**E5B_DATASET_VALIDATION_EXPORT_HARDENING_COMPLETED** — offline hardening +
+validation complete and expanded live real sample validated (read-only, no SQL
+writes); no Power BI/Grafana; no commit; no full-history run.

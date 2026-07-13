@@ -50,7 +50,18 @@ Merged group:
   now compared, so drift is computed on the true entity history (more, and
   correct, signals per entity).
 
-## Live confirmation (pending operator DB run)
-The same report is emitted into `run_metadata.json.normalization_stats` and
-`key_collision_report` on every `run_refresh` run, including the live expanded
-sample; the collision counts there confirm the real fact-table variant volume.
+## Live confirmation (operator DB run, 2026-07-13) — COMPLETED
+The expanded live read-only run confirmed the real fact-table variant volume:
+
+| Metric | Value (live) |
+| --- | --- |
+| distinct_keys_raw | 21 |
+| distinct_keys_canonical | 12 |
+| keys_merged | 9 |
+| collision_groups | 9 |
+| suspicious_merges | 0 |
+
+So the real Enterprise/HDD sample carried **9 case/whitespace duplicate keys**
+that E5A's destructive upper-casing would have de-cased silently; E5B now audits
+and reports them (emitted in `run_metadata.json.normalization_stats` /
+`key_collision_report`). Same numbers on both live runs (idempotent).

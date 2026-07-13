@@ -6,12 +6,13 @@ Last updated: 2026-07-13
 > Microsoft internal / confidential. Engineering stages (E-prefix) build the product; product/document versions (V1/V2/V3) are separate. See `engineering/ROADMAP.md`.
 
 ## Current stage
-**E5B — Production Dataset Validation & Export Hardening: PARTIAL** (offline code
-hardening + deterministic validation complete: I1 canonicalization, I2 UTF-8
-logging, I3 deep Performance, atomic export, `run_refresh` runner, 18/18 checks,
-triple-run idempotency, frozen contract, Power BI boundary). Remaining: run the
-**live expanded real sample** (read-only, VPN+MFA) to flip to COMPLETED. Not
-E5B = SQL: no DDL, no SQL tables/views, no writes to Tesseract.
+**E5B — Production Dataset Validation & Export Hardening: COMPLETE.** Offline
+hardening (I1 canonicalization, I2 UTF-8 logging, I3 deep Performance, atomic
+export, `run_refresh` runner, 18/18 checks, idempotency, frozen contract) **and**
+the expanded live read-only run against Tesseract validated: ran twice (exit 0),
+18/18 checks, canonicalization 21→12, deep coverage 156/168, cross-run
+idempotent, 168 governed signals, no SQL writes. Next: **E6 — Power BI MVP**
+(local, consume-only). Token: E5B_DATASET_VALIDATION_EXPORT_HARDENING_COMPLETED.
 
 ## Stage status
 | Stage | Name | Status |
@@ -23,8 +24,8 @@ E5B = SQL: no DDL, no SQL tables/views, no writes to Tesseract.
 | E3 | Mathematical Drift Model | ✅ Complete |
 | E4 | Output Schema Design | ✅ Complete |
 | E5A | Python Drift Engine | ✅ Complete |
-| E5B | Production Dataset Validation & Export Hardening | ◑ Partial (offline done; live sample pending) |
-| E6 | Power BI MVP (local, consume-only) | ⏳ |
+| E5B | Production Dataset Validation & Export Hardening | ✅ Complete (offline + live validated) |
+| E6 | Power BI MVP (local, consume-only) | ⏳ Next |
 | E7 | Grafana MVP (local, consume-only) | ⏳ |
 | E8 | Cloud Deployment & Governance | ⏳ |
 

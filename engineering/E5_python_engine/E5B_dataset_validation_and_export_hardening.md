@@ -50,15 +50,17 @@
 - Deep vs shallow Performance coverage: 78/85 vs 13/85.
 - Runtime (expanded synthetic): ~3.1 s total, peak ~3.2 MB.
 
-## Live expanded sample (Tesseract read-only)
-The engine is ready. The live expanded real sample (12 keys / 15 versions,
-Enterprise/HDD) is executed by:
-```
-$env:AEGIS_DRIFT_SQL_SERVER="<host>"; $env:AEGIS_DRIFT_SQL_DATABASE="<db>"
-python -m drift_engine.scripts.run_refresh --source live --profile expanded --perf-mode deep
-```
-This requires VPN + Entra Interactive (MFA) and is the one step that needs the
-operator's DB session. Outputs land atomically in `V1/data/processed/current/`.
+## Live expanded sample (Tesseract read-only) — COMPLETED 2026-07-13
+Executed twice against Tesseract (`--source live --profile expanded --perf-mode
+deep`, VPN + Entra MFA), exit 0 both, outputs atomic in `V1/data/processed/current/`:
+- Scope: Enterprise/HDD, 12 keys, 15 versions.
+- Forecast rows 575,484 → dedupe 531,696 → forward 265,824; actuals 111,648; metrics 1,080.
+- Canonicalization: raw 21 → canonical 12 (9 merged, 0 suspicious).
+- Signals 168 / family 672 / events 71; status Healthy 82 / Watch 38 / Warning 34 / Critical 14.
+- Family coverage: perf 156/168 · shape 168/168 · stab 168/168 · vol 144/168.
+- Checks 18/18; grain unique; hashes unique; scores 0–100; no NaN/Inf; perf_mode=deep.
+- Cross-run idempotency: identical aggregate record hash `3590574a…0710a9`.
+- Runtime 434.73 s / 829.37 s; peak 422 MB. No SQL writes; `V1/data/` git-ignored.
 
 ## Governance
 Read-only against source; SELECT-only; no DDL/tables/views/writes; no secrets or

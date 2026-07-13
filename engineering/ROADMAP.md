@@ -13,9 +13,9 @@
 | **E2** | Forecast Drift Information Model (tables, grain, relations, lineage) | Design | ✅ Complete |
 | **E3** | Mathematical Drift Model (formulas + known-answer fixtures) | Math | ✅ Complete |
 | **E4** | Output Schema Design — `aegis_forecast_drift_signals` (design only) | Design | ✅ Complete |
-| **E5** | SQL Implementation & Validation (views/CTEs/procs + validate vs fixtures) | Build | ◑ In progress |
+| **E5** | SQL Implementation & Validation (views/CTEs/procs + validate vs fixtures) | Build | ✅ Complete |
 | ├ E5A | Python Drift Engine (read-only ingest + calc + governed datasets) | Build | ✅ Complete |
-| └ E5B | **Production Dataset Validation & Export Hardening** (canonicalization, atomic export, refresh runner, contract) | Build | ◑ In progress — offline hardening + validation complete; live expanded sample pending (PARTIAL) |
+| └ E5B | **Production Dataset Validation & Export Hardening** (canonicalization, atomic export, refresh runner, contract) | Build | ✅ Complete — offline hardening + expanded live read-only run validated (2026-07-13) |
 | **E6** | Power BI MVP (consume only) | Viz | ⏳ |
 | **E7** | Grafana Production Dashboard (same SQL, new viz) | Production | ⏳ |
 | **E8** | Production Deployment & Governance (refresh, automation, docs) | Ops | ⏳ |

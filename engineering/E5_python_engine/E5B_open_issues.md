@@ -15,7 +15,7 @@
 ## Still open (non-blocking for E6)
 | # | Issue | Impact | Plan |
 | --- | --- | --- | --- |
-| O1 | **Live expanded real sample not yet run** in this session (DB env/MFA) | offline validation complete; real-data numbers pending | operator runs `run_refresh --source live --profile expanded --perf-mode deep`; confirms canonicalization/grain/runtime on real data |
+| O1 | **Live expanded real sample** | ✅ DONE 2026-07-13 — ran twice (exit 0), 18/18 checks, canonicalization 21→12, deep coverage 156/168, cross-run idempotent | closed |
 | O2 | **pyarrow absent** → no Parquet emitted | CSV is the working contract | `pip install pyarrow` in the drift env (authorize) to enable Parquet + round-trip check |
 | O3 | **pytest absent** | fixtures run via standalone runner | optional `pip install pytest`; convert `test_fixtures.py` assertions |
 | O4 | Deep vs shallow productive default undecided | affects Performance coverage in E6 | decide after live sample; default shallow, deep as labelled alternative |
