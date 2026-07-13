@@ -1,0 +1,2 @@
+calculation_run_id,calculation_version,formula_version,threshold_config_id,weight_config_id,run_started_at,run_finished_at,source_forecast_version_max,signals_written,events_created,run_status,created_by
+1,E5A-v1,f1.0,t1.0,w1.0,2026-07-13T02:39:30.490845+00:00,2026-07-13T02:39:30.490916+00:00,2026-05-01,18,8,Success,drift_engine

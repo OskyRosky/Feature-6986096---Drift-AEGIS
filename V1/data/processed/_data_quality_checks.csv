@@ -1,0 +1,13 @@
+check,result,detail
+signals_not_empty,PASS,18
+required_columns_present,PASS,[]
+grain_unique,PASS,0 duplicates
+record_hash_unique,PASS,
+scores_in_0_100,PASS,0 out of range
+composite_not_null,PASS,
+weights_sum_100,PASS,100.0
+no_inf_values,PASS,0
+no_empty_keys,PASS,
+four_families_per_signal,PASS,{4: 18}
+confidence_valid,PASS,
+status_valid,PASS,

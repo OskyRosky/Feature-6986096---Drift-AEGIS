@@ -1,0 +1,9 @@
+event_history_id,drift_event_id,old_status,new_status,changed_at,changed_by,note
+1,1,,Open,2026-07-13T02:39:15.144603+00:00,drift_engine,auto-created on detection
+2,6,,Open,2026-07-13T02:39:15.144603+00:00,drift_engine,auto-created on detection
+3,8,,Open,2026-07-13T02:39:15.144603+00:00,drift_engine,auto-created on detection
+4,10,,Open,2026-07-13T02:39:15.144603+00:00,drift_engine,auto-created on detection
+5,12,,Open,2026-07-13T02:39:15.144603+00:00,drift_engine,auto-created on detection
+6,14,,Open,2026-07-13T02:39:15.144603+00:00,drift_engine,auto-created on detection
+7,15,,Open,2026-07-13T02:39:15.144603+00:00,drift_engine,auto-created on detection
+8,18,,Open,2026-07-13T02:39:15.144603+00:00,drift_engine,auto-created on detection

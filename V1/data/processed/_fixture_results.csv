@@ -1,0 +1,8 @@
+fixture,score_got,score_expected,tolerance,status_got,status_expected,result
+FX-PERF-01,0.0,0.0,1.0,Healthy,Healthy,PASS
+FX-PERF-02,73.33,73.3,1.0,Critical,Critical,PASS
+FX-SHAPE-01,77.63,77.6,1.0,Critical,Critical,PASS
+FX-STAB-01,86.71,86.7,1.0,Critical,Critical,PASS
+FX-VOL-01,83.93,83.9,1.0,Critical,Critical,PASS
+FX-COMP-01,80.1,80.1,1.0,Critical,Critical,PASS
+FX-COMP-02,79.68,79.7,1.0,Critical,Critical,PASS

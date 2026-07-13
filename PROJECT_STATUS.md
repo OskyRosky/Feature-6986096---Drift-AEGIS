@@ -6,7 +6,7 @@ Last updated: 2026-07-12
 > Microsoft internal / confidential. Engineering stages (E-prefix) build the product; product/document versions (V1/V2/V3) are separate. See `engineering/ROADMAP.md`.
 
 ## Current stage
-**E4 — Output Schema Design: COMPLETE.** Next: **E5 — SQL Implementation & Validation** (needs authorization).
+**E5A — Python Drift Engine: COMPLETE** (read-only engine, 7/7 fixtures, real sample 12/12 checks, idempotent). Next: **E5B — SQL Implementation & Validation** (needs authorization).
 
 ## Stage status
 | Stage | Name | Status |
@@ -17,7 +17,8 @@ Last updated: 2026-07-12
 | E2 | Forecast Drift Information Model | ✅ Complete |
 | E3 | Mathematical Drift Model | ✅ Complete |
 | E4 | Output Schema Design | ✅ Complete |
-| E5 | SQL Implementation & Validation | ⏳ Next (needs auth) |
+| E5A | Python Drift Engine | ✅ Complete |
+| E5B | SQL Implementation & Validation | ⏳ Next (needs auth) |
 | E6 | Power BI MVP | ⏳ |
 | E7 | Grafana Production Dashboard | ⏳ |
 | E8 | Production Deployment & Governance | ⏳ |

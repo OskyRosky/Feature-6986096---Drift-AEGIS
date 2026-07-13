@@ -1,0 +1,21 @@
+transform_id,layer,name,description,gap_addressed,module_function
+T01,normalization,null drop,Drop rows with null target/version/value,data quality,normalization.normalize_forecasts
+T02,normalization,dedupe,Drop duplicate rows on natural grain (fixes 2025-06-01 double load),G1,normalization.normalize_forecasts
+T03,normalization,forward filter,Keep rows where target_date >= forecast_version,G6,normalization.normalize_forecasts
+T04,normalization,horizon_days,Compute target_date - forecast_version,eligibility,normalization.normalize_forecasts
+T05,normalization,region parse,Region = Key prefix before first hyphen,G3 partial,normalization.normalize_forecasts
+T06,normalization,version_rank,Rank versions ascending per key,version pairing,normalization.normalize_forecasts
+T07,normalization,version pairing,Map v_n to previous v_(n-1),pairing,normalization.consecutive_version_pairs
+T08,normalization,metrics sort,Sort metrics by key + Forecast_Version,performance pairing,normalization.normalize_metrics
+T09,engine,curve alignment,Align forward target dates common to two versions,shape,engine.compute_signals
+T10,engine,performance drift,Relative MAPE change with gate,performance,families.performance_drift
+T11,engine,shape drift,Level-normalized curve RMSE,shape,families.shape_drift
+T12,engine,stability drift,Latest revision pct + structural break,stability,families.stability_drift
+T13,engine,volatility drift,CoV over last N + MAD companion,volatility,families.volatility_drift
+T14,engine,piecewise normalization,Map raw magnitude to 0-100,normalization,scoring.piecewise
+T15,engine,composite,Weighted mean renormalized over available families,composite,composite.composite
+T16,engine,event logic,Event when composite>=40 or family>=70,events,composite.is_event
+T17,engine,persistence,Consecutive Warning+ versions per key,persistence,engine._apply_persistence
+T18,engine,record hash,SHA256 of natural key + scores,idempotency,engine._hash
+T19,export,write governed,CSV (+Parquet if pyarrow) + run_metadata,output contract,export.export_all
+T20,validation,quality checks,Schema/grain/ranges/hash/weights/NaN,quality,checks.run_checks

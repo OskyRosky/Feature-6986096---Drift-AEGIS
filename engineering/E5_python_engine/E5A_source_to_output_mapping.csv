@@ -1,0 +1,19 @@
+source_object,source_column,ingestion_query,normalization_step,engine_use,output_column,output_dataset
+forecast_substrateBE_hdd_region,Key,forecasts_query,region parse + grain,group key,forecast_key,forecast_drift_signals
+forecast_substrateBE_hdd_region,DateTime,forecasts_query,forward filter (is_forward),shape/stability/volatility target,target_date,forecast_drift_signals
+forecast_substrateBE_hdd_region,ForecastVersion,forecasts_query,version_rank + pairing,version axis,forecast_version / previous_forecast_version,forecast_drift_signals
+forecast_substrateBE_hdd_region,Value,forecasts_query,dedupe + null drop,shape/stability/volatility input,(scores),forecast_drift_signals / family_scores
+forecast_substrateBE_hdd_region,ModelVersion,forecasts_query,filter <> actual,not a driver,(n/a),-
+forecast_substrateBE_hdd_region,Scenario,forecasts_query,scope filter Enterprise,scope,scenario,forecast_drift_signals
+forecast_substrateBE_hdd_region,Resource,forecasts_query,scope filter HDD,scope,resource,forecast_drift_signals
+forecast_substrateBE_hdd_region,Value (ModelVersion=actual),actuals_query,per-scenario actuals,performance deep (future),(reserved),-
+forecast_substrateBE_hdd_region_metrics,Key,metrics_query,join key,performance,forecast_key,forecast_drift_family_scores
+forecast_substrateBE_hdd_region_metrics,Forecast_Version,metrics_query,sort/pair,performance version pairing,forecast_version,forecast_drift_family_scores
+forecast_substrateBE_hdd_region_metrics,MAPE,metrics_query,none,performance primary metric,metric_value / performance_drift_score,forecast_drift_signals / family_scores
+forecast_substrateBE_hdd_region_metrics,Bias/Bias_Pct/Accuracy/MAE/RMSE/SMAPE,metrics_query,none,performance secondary/diagnostic,(reserved),family_scores
+derived,region,n/a,parse Key prefix,grouping,region,forecast_drift_signals
+derived,horizon_days,n/a,target_date - forecast_version,forward filter,(internal),-
+derived,is_forward,n/a,target_date >= forecast_version,eligibility,(internal),-
+derived,version_rank,n/a,rank per key,pairing,(internal),-
+engine,forecast_drift_score,n/a,composite,scoring,forecast_drift_score,forecast_drift_signals
+engine,record_hash,n/a,sha256(natural key + scores),idempotency,record_hash,forecast_drift_signals

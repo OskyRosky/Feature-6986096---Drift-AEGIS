@@ -1,0 +1,61 @@
+{
+  "calculation_version": "E5A-v1",
+  "formula_version": "f1.0",
+  "normalization_version": "piecewise-1.0",
+  "threshold_config_version": "t1.0",
+  "weight_config_version": "w1.0",
+  "generated_at": "2026-07-13T02:39:30.516181+00:00",
+  "parquet_available": false,
+  "signal_rows": 18,
+  "family_score_rows": 72,
+  "event_rows": 8,
+  "files": {
+    "forecast_drift_signals": [
+      "forecast_drift_signals.csv"
+    ],
+    "forecast_drift_family_scores": [
+      "forecast_drift_family_scores.csv"
+    ],
+    "forecast_drift_runs": [
+      "forecast_drift_runs.csv"
+    ],
+    "forecast_drift_event_history": [
+      "forecast_drift_event_history.csv"
+    ]
+  },
+  "sample_keys": [
+    "GBR-Go Local",
+    "LAM-Multitenant",
+    "CAN-Go Local"
+  ],
+  "sample_versions": [
+    "2026-05-01",
+    "2026-04-16",
+    "2026-04-06",
+    "2026-03-07",
+    "2026-02-01",
+    "2026-01-01",
+    "2025-12-01",
+    "2025-07-01"
+  ],
+  "normalization_stats": {
+    "rows_in": 63144,
+    "rows_after_nulls": 63144,
+    "rows_after_dedupe": 63144,
+    "duplicate_version_present": false,
+    "rows_forward_only": 35145,
+    "distinct_keys": 6,
+    "distinct_versions": 8
+  },
+  "checks_passed": 12,
+  "checks_total": 12,
+  "idempotent": true,
+  "runtime_seconds": 41.49,
+  "peak_memory_mb": 48.7,
+  "status_distribution": {
+    "Healthy": 9,
+    "Watch": 4,
+    "Critical": 3,
+    "Warning": 2
+  }
+}
