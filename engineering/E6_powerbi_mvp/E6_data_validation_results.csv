@@ -22,4 +22,8 @@ tmdl_import_validated,yes,yes,PASS,corrected TMDL re-imported via MCP: 5 tables 
 calendar_relationship,active,active,PASS,signals[forecast_version]->Calendar[Date] many-to-one single; Calendar columns in TMDL; Month sortBy MonthNo
 m_empty_string_fix,applied,applied,PASS,partition M nulls empty strings before typing (fixes refresh type mismatch)
 official_name_path,corrected,corrected,PASS,AEGIS_Forecast_Drift + V1/PBI (no MVP; no V1/powerbi)
-live_desktop_refresh,success,pending,PARTIAL,running .pbix had uncommitted MCP change (now fixed in TMDL); confirm in-model refresh after re-import
+live_desktop_refresh,success,success,PASS,real Full refresh in running Desktop (localhost:59618) succeeded after M empty-string fix
+in_model_row_counts,168/672/71/1,168/672/71/1,PASS,validated via DAX COUNTROWS in the loaded model (Calendar=1096 dates)
+in_model_measures,24 compile,24 compile,PASS,DAX ROW over all measures returns coherent values (status 14/34/38/82=168; events 71; deep; 18/18; True; E5A-v1)
+in_model_relationships,4 active,4 active,PASS,relationship List confirms 4 active many-to-one single-direction
+powerbi_matches_python,yes,yes,PASS,status distribution + scores identical to Python (no recomputation)

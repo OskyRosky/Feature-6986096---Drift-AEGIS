@@ -58,10 +58,13 @@ AEGIS sidebar with 11 items + logo specified for page-navigation buttons/
 bookmarks (`E6_sidebar_navigation_spec.md`). Not required collapsible.
 
 ## 9. Data validation
-Row counts match E5B: signals 168, family 672 (168×4), events 71, runs 1.
-Model: 5 tables, 3 active relationships, 24 measures, 0 ambiguous relationships,
-0 DAX business-logic recomputation, latest-snapshot via `is_current=1`. Top
-Services flagged PARTIAL (G3). `V1/data/` git-ignored. See
+**Validated in-model** in the running Power BI Desktop (DAX over the loaded,
+refreshed model): signals 168, family 672 (168×4), events 71, runs 1 (Calendar
+1096 dates). 24 measures compile with values identical to Python (status
+14/34/38/82=168; events 71; Event Rate 42.3%; deep; 18/18; True; E5A-v1;
+computed 636 / NOT_COMPUTABLE 36). Model: 5 tables, **4 active relationships**,
+0 ambiguous, 0 DAX business-logic recomputation, latest-snapshot via
+`is_current=1`. Top Services PARTIAL (G3). `V1/data/` git-ignored. See
 `E6_data_validation_results.csv`.
 
 ## 10. Refresh workflow
@@ -70,15 +73,15 @@ value = `DriftDataFolder`. Stable file names in `current/` keep the connection
 valid across refreshes. See `E6_refresh_runbook.md`.
 
 ## 11. MCP usage
-Power BI MCP used to: create the offline model; create the `DriftDataFolder`
-parameter; create 4 tables (typed columns + M partitions); create the Calendar
-calculated table; create 3 relationships; create 24 measures; export TMDL to the
-repo. MCP was **not** used to introduce business logic in DAX.
+Power BI MCP used to: create the `DriftDataFolder` parameter; create 5 tables
+(typed columns + M partitions + Calendar); fix the partition M (null empty
+strings); **Full-refresh the tables in the running Desktop**; create 4
+relationships; create 24 measures; validate row counts + measures via DAX;
+export/validate TMDL. MCP was **not** used to introduce business logic in DAX.
 
 ## 12. Manual work still required
-- Import the TMDL model into Power BI Desktop, set `DriftDataFolder`, refresh.
-- Create the Calendar↔signals relationship.
-- Author visuals/pages + sidebar per the specs; save the `.pbix`.
+- **Save** the `.pbix` in Power BI Desktop (Ctrl+S) to persist the model to disk.
+- Author visuals/pages + sidebar per the specs.
 - Fine visual polish (layout, sizes, alignment, colors, bookmarks, tooltips).
 
 ## 13. Known limitations
@@ -88,25 +91,22 @@ Calendar relationship manual (L4); single scenario/run in MVP data (L5/L6);
 (L8). See `E6_known_limitations.md`.
 
 ## 14. Validation against E6 criteria
-semantic model defined ✅ · relationships validated ✅ (3 active + 1 documented
-manual) · presentation measures created ✅ · MVP pages implemented-or-specified ✅
-(fully specified + importable model; visuals manual) · navigation ✅ (specified) ·
-real data loads ✅ (168/672/71/1; loads on Desktop refresh) · no business logic
-duplicated ✅ · local refresh documented ✅ · pending visual handoff clearly
-identified ✅.
+semantic model defined ✅ · relationships validated ✅ (4 active, no ambiguity) ·
+presentation measures created + compile ✅ (24, values = Python) · real refresh in
+Desktop ✅ · in-model row counts ✅ (168/672/71/1) · MVP pages specified ✅ (visuals
+pending) · navigation specified ✅ · no business logic duplicated ✅ · local refresh
+documented ✅ · Top Services PARTIAL ✅ · pending visual authoring identified ✅.
 
 ## 15. Explicit outcome
-**E6_POWER_BI_MVP_PARTIAL** — semantic model, relationships, measures, page/
-sidebar specifications and an importable TMDL model are complete and validated
-against the real governed datasets; the `.pbix` visual authoring in Power BI
-Desktop is the identified remaining manual step (no headless `.pbix` visual
-build available).
+**E6_POWER_BI_MVP_PARTIAL** — the governed model is built, **refreshed and
+validated in-model in Power BI Desktop** (real data, 4 relationships, 24 working
+measures matching Python); the remaining step is authoring the `.pbix` visual
+pages + sidebar (and saving the file). Stays PARTIAL until visuals are done.
 
 ## 16. Next step
-Open Power BI Desktop, import `V1/PBI/tmdl/`, set `DriftDataFolder`, refresh,
-add the Calendar relationship, and build the 11 pages + sidebar per the specs;
-save `V1/PBI/AEGIS_Forecast_Drift.pbix`. Then E7 (Grafana) may reuse the
-same governed layer.
+In Power BI Desktop: **save** `V1/PBI/AEGIS_Forecast_Drift.pbix` (Ctrl+S), then
+build the 11 pages + AEGIS sidebar per `E6_page_specifications.md` +
+`E6_sidebar_navigation_spec.md`. Scope stays V1 — Power BI only.
 
 ## 17. Git status
 Not committed. New: `engineering/E6_powerbi_mvp/*`, `V1/PBI/tmdl/*`; modified

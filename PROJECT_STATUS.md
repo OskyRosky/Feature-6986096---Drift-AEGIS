@@ -11,10 +11,13 @@ Last updated: 2026-07-13
 5 tables, shared `DriftDataFolder` parameter, **4 active relationships** (incl.
 Calendar), 24 presentation-only measures (no DAX business logic), exported +
 corrected to importable TMDL (`V1/PBI/tmdl/`; re-import validated: 5 tables / 24
-measures / 4 rels). Official file `V1/PBI/AEGIS_Forecast_Drift.pbix`. 11 pages +
-AEGIS sidebar specified; row counts match E5B (168/672/71/1). Remaining: resolve
-the pending Desktop MCP change, confirm the in-model refresh, and author `.pbix`
-visuals. Token: E6_POWER_BI_MVP_PARTIAL. Next: finish visuals, then E7 (Grafana).
+measures / 4 rels). Official file `V1/PBI/AEGIS_Forecast_Drift.pbix`. **Real Full
+refresh executed in the running Desktop and validated in-model** (DAX):
+signals 168 / family 672 / events 71 / runs 1 (Calendar 1096), 24 measures
+compile with values identical to Python (status 14/34/38/82, deep, 18/18, True),
+4 active relationships. 11 pages + AEGIS sidebar specified. Remaining: **save the
+`.pbix`** and author the visual pages + sidebar. Token: E6_POWER_BI_MVP_PARTIAL
+(stays PARTIAL until visuals are built). Next: build visuals (V1 Power BI only).
 
 ## Stage status
 | Stage | Name | Status |
