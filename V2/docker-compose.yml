@@ -1,0 +1,44 @@
+# AEGIS Forecast Drift — V2 (Grafana product) infrastructure
+# E7A: read-only CSV HTTP server for the Infinity datasource.
+#
+# Scope / governance:
+#   - Serves ONLY the four governed CSVs from the V2 governed snapshot
+#     (V2/data/processed/current), read-only. That snapshot is a byte-equivalent
+#     (SHA256-verified) copy of the V1 authoritative outputs, produced by
+#     scripts/sync-governed-data.ps1 (E7A.2). V1 remains the authoritative
+#     producer; V2 is the self-contained Grafana consumption product.
+#   - Internal Docker network access only (NO host ports published for the CSVs).
+#   - Does NOT create, replace, or manage the existing `grafana` container.
+#   - No drift logic, thresholds, weights, or classifications live here.
+#
+# The pre-existing `grafana` container (grafana/grafana-enterprise 13.0.1) is
+# attached to this network out-of-band via `docker network connect aegis-net grafana`
+# so Grafana can resolve http://aegis-csv/ without publishing the CSVs to the host.
+
+services:
+  aegis-csv:
+    image: nginx:1.27-alpine            # pinned (no :latest); Grafana-independent static server
+    container_name: aegis-csv
+    restart: unless-stopped
+    networks:
+      aegis-net:
+        aliases:
+          - aegis-csv
+    volumes:
+      # Governed datasets — READ-ONLY. Default now resolves to the V2 governed
+      # snapshot (self-contained), relative to this compose file.
+      - "${AEGIS_CSV_DIR:-./data/processed/current}:/usr/share/nginx/html:ro"
+      # Minimal hardened nginx config — READ-ONLY.
+      - "./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro"
+    # NO `ports:` on purpose — CSVs are reachable only inside `aegis-net`.
+    healthcheck:
+      # busybox wget resolves "localhost" to IPv6 first; nginx listens on IPv4 -> use 127.0.0.1.
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1/healthz"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+networks:
+  aegis-net:
+    name: aegis-net
+    driver: bridge

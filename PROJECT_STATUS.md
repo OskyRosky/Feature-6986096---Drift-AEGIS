@@ -1,11 +1,41 @@
 # PROJECT STATUS — AEGIS Forecast Drift Framework
 
 **Feature 6986096 — Integrate Cross-Functional Capacity Feedback Signals to Align and Improve Capacity Mitigation Actions**
-Last updated: 2026-07-13
+Last updated: 2026-07-17
 
 > Microsoft internal / confidential. Engineering stages (E-prefix) build the product; product/document versions (V1/V2/V3) are separate. See `engineering/ROADMAP.md`.
 
 ## Current stage
+**E7A.2 — V2 Governed Data Snapshot & Datasource Rewire: COMPLETE (2026-07-17).**
+V2 is now a **self-contained Grafana product**. Created a byte-equivalent,
+SHA256-verified governed snapshot of the four V1 datasets (+ metadata +
+validation) under `V2/data/processed/`, plus an idempotent sync script
+`V2/scripts/sync-governed-data.ps1` (allow-list copy, count + hash validation,
+manifest `data_manifest.json`, no secrets). Rewired **only** the `aegis-csv` bind
+mount from `V1/data/processed/current/` to `V2/data/processed/current/`
+(read-only), keeping container name, `aegis-net`, `http://aegis-csv`, datasource
+uid `aegis-forecast-drift-csv`, the Grafana container, volume, and port 3000
+unchanged. Restarted only `aegis-csv`. Validated: mount RW=false on V2; 4 CSVs
+served (**168 / 672 / 71 / 1**); V1==V2 hashes match; Grafana healthy (13.0.1) and
+reaches `http://aegis-csv`; Infinity + datasource intact; `V1/data` clean; no
+secrets. Token: E7A2_V2_DATA_SNAPSHOT_COMPLETED. Deliverables in
+`engineering/E7_grafana/E7A2_*`. Next: **E7B — MCP connection** — **awaiting explicit
+authorization**.
+
+**E7A — Grafana Readiness & Data Source: COMPLETE (2026-07-16).** The existing
+local Grafana (Enterprise **13.0.1**, container `grafana`, port 3000, volume
+`grafana-storage`) was **preserved** (not recreated). Added a read-only CSV HTTP
+server `aegis-csv` (nginx:1.27-alpine) under `V2/`, serving the four governed
+CSVs from `V1/data/processed/current/` on an internal `aegis-net` network (no host
+port). Installed **Infinity 3.10.1** into Grafana and provisioned datasource
+**`AEGIS Forecast Drift CSV`** (uid `aegis-forecast-drift-csv`). Validated: Grafana
+healthy; Infinity registered; datasource provisioned; all four CSVs reachable by
+DNS with exact counts **168 / 672 / 71 / 1**; `text/csv`; mount read-only; datasets
+and secrets untouched; volume backed up outside the repo. Token:
+E7A_READINESS_DATASOURCE_COMPLETED. Deliverables in `engineering/E7_grafana/`.
+Next: **E7B — MCP connection** (service account + token + `mcp-grafana`) — **awaiting
+explicit authorization**; no dashboards, service accounts, or MCP created yet.
+
 **E6 — Power BI MVP (local, consume-only): PARTIAL.** Governed semantic model
 `AEGIS_Forecast_Drift` authored via Power BI MCP over `V1/data/processed/current/`:
 5 tables, shared `DriftDataFolder` parameter, **4 active relationships** (incl.
@@ -31,7 +61,7 @@ compile with values identical to Python (status 14/34/38/82, deep, 18/18, True),
 | E5A | Python Drift Engine | ✅ Complete |
 | E5B | Production Dataset Validation & Export Hardening | ✅ Complete (offline + live validated) |
 | E6 | Power BI MVP (local, consume-only) | ◑ Partial (model + measures + specs + TMDL; .pbix visuals manual) |
-| E7 | Grafana MVP (local, consume-only) | ⏳ |
+| E7 | Grafana MVP (local, consume-only) | ◑ In progress (E7A ✅ readiness & datasource; E7B ⏳) |
 | E8 | Cloud Deployment & Governance | ⏳ |
 
 ## Key validated facts (E1B)

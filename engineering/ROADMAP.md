@@ -17,7 +17,9 @@
 | ├ E5A | Python Drift Engine (read-only ingest + calc + governed datasets) | Build | ✅ Complete |
 | └ E5B | **Production Dataset Validation & Export Hardening** (canonicalization, atomic export, refresh runner, contract) | Build | ✅ Complete — offline hardening + expanded live read-only run validated (2026-07-13) |
 | **E6** | Power BI MVP (consume only) | Viz | ◑ In progress — model `AEGIS_Forecast_Drift` refreshed + validated in Desktop (in-model 168/672/71/1, 24 measures=Python, 4 rels); TMDL at `V1/PBI/tmdl/`; save `.pbix` + author visuals pending (PARTIAL) |
-| **E7** | Grafana Production Dashboard (same SQL, new viz) | Production | ⏳ |
+| **E7** | Grafana Production Dashboard (same SQL, new viz) | Production | ◑ In progress |
+| ├ E7A | Grafana Readiness & Data Source (Infinity + read-only CSV server) | Build | ✅ Complete (2026-07-16) — existing Grafana 13.0.1 preserved; Infinity 3.10.1 + datasource `AEGIS Forecast Drift CSV`; counts 168/672/71/1 served internally |
+| └ E7B | MCP Connection (service account + token, mcp-grafana) | Build | ⏳ (awaiting authorization) |
 | **E8** | Production Deployment & Governance (refresh, automation, docs) | Ops | ⏳ |
 
 **Principles:** model-first not tool-first; Information Model before math; Data Dictionary is a deliverable **of** E1 (not a separate stage); reuse Code Improvement (reference, don't copy logic); no live SQL until E1B; this project stays an **independent workspace/repo** from Code Improvement.

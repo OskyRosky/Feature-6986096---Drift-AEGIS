@@ -1,0 +1,18 @@
+check_id,check,expected,actual,result,notes
+V1,Grafana available at http://localhost:3000,health database ok,"{""database"":""ok"",""version"":""13.0.1""}",PASS,unchanged after plugin restart
+V2,Infinity plugin installed,yesoreyeram-infinity-datasource present,yesoreyeram-infinity-datasource @ 3.10.1,PASS,pinned version; signed by Grafana Labs
+V3,Infinity plugin registered/healthy,Plugin registered in logs,"plugins.registration ... pluginId=yesoreyeram-infinity-datasource",PASS,backend plugin loaded after restart
+V4,Datasource provisioned,AEGIS Forecast Drift CSV inserted,"provisioning.datasources inserting datasource name=AEGIS Forecast Drift CSV uid=aegis-forecast-drift-csv",PASS,editable=false; url=http://aegis-csv
+V5,CSV reachable over Docker network by DNS,HTTP 200 from http://aegis-csv,all 4 files returned 200 from temp container on aegis-net,PASS,internal-only; no host port published
+V6,signals.csv row count,168,168,PASS,served over http://aegis-csv
+V7,family_scores.csv row count,672,672,PASS,served over http://aegis-csv
+V8,event_history.csv row count,71,71,PASS,served over http://aegis-csv
+V9,runs.csv row count,1,1,PASS,served over http://aegis-csv
+V10,Content-Type for CSV,text/csv,text/csv; charset=utf-8,PASS,default_type text/csv in nginx
+V11,Dates present as ISO timestamps in payload,ISO-8601 dates,"forecast_version=2024-04-01; detected_on=2026-07-13T22:38:00.905768+00:00",PASS,data-layer; Infinity type-inference to be exercised in E7C query
+V12,Scores present as numbers in payload,numeric,"forecast_drift_score=25.6; stability_drift_score=44.15",PASS,data-layer; Infinity numeric parse to be exercised in E7C query
+V13,Empty strings/nulls served without error,HTTP 200 no error,files with empty cells served 200,PASS,Infinity null handling to be confirmed in E7C
+V14,Infinity query per dataset inside Grafana,4 datasets queryable,plumbing verified; authenticated query deferred,DEFERRED-E7C,requires Grafana auth; out of E7A scope (no service account per instruction)
+V15,Dataset files unmodified,no changes,git shows no changes under V1/data/processed/current; RO mount rejects writes,PASS,Read-only file system confirmed
+V16,No secrets created in repo,none,provisioning + .env.example contain no secrets; .gitignore excludes .env/backups,PASS,volume backup stored outside repo
+V17,Existing Grafana preserved,same container/image/port/volume,grafana container not recreated; grafana-storage intact; :3000 unchanged,PASS,attached aegis-net; kept bridge
