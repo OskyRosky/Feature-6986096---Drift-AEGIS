@@ -19,6 +19,7 @@
 | **E6** | Power BI MVP (consume only) | Viz | ◑ In progress — model `AEGIS_Forecast_Drift` refreshed + validated in Desktop (in-model 168/672/71/1, 24 measures=Python, 4 rels); TMDL at `V1/PBI/tmdl/`; save `.pbix` + author visuals pending (PARTIAL) |
 | **E7** | Grafana Production Dashboard (same SQL, new viz) | Production | ◑ In progress |
 | ├ E7A | Grafana Readiness & Data Source (Infinity + read-only CSV server) | Build | ✅ Complete (2026-07-16) — existing Grafana 13.0.1 preserved; Infinity 3.10.1 + datasource `AEGIS Forecast Drift CSV`; counts 168/672/71/1 served internally |
+| ├ E7A.2 | V2 Governed Data Snapshot & Datasource Rewire (self-contained V2) | Build | ✅ Complete (2026-07-17) — byte-equivalent SHA256-verified snapshot under `V2/data/processed/` + `sync-governed-data.ps1`; `aegis-csv` rewired to V2 (read-only); V1 untouched; Grafana/UID/port unchanged |
 | └ E7B | MCP Connection (service account + token, mcp-grafana) | Build | ⏳ (awaiting authorization) |
 | **E8** | Production Deployment & Governance (refresh, automation, docs) | Ops | ⏳ |
 
