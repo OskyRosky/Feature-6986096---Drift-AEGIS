@@ -4,6 +4,11 @@
 
 ## Outcome: `E7A2_V2_DATA_SNAPSHOT_COMPLETED`
 
+> **Cross-reference (2026-07-17):** the Infinity in-Grafana query gate was
+> subsequently validated and closed under **E7A.1** (token
+> `E7A_INFINITY_QUERY_GATE_COMPLETED`) and formally registered by **E7B.0**
+> (`E7B0_closure_summary.md`). This does not alter the E7A.2 outcome.
+
 V2 is now a **self-contained Grafana product**. A byte-equivalent, SHA256-verified
 governed snapshot of the four V1 datasets (plus metadata and validation
 artifacts) lives under `V2/data/processed/`, and `aegis-csv` serves Grafana from

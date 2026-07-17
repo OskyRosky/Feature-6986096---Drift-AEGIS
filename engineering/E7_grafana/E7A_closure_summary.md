@@ -20,7 +20,15 @@ recreated). No dashboards were built (correctly out of E7A scope).
 4. **Validation:** Grafana healthy; Infinity registered; datasource provisioned; all four CSVs reachable by DNS `http://aegis-csv/...` with exact counts; `text/csv`; read-only mount enforced; datasets and secrets untouched.
 
 ## Known limitations / open items
-- **O1 — Infinity in-Grafana query per dataset (V14) deferred to E7C.** The datasource + network plumbing are verified, but running an actual Infinity query (and confirming date→timestamp and score→number type inference, V11–V13 at the Infinity layer) requires an authenticated Grafana session; that belongs to E7C, and creating a service account is explicitly reserved for E7B.
+- **O1 — RESOLVED by E7A.1 (2026-07-17).** The Infinity in-Grafana query per
+  dataset (check V14) is now **PASS**: the user manually executed one Infinity
+  query per dataset from an authenticated Grafana session (CSV / Backend parser /
+  URL / Table / GET) and the Query Inspector returned **168 / 672 / 71 / 1**;
+  datasource **Health check successful**. CSV parsing, tabular usability, and
+  null/empty-string tolerance are PASS. Explicit per-field Grafana type hints
+  (Time/Number) are **not** claimed here and are deferred to E7C/E7D. Evidence:
+  `E7A1_infinity_manual_query_evidence.md`; formally closed under **E7B.0**
+  (`E7B0_closure_summary.md`). Outcome token: `E7A_INFINITY_QUERY_GATE_COMPLETED`.
 - **O2 — Provisioning is injected via `docker cp`.** Because the existing Grafana container predates compose and does not mount `V2/…/provisioning`, the datasource file was copied in. A future compose-managed rebuild (E8) should mount `V2/grafana/provisioning` so the datasource re-provisions automatically. Until then, the datasource persists in the `grafana-storage` DB across restarts.
 - **O3 — Data gaps unchanged from E6:** `service` (G3) and `forest` (G4) are null; single scenario (G5); thin history (1 run). These are data-sourcing items, not E7A blockers.
 

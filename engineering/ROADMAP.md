@@ -19,8 +19,10 @@
 | **E6** | Power BI MVP (consume only) | Viz | ◑ In progress — model `AEGIS_Forecast_Drift` refreshed + validated in Desktop (in-model 168/672/71/1, 24 measures=Python, 4 rels); TMDL at `V1/PBI/tmdl/`; save `.pbix` + author visuals pending (PARTIAL) |
 | **E7** | Grafana Production Dashboard (same SQL, new viz) | Production | ◑ In progress |
 | ├ E7A | Grafana Readiness & Data Source (Infinity + read-only CSV server) | Build | ✅ Complete (2026-07-16) — existing Grafana 13.0.1 preserved; Infinity 3.10.1 + datasource `AEGIS Forecast Drift CSV`; counts 168/672/71/1 served internally |
+| ├ E7A.1 | Infinity Functional Query Validation Gate (in-Grafana query per dataset) | Validate | ✅ Complete (2026-07-17) — manual authenticated Grafana queries; Query Inspector 168/672/71/1; health check OK; CSV/null parsing PASS; type hints → E7C/E7D. Token `E7A_INFINITY_QUERY_GATE_COMPLETED` |
 | ├ E7A.2 | V2 Governed Data Snapshot & Datasource Rewire (self-contained V2) | Build | ✅ Complete (2026-07-17) — byte-equivalent SHA256-verified snapshot under `V2/data/processed/` + `sync-governed-data.ps1`; `aegis-csv` rewired to V2 (read-only); V1 untouched; Grafana/UID/port unchanged |
-| └ E7B | MCP Connection (service account + token, mcp-grafana) | Build | ⏳ (awaiting authorization) |
+| ├ E7B.0 | Formal Closure of E7A.1 (docs + evidence, no MCP) | Docs | ✅ Complete (2026-07-17) — evidence registered; V14 DEFERRED→PASS; closure docs. Token `E7B0_E7A1_FORMAL_CLOSURE_COMPLETED` |
+| └ E7B.1 | MCP Connection Preflight (assess prerequisites only) | Build | ⏳ (awaiting authorization) |
 | **E8** | Production Deployment & Governance (refresh, automation, docs) | Ops | ⏳ |
 
 **Principles:** model-first not tool-first; Information Model before math; Data Dictionary is a deliverable **of** E1 (not a separate stage); reuse Code Improvement (reference, don't copy logic); no live SQL until E1B; this project stays an **independent workspace/repo** from Code Improvement.

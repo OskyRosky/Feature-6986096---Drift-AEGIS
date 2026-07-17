@@ -12,7 +12,15 @@ V10,Content-Type for CSV,text/csv,text/csv; charset=utf-8,PASS,default_type text
 V11,Dates present as ISO timestamps in payload,ISO-8601 dates,"forecast_version=2024-04-01; detected_on=2026-07-13T22:38:00.905768+00:00",PASS,data-layer; Infinity type-inference to be exercised in E7C query
 V12,Scores present as numbers in payload,numeric,"forecast_drift_score=25.6; stability_drift_score=44.15",PASS,data-layer; Infinity numeric parse to be exercised in E7C query
 V13,Empty strings/nulls served without error,HTTP 200 no error,files with empty cells served 200,PASS,Infinity null handling to be confirmed in E7C
-V14,Infinity query per dataset inside Grafana,4 datasets queryable,plumbing verified; authenticated query deferred,DEFERRED-E7C,requires Grafana auth; out of E7A scope (no service account per instruction)
+V14,Infinity query per dataset inside Grafana,4 datasets queryable,"manual authenticated Grafana query per dataset; Query Inspector 168/672/71/1",PASS,E7A.1 closed 2026-07-17; evidence in E7A1_infinity_manual_query_evidence.md
 V15,Dataset files unmodified,no changes,git shows no changes under V1/data/processed/current; RO mount rejects writes,PASS,Read-only file system confirmed
 V16,No secrets created in repo,none,provisioning + .env.example contain no secrets; .gitignore excludes .env/backups,PASS,volume backup stored outside repo
 V17,Existing Grafana preserved,same container/image/port/volume,grafana container not recreated; grafana-storage intact; :3000 unchanged,PASS,attached aegis-net; kept bridge
+V18,datasource_health_check,Health check successful,"Connections -> Data sources -> AEGIS Forecast Drift CSV -> Test = Health check successful",PASS,E7A.1 manual evidence (authenticated session)
+V19,infinity_signals_query,168,168 rows (Query Inspector; 1 query),PASS,url http://aegis-csv/forecast_drift_signals.csv; CSV/Backend/URL/Table/GET
+V20,infinity_family_scores_query,672,672 rows,PASS,url http://aegis-csv/forecast_drift_family_scores.csv
+V21,infinity_event_history_query,71,71 rows (Query Inspector; 1 query),PASS,url http://aegis-csv/forecast_drift_event_history.csv
+V22,infinity_runs_query,1,1 row (Query Inspector; 1 query),PASS,url http://aegis-csv/forecast_drift_runs.csv
+V23,csv_backend_parser,tables render without CSV errors,tables rendered; no column mismatches; expected fields present,PASS,Backend parser; fields incl. calculation_run_id/drift_status/old_status/new_status
+V24,null_empty_string_tolerance,no error on empty cells,empty cells served/parsed without error during correct queries,PASS,no explicit Time-type conversion claimed; type hints per-panel -> E7C/E7D
+V25,v1_no_mutation,NONE,V1 governed CSV SHA256 == preflight baseline (4/4); git V1/data clean,NONE,V1 remains authoritative and intact

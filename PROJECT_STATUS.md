@@ -6,6 +6,22 @@ Last updated: 2026-07-17
 > Microsoft internal / confidential. Engineering stages (E-prefix) build the product; product/document versions (V1/V2/V3) are separate. See `engineering/ROADMAP.md`.
 
 ## Current stage
+**E7B.0 — Formal Closure of E7A.1 (Infinity Query Gate): COMPLETE (2026-07-17).**
+Documentation-and-evidence-only stage (no MCP, no system changes). Formally
+registered and closed **E7A.1 — Infinity Functional Query Validation Gate** using
+manual evidence from the user's authenticated Grafana session: datasource **Health
+check successful**; one Infinity query per dataset (CSV / Backend parser / URL /
+Table / GET) returned **168 / 672 / 71 / 1** in the Query Inspector. CSV parsing,
+tabular usability, and null/empty tolerance = PASS; explicit per-field Grafana
+type hints (Time/Number) **deferred to E7C/E7D** (no auto timestamp→Time claim).
+Updated `E7A_validation_results.csv` (V14 DEFERRED→PASS; added V18–V25) and closure
+docs. Tokens: E7A.1 = **E7A_INFINITY_QUERY_GATE_COMPLETED**; E7B.0 =
+**E7B0_E7A1_FORMAL_CLOSURE_COMPLETED**. Deliverables:
+`engineering/E7_grafana/E7A1_infinity_manual_query_evidence.md`,
+`engineering/E7_grafana/E7B0_closure_summary.md`. **Open risk R1:** external
+auto-commit/push to `origin/main` (commits `add`) still active — detected/reported
+only. Next: **E7B.1 — MCP Preflight** — **awaiting explicit authorization**.
+
 **E7A.2 — V2 Governed Data Snapshot & Datasource Rewire: COMPLETE (2026-07-17).**
 V2 is now a **self-contained Grafana product**. Created a byte-equivalent,
 SHA256-verified governed snapshot of the four V1 datasets (+ metadata +

@@ -55,5 +55,14 @@ inside the `aegis-net` Docker network (no host port). The pre-existing Grafana
 ## Stage history
 
 - **E7A** — Grafana readiness + Infinity datasource (served from V1).
+- **E7A.1** — Infinity Functional Query Validation Gate: manual authenticated
+  Grafana queries returned 168/672/71/1 (Query Inspector); health check OK; CSV
+  parsing + null tolerance PASS; per-panel type hints deferred to E7C/E7D.
+  Token `E7A_INFINITY_QUERY_GATE_COMPLETED`. See
+  `engineering/E7_grafana/E7A1_infinity_manual_query_evidence.md`.
 - **E7A.2** — V2 governed data snapshot + datasource rewire (self-contained V2).
   See `engineering/E7_grafana/E7A2_*`.
+- **E7B.0** — Formal closure of E7A.1 (docs + evidence, no MCP). Token
+  `E7B0_E7A1_FORMAL_CLOSURE_COMPLETED`. See
+  `engineering/E7_grafana/E7B0_closure_summary.md`.
+- **E7B.1** — MCP Connection Preflight — not started (awaiting authorization).
