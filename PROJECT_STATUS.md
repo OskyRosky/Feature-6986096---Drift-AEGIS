@@ -6,6 +6,23 @@ Last updated: 2026-07-17
 > Microsoft internal / confidential. Engineering stages (E-prefix) build the product; product/document versions (V1/V2/V3) are separate. See `engineering/ROADMAP.md`.
 
 ## Current stage
+**E7B.1 — Grafana MCP Connection Preflight: COMPLETE (2026-07-17).** Read-only audit
+& design — **nothing installed, no service account/token, no MCP config**. Determined
+the safe, reproducible way to connect Claude Code to Grafana via the official
+`mcp-grafana` server (**v0.17.2**, requires Grafana ≥9.0; we have 13.0.1). **Selected
+Architecture A:** native binary on the Windows host, **stdio**,
+`GRAFANA_URL=http://localhost:3000`, Claude Code **local scope**, token via
+`GRAFANA_SERVICE_ACCOUNT_TOKEN_FILE` (git-ignored) — zero impact on `aegis-net`/existing
+containers, trivial rollback. Designed least-privilege service account `aegis-mcp`,
+secret handling, tool allow-list (`datasource`+`search`/`dashboard` only, `--disable-write`
+for reads, write scoped to a single temp smoke dashboard), and the E7B.2–E7B.5 plan.
+**Known limitation:** no native Infinity/CSV query tool (CSV read only via Infinity
+panel + `run_panel_query`, disabled by default). Integrity unchanged: Grafana & aegis-csv
+healthy; V2 168/672/71/1; V1==V2; V1 intact. Token: **E7B1_MCP_PREFLIGHT_COMPLETED**.
+Deliverables: `engineering/E7_grafana/E7B1_*` (6 docs). **Open risk R1:** external
+auto-commit/push to `origin/main` — watch, do not modify. **No blockers for E7B.2.**
+Next: **E7B.2 — Install pinned MCP server** — **awaiting explicit authorization**.
+
 **E7B.0 — Formal Closure of E7A.1 (Infinity Query Gate): COMPLETE (2026-07-17).**
 Documentation-and-evidence-only stage (no MCP, no system changes). Formally
 registered and closed **E7A.1 — Infinity Functional Query Validation Gate** using
@@ -77,7 +94,7 @@ compile with values identical to Python (status 14/34/38/82, deep, 18/18, True),
 | E5A | Python Drift Engine | ✅ Complete |
 | E5B | Production Dataset Validation & Export Hardening | ✅ Complete (offline + live validated) |
 | E6 | Power BI MVP (local, consume-only) | ◑ Partial (model + measures + specs + TMDL; .pbix visuals manual) |
-| E7 | Grafana MVP (local, consume-only) | ◑ In progress (E7A ✅ readiness & datasource; E7B ⏳) |
+| E7 | Grafana MVP (local, consume-only) | ◑ In progress (E7A ✅; E7A.1/E7A.2/E7B.0 ✅; E7B.1 ✅ MCP preflight; E7B.2 ⏳) |
 | E8 | Cloud Deployment & Governance | ⏳ |
 
 ## Key validated facts (E1B)

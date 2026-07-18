@@ -22,7 +22,11 @@
 | ├ E7A.1 | Infinity Functional Query Validation Gate (in-Grafana query per dataset) | Validate | ✅ Complete (2026-07-17) — manual authenticated Grafana queries; Query Inspector 168/672/71/1; health check OK; CSV/null parsing PASS; type hints → E7C/E7D. Token `E7A_INFINITY_QUERY_GATE_COMPLETED` |
 | ├ E7A.2 | V2 Governed Data Snapshot & Datasource Rewire (self-contained V2) | Build | ✅ Complete (2026-07-17) — byte-equivalent SHA256-verified snapshot under `V2/data/processed/` + `sync-governed-data.ps1`; `aegis-csv` rewired to V2 (read-only); V1 untouched; Grafana/UID/port unchanged |
 | ├ E7B.0 | Formal Closure of E7A.1 (docs + evidence, no MCP) | Docs | ✅ Complete (2026-07-17) — evidence registered; V14 DEFERRED→PASS; closure docs. Token `E7B0_E7A1_FORMAL_CLOSURE_COMPLETED` |
-| └ E7B.1 | MCP Connection Preflight (assess prerequisites only) | Build | ⏳ (awaiting authorization) |
+| ├ E7B.1 | MCP Connection Preflight (assess prerequisites only) | Build | ✅ Complete (2026-07-17) — read-only; nothing installed. `mcp-grafana` v0.17.2 (Grafana ≥9.0 ✓); **Arch A** host binary/stdio/`localhost:3000`/Claude local scope/token-file; `aegis-mcp` least-privilege design; tool allow-list; E7B.2–E7B.5 plan. No native Infinity query tool noted. Token `E7B1_MCP_PREFLIGHT_COMPLETED`. No blockers for E7B.2 |
+| ├ E7B.2 | Install pinned MCP server (v0.17.2, no secrets) | Build | ⏳ (awaiting authorization) |
+| ├ E7B.3 | Service account `aegis-mcp` + short-lived token (manual) | Build | ⏳ |
+| ├ E7B.4 | Register MCP in Claude Code + connectivity smoke test | Build | ⏳ |
+| └ E7B.5 | MCP connection closure (revoke token, security validation) | Build | ⏳ |
 | **E8** | Production Deployment & Governance (refresh, automation, docs) | Ops | ⏳ |
 
 **Principles:** model-first not tool-first; Information Model before math; Data Dictionary is a deliverable **of** E1 (not a separate stage); reuse Code Improvement (reference, don't copy logic); no live SQL until E1B; this project stays an **independent workspace/repo** from Code Improvement.
