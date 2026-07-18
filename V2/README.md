@@ -72,4 +72,11 @@ inside the `aegis-net` Docker network (no host port). The pre-existing Grafana
   service account `aegis-mcp` + tool allow-list designed; E7B.2–E7B.5 planned.
   Known limitation: no native Infinity/CSV query tool. Token
   `E7B1_MCP_PREFLIGHT_COMPLETED`. See `engineering/E7_grafana/E7B1_*`.
-- **E7B.2** — Install pinned MCP server — not started (awaiting authorization).
+- **E7B.2** — Install pinned Grafana MCP server. Official `mcp-grafana` **v0.17.2**
+  (windows/amd64) installed **outside the repo** at
+  `%LOCALAPPDATA%\AEGIS\mcp-grafana\v0.17.2\`; SHA256 verified vs release page +
+  official `checksums.txt`; `--version`/`--help` OK. Secret-free scripts in
+  `V2/scripts/` (`install-mcp-grafana.ps1`, `verify-mcp-grafana.ps1`,
+  `mcp-grafana-install-manifest.json`). Not connected to Grafana; no token; no MCP
+  registration. Token `E7B2_MCP_INSTALLATION_COMPLETED`. See `engineering/E7_grafana/E7B2_*`.
+- **E7B.3** — Service account `aegis-mcp` + token — not started (awaiting authorization).

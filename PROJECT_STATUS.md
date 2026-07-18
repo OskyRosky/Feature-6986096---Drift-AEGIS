@@ -6,6 +6,21 @@ Last updated: 2026-07-17
 > Microsoft internal / confidential. Engineering stages (E-prefix) build the product; product/document versions (V1/V2/V3) are separate. See `engineering/ROADMAP.md`.
 
 ## Current stage
+**E7B.2 — Install Pinned Grafana MCP Server: COMPLETE (2026-07-17).** Installed the
+**official** `mcp-grafana` **v0.17.2** binary (windows/amd64) **outside the repo** at
+`%LOCALAPPDATA%\AEGIS\mcp-grafana\v0.17.2\`, verified integrity (SHA256 `939eb0f4…eb62616`
+matched **both** the release page **and** the official `checksums.txt`), and validated it
+runs locally (`--version`=0.17.2; `--help` shows stdio + `--disable-write`/tool flags).
+Created reproducible **secret-free** scripts in `V2/scripts/` (`install-mcp-grafana.ps1`
+idempotent, `verify-mcp-grafana.ps1` read-only, `mcp-grafana-install-manifest.json`).
+**No connection to Grafana; no service account; no token; no Claude Code registration;
+no `.mcp.json`.** Binary kept out of the repo so R1 cannot publish it; PATH not modified.
+Integrity unchanged: Grafana & aegis-csv healthy; V2 168/672/71/1; V1 intact. Token:
+**E7B2_MCP_INSTALLATION_COMPLETED**. Deliverables: `engineering/E7_grafana/E7B2_*` (5 docs)
++ `V2/scripts/*`. **Open risk R1:** external auto-commit/push to `origin/main` — watch,
+do not modify (fired as `b60f2b9` on the prior E7B.1 corrections). **No blockers for E7B.3.**
+Next: **E7B.3 — Service account `aegis-mcp` + token** — **awaiting explicit authorization**.
+
 **E7B.1 — Grafana MCP Connection Preflight: COMPLETE (2026-07-17).** Documentation-only
 stage (no runtime mutation): produced six deliverables + status updates, but **nothing
 installed, no service account/token, no MCP config**. Determined
@@ -95,7 +110,7 @@ compile with values identical to Python (status 14/34/38/82, deep, 18/18, True),
 | E5A | Python Drift Engine | ✅ Complete |
 | E5B | Production Dataset Validation & Export Hardening | ✅ Complete (offline + live validated) |
 | E6 | Power BI MVP (local, consume-only) | ◑ Partial (model + measures + specs + TMDL; .pbix visuals manual) |
-| E7 | Grafana MVP (local, consume-only) | ◑ In progress (E7A ✅; E7A.1/E7A.2/E7B.0 ✅; E7B.1 ✅ MCP preflight; E7B.2 ⏳) |
+| E7 | Grafana MVP (local, consume-only) | ◑ In progress (E7A ✅; E7A.1/E7A.2/E7B.0/E7B.1 ✅; E7B.2 ✅ MCP binary installed; E7B.3 ⏳) |
 | E8 | Cloud Deployment & Governance | ⏳ |
 
 ## Key validated facts (E1B)
