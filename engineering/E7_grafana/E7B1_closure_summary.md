@@ -4,9 +4,12 @@
 Connection Preflight.** Date: 2026-07-17. **Outcome: `E7B1_MCP_PREFLIGHT_COMPLETED`.**
 
 ## What this stage did
-Read-only audit + design to determine the safe, compatible, reproducible way to
-connect Claude Code to Grafana via the official Grafana MCP server (`mcp-grafana`).
-**Nothing installed, pulled, or configured.**
+**Documentation-only / no runtime mutation.** Audit + design to determine the safe,
+compatible, reproducible way to connect Claude Code to Grafana via the official
+Grafana MCP server (`mcp-grafana`). The stage produced six documentation deliverables
+and updated status files, but mutated no runtime: **nothing was installed, pulled, or
+configured**, and no service account, token, folder, dashboard, or MCP configuration
+was created.
 
 ## Deliverables
 | File | Purpose |
@@ -32,10 +35,15 @@ connect Claude Code to Grafana via the official Grafana MCP server (`mcp-grafana
 - **Known limitation:** no native Infinity/CSV query tool in `mcp-grafana`; CSV data
   can only be read via an Infinity panel + `run_panel_query` (disabled by default).
 
-## Integrity (unchanged this stage)
+## Integrity (runtime unchanged this stage)
 - Grafana 13.0.1 healthy; aegis-csv healthy.
 - V2 counts 168 / 672 / 71 / 1. V1 == V2. V1 intact.
 - No install, no service account, no token, no folder, no dashboard, no MCP config.
+- **MCP clean state confirmed** (no MCP servers registered; no `.mcp.json`; no
+  `.vscode/mcp.json`; no `.secrets/`; no `mcp-grafana` binary). This refers to the
+  **MCP state only** — the **intended E7B.1 documentation changes remain in the Git
+  working tree** (they are deliberate deliverables, not an error or a blocker). The
+  Git working tree is therefore **not** claimed to be clean.
 
 ## Risks
 - **R1 — external auto-commit/push** to `origin/main` (commits `add`): active,

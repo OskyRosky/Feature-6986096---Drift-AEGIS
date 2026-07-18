@@ -65,7 +65,7 @@ inside the `aegis-net` Docker network (no host port). The pre-existing Grafana
 - **E7B.0** — Formal closure of E7A.1 (docs + evidence, no MCP). Token
   `E7B0_E7A1_FORMAL_CLOSURE_COMPLETED`. See
   `engineering/E7_grafana/E7B0_closure_summary.md`.
-- **E7B.1** — Grafana MCP Connection Preflight (read-only; nothing installed).
+- **E7B.1** — Grafana MCP Connection Preflight (documentation-only; no runtime mutation).
   Selected **Architecture A** for `mcp-grafana` **v0.17.2**: native binary on the
   host, **stdio**, `GRAFANA_URL=http://localhost:3000`, Claude Code **local scope**,
   token via `GRAFANA_SERVICE_ACCOUNT_TOKEN_FILE` (git-ignored). Least-privilege

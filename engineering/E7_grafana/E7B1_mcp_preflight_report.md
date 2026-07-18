@@ -1,14 +1,15 @@
 # E7B.1 — Grafana MCP Connection Preflight Report
 
 **Feature 6986096 — AEGIS Forecast Drift Framework.**
-Stage: **E7B.1 — Grafana MCP Connection Preflight (read-only audit & design).**
+Stage: **E7B.1 — Grafana MCP Connection Preflight (documentation-only; no runtime mutation).**
 Date: **2026-07-17.**
 
-> **Read-only preflight.** Nothing was installed, pulled, or downloaded. No service
-> account, token, folder, dashboard, or MCP configuration was created or changed.
-> Its purpose is to define the safe, compatible, reproducible way to connect the
-> coding agent (Claude Code) to Grafana via the official Grafana MCP server —
-> **before** any installation in E7B.2.
+> **Documentation-only / no runtime mutation.** This stage produced documentation
+> (six deliverables + status-file updates) but mutated no runtime: nothing was
+> installed, pulled, or downloaded, and no service account, token, folder, dashboard,
+> or MCP configuration was created or changed. Its purpose is to define the safe,
+> compatible, reproducible way to connect the coding agent (Claude Code) to Grafana
+> via the official Grafana MCP server — **before** any installation in E7B.2.
 
 ## 1. Baseline (read-only)
 
@@ -37,7 +38,7 @@ Date: **2026-07-17.**
 | Soporte MCP | Claude Code CLI 2.1.116 (soporta servidores MCP) | Usar `claude mcp add` en E7B.4 |
 | Config MCP (user) | `~/.claude.json` (26.7 KB); `mcpServers` vacío | Mantener limpio; registrar en **local scope** |
 | Config MCP (project) | sin `.mcp.json`, sin `.vscode/mcp.json` | No crear archivos con secretos versionados |
-| Servidores registrados | **ninguno** (user y project) | Clean slate — registrar solo `grafana` |
+| Servidores registrados | **ninguno** (user y project) | Estado MCP limpio — registrar solo `grafana` |
 | Alcance apropiado | n/a | **local** (`-s local`): por-proyecto, NO commiteado |
 | Tokens en JSON/Git | riesgo con project scope + auto-commit | Nunca inline; usar `GRAFANA_SERVICE_ACCOUNT_TOKEN_FILE` |
 | Variables de entorno | soportadas | Token vía archivo git-ignored; sólo referencia en config |

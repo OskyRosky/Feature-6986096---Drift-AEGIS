@@ -6,8 +6,9 @@ Last updated: 2026-07-17
 > Microsoft internal / confidential. Engineering stages (E-prefix) build the product; product/document versions (V1/V2/V3) are separate. See `engineering/ROADMAP.md`.
 
 ## Current stage
-**E7B.1 — Grafana MCP Connection Preflight: COMPLETE (2026-07-17).** Read-only audit
-& design — **nothing installed, no service account/token, no MCP config**. Determined
+**E7B.1 — Grafana MCP Connection Preflight: COMPLETE (2026-07-17).** Documentation-only
+stage (no runtime mutation): produced six deliverables + status updates, but **nothing
+installed, no service account/token, no MCP config**. Determined
 the safe, reproducible way to connect Claude Code to Grafana via the official
 `mcp-grafana` server (**v0.17.2**, requires Grafana ≥9.0; we have 13.0.1). **Selected
 Architecture A:** native binary on the Windows host, **stdio**,
