@@ -79,4 +79,25 @@ inside the `aegis-net` Docker network (no host port). The pre-existing Grafana
   `V2/scripts/` (`install-mcp-grafana.ps1`, `verify-mcp-grafana.ps1`,
   `mcp-grafana-install-manifest.json`). Not connected to Grafana; no token; no MCP
   registration. Token `E7B2_MCP_INSTALLATION_COMPLETED`. See `engineering/E7_grafana/E7B2_*`.
-- **E7B.3** — Service account `aegis-mcp` + token — not started (awaiting authorization).
+- **E7B.3** — Service account `aegis-mcp` (Editor, not admin) + short-lived DPAPI-encrypted
+  token stored outside the repo; authenticated read-only validation PASS (no writes, no MCP
+  registration). Token `E7B3_SERVICE_ACCOUNT_TOKEN_COMPLETED`. See `engineering/E7_grafana/E7B3_*`.
+- **E7B.4** — Registered `mcp-grafana` v0.17.2 in Claude Code as stdio server `grafana`
+  (local scope, outside repo; secure wrapper, no token in config). Smoke test
+  (`initialize`+`list_datasources`) returned `aegis-forecast-drift-csv`; `claude mcp list` =
+  **✓ Connected**. No dashboards/writes. Token expires 2026-09-01, revoke at E7D close.
+  Token `E7B4_MCP_REGISTRATION_SMOKE_COMPLETED`. See `engineering/E7_grafana/E7B4_*`.
+- **E7B.5** — MCP connection closure as a **non-destructive** operational-readiness check
+  (token & MCP kept active for E7C/E7D; nothing revoked/removed). Re-verified `✓ Connected`,
+  datasource `aegis-forecast-drift-csv` visible, no secrets in repo/config/git, token expiry
+  2026-09-01 with definitive revocation at E7D close. No dashboards; E7C not started.
+  Token `E7B5_MCP_OPERATIONAL_READINESS_COMPLETED`. See `engineering/E7_grafana/E7B5_operational_readiness.md`.
+- **E7C** — Grafana dashboard **foundation preview** built via MCP: folder `AEGIS Forecast Drift`
+  (uid `afsjccp27s0e8d`) + dashboard `AEGIS Forecast Drift` (uid `aegis-forecast-drift-foundation`)
+  with header, 4 Infinity query variables (forecast_key/region/drift_status/run_id, all with All)
+  and 4 preview panels (Latest Run, Total Signals=168, Status Distribution, Top 10 by drift score).
+  Datasource health OK; read-only `/api/ds/query` per-panel rows 1/168/168/168 (no No-data);
+  pre-existing dashboard untouched; governed export `V2/grafana/dashboards/aegis-forecast-drift-foundation.json`
+  (secret-free, UID ref). Foundation preview only — no E7D, no alerts, no threshold/data change.
+  URL `http://localhost:3000/d/aegis-forecast-drift-foundation/aegis-forecast-drift`.
+  Token `E7C_DASHBOARD_FOUNDATION_PREVIEW_COMPLETED`. See `engineering/E7_grafana/E7C_*`.

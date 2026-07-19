@@ -1,0 +1,332 @@
+{
+  "uid": "aegis-forecast-drift-foundation",
+  "title": "AEGIS Forecast Drift",
+  "description": "E7C Foundation Preview - governed forecast drift monitoring (V2 snapshot, read-only). Preliminary structure for review before the E7D MVP.",
+  "tags": ["aegis", "forecast-drift", "foundation", "e7c"],
+  "editable": true,
+  "schemaVersion": 39,
+  "version": 0,
+  "time": { "from": "now-5y", "to": "now" },
+  "timepicker": { "hidden": true },
+  "refresh": "",
+  "templating": {
+    "list": [
+      {
+        "name": "forecast_key",
+        "label": "Service / Forecast Key",
+        "type": "query",
+        "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+        "query": {
+          "refId": "variable",
+          "type": "csv",
+          "source": "url",
+          "format": "table",
+          "parser": "backend",
+          "url": "http://aegis-csv/forecast_drift_signals.csv",
+          "url_options": { "method": "GET", "data": "" },
+          "root_selector": "",
+          "columns": [ { "selector": "forecast_key", "text": "", "type": "string" } ],
+          "filters": []
+        },
+        "includeAll": true,
+        "multi": true,
+        "allValue": null,
+        "current": { "text": "All", "value": "$__all", "selected": false },
+        "refresh": 1,
+        "sort": 1,
+        "hide": 0
+      },
+      {
+        "name": "region",
+        "label": "Region",
+        "type": "query",
+        "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+        "query": {
+          "refId": "variable",
+          "type": "csv",
+          "source": "url",
+          "format": "table",
+          "parser": "backend",
+          "url": "http://aegis-csv/forecast_drift_signals.csv",
+          "url_options": { "method": "GET", "data": "" },
+          "root_selector": "",
+          "columns": [ { "selector": "region", "text": "", "type": "string" } ],
+          "filters": []
+        },
+        "includeAll": true,
+        "multi": true,
+        "allValue": null,
+        "current": { "text": "All", "value": "$__all", "selected": false },
+        "refresh": 1,
+        "sort": 1,
+        "hide": 0
+      },
+      {
+        "name": "drift_status",
+        "label": "Drift Status",
+        "type": "query",
+        "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+        "query": {
+          "refId": "variable",
+          "type": "csv",
+          "source": "url",
+          "format": "table",
+          "parser": "backend",
+          "url": "http://aegis-csv/forecast_drift_signals.csv",
+          "url_options": { "method": "GET", "data": "" },
+          "root_selector": "",
+          "columns": [ { "selector": "drift_status", "text": "", "type": "string" } ],
+          "filters": []
+        },
+        "includeAll": true,
+        "multi": true,
+        "allValue": null,
+        "current": { "text": "All", "value": "$__all", "selected": false },
+        "refresh": 1,
+        "sort": 1,
+        "hide": 0
+      },
+      {
+        "name": "run_id",
+        "label": "Run ID",
+        "type": "query",
+        "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+        "query": {
+          "refId": "variable",
+          "type": "csv",
+          "source": "url",
+          "format": "table",
+          "parser": "backend",
+          "url": "http://aegis-csv/forecast_drift_runs.csv",
+          "url_options": { "method": "GET", "data": "" },
+          "root_selector": "",
+          "columns": [ { "selector": "calculation_run_id", "text": "", "type": "string" } ],
+          "filters": []
+        },
+        "includeAll": true,
+        "multi": true,
+        "allValue": null,
+        "current": { "text": "All", "value": "$__all", "selected": false },
+        "refresh": 1,
+        "sort": 1,
+        "hide": 0
+      }
+    ]
+  },
+  "panels": [
+    {
+      "id": 1,
+      "type": "text",
+      "title": "",
+      "gridPos": { "h": 4, "w": 24, "x": 0, "y": 0 },
+      "options": {
+        "mode": "markdown",
+        "content": "# AEGIS Forecast Drift\n\nGoverned forecast drift monitoring across **performance**, **shape**, **stability** and **volatility**.\n\n_Data source: governed **V2** snapshot (read-only) via datasource `aegis-forecast-drift-csv`. Foundation preview (E7C) — full MVP arrives in E7D._"
+      }
+    },
+    {
+      "id": 2,
+      "type": "table",
+      "title": "Latest Governed Run",
+      "description": "Most recent governed calculation run (forecast_drift_runs.csv).",
+      "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+      "gridPos": { "h": 7, "w": 9, "x": 0, "y": 4 },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+          "type": "csv",
+          "source": "url",
+          "format": "table",
+          "parser": "backend",
+          "url": "http://aegis-csv/forecast_drift_runs.csv",
+          "url_options": { "method": "GET", "data": "" },
+          "root_selector": "",
+          "columns": [
+            { "selector": "calculation_run_id", "text": "Run ID", "type": "string" },
+            { "selector": "run_status", "text": "Status", "type": "string" },
+            { "selector": "run_finished_at", "text": "Finished At (UTC)", "type": "string" },
+            { "selector": "signals_written", "text": "Signals", "type": "number" },
+            { "selector": "events_created", "text": "Events", "type": "number" }
+          ],
+          "filters": []
+        }
+      ],
+      "transformations": [
+        { "id": "transpose", "options": {} }
+      ],
+      "fieldConfig": {
+        "defaults": { "custom": { "align": "left" } },
+        "overrides": []
+      },
+      "options": { "showHeader": false }
+    },
+    {
+      "id": 3,
+      "type": "stat",
+      "title": "Total Drift Signals",
+      "description": "Count of governed drift signal records (forecast_drift_signals.csv). Baseline: 168.",
+      "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+      "gridPos": { "h": 7, "w": 6, "x": 9, "y": 4 },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+          "type": "csv",
+          "source": "url",
+          "format": "table",
+          "parser": "backend",
+          "url": "http://aegis-csv/forecast_drift_signals.csv",
+          "url_options": { "method": "GET", "data": "" },
+          "root_selector": "",
+          "columns": [ { "selector": "drift_event_id", "text": "signal", "type": "string" } ],
+          "filters": []
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "decimals": 0,
+          "color": { "mode": "fixed", "fixedColor": "text" }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": { "calcs": ["count"], "fields": "/.*/", "values": false },
+        "orientation": "auto",
+        "colorMode": "none",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "textMode": "value"
+      }
+    },
+    {
+      "id": 4,
+      "type": "piechart",
+      "title": "Drift Status Distribution",
+      "description": "Distribution of signals by drift status (Healthy / Watch / Warning / Critical).",
+      "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+      "gridPos": { "h": 7, "w": 9, "x": 15, "y": 4 },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+          "type": "csv",
+          "source": "url",
+          "format": "table",
+          "parser": "backend",
+          "url": "http://aegis-csv/forecast_drift_signals.csv",
+          "url_options": { "method": "GET", "data": "" },
+          "root_selector": "",
+          "columns": [
+            { "selector": "drift_status", "text": "drift_status", "type": "string" },
+            { "selector": "drift_event_id", "text": "signal", "type": "string" }
+          ],
+          "filters": []
+        }
+      ],
+      "transformations": [
+        {
+          "id": "groupBy",
+          "options": {
+            "fields": {
+              "drift_status": { "aggregations": [], "operation": "groupby" },
+              "signal": { "aggregations": ["count"], "operation": "aggregate" }
+            }
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "decimals": 0,
+          "color": { "mode": "fixed" },
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "Healthy": { "color": "green", "index": 0 },
+                "Watch": { "color": "yellow", "index": 1 },
+                "Warning": { "color": "orange", "index": 2 },
+                "Critical": { "color": "red", "index": 3 }
+              }
+            }
+          ]
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": true },
+        "pieType": "donut",
+        "legend": { "displayMode": "table", "placement": "right", "values": ["value", "percent"] },
+        "displayLabels": ["name", "value"]
+      }
+    },
+    {
+      "id": 5,
+      "type": "table",
+      "title": "Top Drift Signals Preview",
+      "description": "Top signals by forecast drift score (forecast_drift_signals.csv). Preview limited to 10 rows.",
+      "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+      "gridPos": { "h": 9, "w": 24, "x": 0, "y": 11 },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+          "type": "csv",
+          "source": "url",
+          "format": "table",
+          "parser": "backend",
+          "url": "http://aegis-csv/forecast_drift_signals.csv",
+          "url_options": { "method": "GET", "data": "" },
+          "root_selector": "",
+          "columns": [
+            { "selector": "forecast_key", "text": "Forecast Key", "type": "string" },
+            { "selector": "region", "text": "Region", "type": "string" },
+            { "selector": "drift_status", "text": "Status", "type": "string" },
+            { "selector": "dominant_drift_family", "text": "Dominant Family", "type": "string" },
+            { "selector": "forecast_drift_score", "text": "Drift Score", "type": "number" }
+          ],
+          "filters": []
+        }
+      ],
+      "transformations": [
+        { "id": "sortBy", "options": { "sort": [ { "field": "Drift Score", "desc": true } ] } },
+        { "id": "limit", "options": { "limitField": 10 } }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": { "align": "left", "filterable": false },
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "Healthy": { "color": "green", "index": 0 },
+                "Watch": { "color": "yellow", "index": 1 },
+                "Warning": { "color": "orange", "index": 2 },
+                "Critical": { "color": "red", "index": 3 }
+              }
+            }
+          ]
+        },
+        "overrides": [
+          {
+            "matcher": { "id": "byName", "options": "Drift Score" },
+            "properties": [
+              { "id": "decimals", "value": 1 },
+              { "id": "custom.align", "value": "right" }
+            ]
+          },
+          {
+            "matcher": { "id": "byName", "options": "Status" },
+            "properties": [
+              { "id": "custom.cellOptions", "value": { "type": "color-text" } }
+            ]
+          }
+        ]
+      },
+      "options": { "showHeader": true, "cellHeight": "sm" }
+    }
+  ],
+  "annotations": { "list": [] }
+}

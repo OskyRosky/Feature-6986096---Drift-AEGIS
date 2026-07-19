@@ -1,11 +1,87 @@
 # PROJECT STATUS — AEGIS Forecast Drift Framework
 
 **Feature 6986096 — Integrate Cross-Functional Capacity Feedback Signals to Align and Improve Capacity Mitigation Actions**
-Last updated: 2026-07-17
+Last updated: 2026-07-18
 
 > Microsoft internal / confidential. Engineering stages (E-prefix) build the product; product/document versions (V1/V2/V3) are separate. See `engineering/ROADMAP.md`.
 
 ## Current stage
+**E7C — Grafana Dashboard Foundation Preview: COMPLETE (2026-07-18).** Built the visual/technical
+foundation of the AEGIS Forecast Drift dashboard **via MCP** (consume-only). Created folder
+**`AEGIS Forecast Drift`** (uid `afsjccp27s0e8d`) and dashboard **`AEGIS Forecast Drift`**
+(uid `aegis-forecast-drift-foundation`, version 1) inside it: a **header** + **4 Infinity query
+variables** (`forecast_key` 12 / `region` 9 / `drift_status` 4 / `run_id` 1 — all data-derived,
+All option, multi) + **4 preview panels** — A Latest Governed Run (runs.csv), B Total Drift
+Signals (**168**), C Drift Status Distribution (Healthy 82 / Watch 38 / Warning 34 / Critical 14),
+D Top 10 by `forecast_drift_score`. Datasource `aegis-forecast-drift-csv` health **OK**;
+read-only `/api/ds/query` per-panel rows **1/168/168/168** (no No-data). Pre-existing dashboard
+`advs2xz` **inspected and untouched**. Governed export
+`V2/grafana/dashboards/aegis-forecast-drift-foundation.json` (secret-free, datasource by UID).
+Severity palette reserved (Healthy=green/Watch=yellow/Warning=orange/Critical=red). **Foundation
+preview only** — no E7D, no full panel set, no alerts, no threshold/weight/data change; token
+**not revoked**, DPAPI **not deleted**, MCP **not unregistered**, V1 untouched, **no manual commit**.
+Precheck PASS: Grafana running, aegis-csv healthy, MCP `✓ Connected`, DPAPI present+decryptable,
+`HEAD==origin/main==4b7c6cc` (auto-commit still only holds E7B.2; E7B.3/4/5 + E7C uncommitted).
+Token: **E7C_DASHBOARD_FOUNDATION_PREVIEW_COMPLETED**. Deliverables:
+`engineering/E7_grafana/E7C_*` (4 docs) + governed dashboard JSON. **Open risk R1** unchanged.
+URL: `http://localhost:3000/d/aegis-forecast-drift-foundation/aegis-forecast-drift`.
+Next: **E7D — Grafana Dashboard MVP** — **awaiting visual review + explicit authorization**.
+
+**E7B.5 — MCP Connection Closure (Operational Readiness): COMPLETE (2026-07-18).**
+Executed as a **NON-DESTRUCTIVE** closure (scope corrected): the token and MCP connection
+**remain active** because E7C/E7D still need them. E7B.5 did **not** revoke the token, delete
+the DPAPI secret, run `remove-grafana-mcp-token.ps1`, run `claude mcp remove grafana`, or
+unregister the MCP. Readiness re-verified: MCP `grafana` **`✓ Connected`** (local, stdio,
+`Environment: empty`); datasource **`aegis-forecast-drift-csv`** visible via `list_datasources`
+(2 clean JSON lines); **no secrets** in repo (REPO_SCAN=CLEAN), Claude config (no token
+prefix), or git tree (0 tracked secret files); DPAPI secret present outside repo; token **expires
+2026-09-01**; **definitive revocation deferred to E7D close**. Grafana container running;
+**no dashboards created; E7C not started.** Git integrity: `HEAD==origin/main==4b7c6cc`;
+last auto-commit `4b7c6cc "add"` (E7B.2 deliverables). Token:
+**E7B5_MCP_OPERATIONAL_READINESS_COMPLETED**. Deliverable:
+`engineering/E7_grafana/E7B5_operational_readiness.md`. **Open risk R1:** external
+auto-commit/push to `origin/main` — watch, do not modify. **No blockers for E7C.**
+Next: **E7C — Dashboard Foundation** — **awaiting explicit authorization**.
+
+**E7B.4 — Register MCP in Claude Code + Connectivity Smoke Test: COMPLETE (2026-07-18).**
+Registered the official `mcp-grafana` v0.17.2 server in **Claude Code** as stdio server
+**`grafana`**, **local scope** (`~/.claude.json`, outside repo, not committed), command =
+the secure wrapper `V2/scripts/start-mcp-grafana.ps1` (**`Environment: empty`** — no token
+in config; the wrapper decrypts the DPAPI token in memory). Hardened the wrapper so
+**stdout carries only MCP JSON-RPC** and all diagnostics go to stderr. **Standalone MCP
+smoke test** (`initialize` + `list_datasources`) returned clean JSON including
+`aegis-forecast-drift-csv`; `claude mcp list`/`get grafana` report **`✓ Connected`**.
+**No dashboards/folders created; no writes; E7C not started.** Token stays DPAPI-encrypted
+outside repo; **expires 2026-09-01; revoke at E7D close**. Integrity unchanged: Grafana &
+aegis-csv healthy; V2 168/672/71/1; V1 intact. Pre-registration post-auto-commit check:
+`HEAD==origin/main==4b7c6cc`, no secret tracked/physical in repo. Token:
+**E7B4_MCP_REGISTRATION_SMOKE_COMPLETED**. Deliverables: `engineering/E7_grafana/E7B4_*`
+(5 docs) + hardened `V2/scripts/start-mcp-grafana.ps1`. **Open risk R1:** external
+auto-commit/push to `origin/main` (last `4b7c6cc`, no secrets) — watch, do not modify.
+**No blockers for E7B.5.** Next: **E7B.5 — MCP connection closure (revoke token, security
+validation)** — **awaiting explicit authorization**.
+
+**E7B.3 — Grafana Service Account & Secure Token: COMPLETE (2026-07-18).** Created the
+dedicated Grafana service account **`aegis-mcp`** (login `sa-1-aegis-mcp`, org role
+**Editor**, **not** admin) and a short-lived token with explicit expiration. **Verified**
+that `GRAFANA_SERVICE_ACCOUNT_TOKEN_FILE` **is** supported in v0.17.2 (binary strings +
+README @ tag) but **rejected** it (plaintext at rest); instead the token is stored
+**encrypted with Windows DPAPI (CurrentUser)** at `%LOCALAPPDATA%\AEGIS\secrets\grafana\`
+(**outside the repo**) and decrypted **only in process memory** by the launch wrapper,
+which sets `GRAFANA_SERVICE_ACCOUNT_TOKEN` process-scoped and restricts MCP tools to
+`search,datasource,dashboard,folder`. Created four ASCII, **secret-free** scripts in
+`V2/scripts/` (`store-`, `start-`, `verify-`, `remove-grafana-mcp-token.ps1`). User
+created the account+token and stored it (`TOKEN_STORED=True`). **Authenticated read-only**
+validation PASSED: identity `sa-1-aegis-mcp`, Editor permissions (no `users:read`/
+`server.admin`), datasource `aegis-forecast-drift-csv` visible — **no writes, no MCP
+registration, no dashboards created, token never printed**. Integrity unchanged: Grafana
+& aegis-csv healthy; V2 168/672/71/1; V1 intact. Token: **E7B3_SERVICE_ACCOUNT_TOKEN_COMPLETED**.
+Deliverables: `engineering/E7_grafana/E7B3_*` (5 docs) + `V2/scripts/*grafana-mcp-token.ps1`.
+**Token not revoked** — kept until E7C/E7D complete or expiration. **Open risk R1:** external
+auto-commit/push to `origin/main` (fired overnight as `4b7c6cc`, no secrets) — watch, do
+not modify. **No blockers for E7B.4.** Next: **E7B.4 — Register MCP in Claude Code +
+connectivity smoke test** — **awaiting explicit authorization**.
+
 **E7B.2 — Install Pinned Grafana MCP Server: COMPLETE (2026-07-17).** Installed the
 **official** `mcp-grafana` **v0.17.2** binary (windows/amd64) **outside the repo** at
 `%LOCALAPPDATA%\AEGIS\mcp-grafana\v0.17.2\`, verified integrity (SHA256 `939eb0f4…eb62616`
@@ -110,7 +186,7 @@ compile with values identical to Python (status 14/34/38/82, deep, 18/18, True),
 | E5A | Python Drift Engine | ✅ Complete |
 | E5B | Production Dataset Validation & Export Hardening | ✅ Complete (offline + live validated) |
 | E6 | Power BI MVP (local, consume-only) | ◑ Partial (model + measures + specs + TMDL; .pbix visuals manual) |
-| E7 | Grafana MVP (local, consume-only) | ◑ In progress (E7A ✅; E7A.1/E7A.2/E7B.0/E7B.1 ✅; E7B.2 ✅ MCP binary installed; E7B.3 ⏳) |
+| E7 | Grafana MVP (local, consume-only) | ◑ In progress (E7A ✅; E7A.1/E7A.2/E7B.0/E7B.1/E7B.2/E7B.3/E7B.4/E7B.5 ✅; E7C ✅ foundation dashboard `aegis-forecast-drift-foundation` (folder `afsjccp27s0e8d`, 4 vars + 4 panels, data OK); E7D ⏳) |
 | E8 | Cloud Deployment & Governance | ⏳ |
 
 ## Key validated facts (E1B)
