@@ -133,8 +133,13 @@ inside the `aegis-net` Docker network (no host port). The pre-existing Grafana
   signal panels (trend panel keeps `forecast_version:timestamp` for its X-axis, drops the version clause);
   broken build archived under `V2/grafana/dashboards/archive/`. Post-repair
   end-to-end per-panel replay: **13/13 filter panels PASS, 0 FAIL**; analytical reconciliation 21/21.
-  Published via `V2/scripts/push-e7d1-overview.ps1` (token DPAPI in-memory) → **v6**, `success`, in folder;
+  After Oscar visually confirmed the data, a final **visual polish (v7)** applied donut severity colors
+  (Healthy green / Watch yellow / Warning orange / Critical red), a 2024-anchored time axis
+  (`2024-03-01 → 2026-06-01`, no empty 2022 gap), a slimmer nav/header (`h:3→h:2`, no content/links removed),
+  and a corrected filter-semantics note (KPIs/distribution/families/ranking honor all five filters; the trend
+  intentionally ignores Forecast Version to preserve full history) — re-validated **13/13 PASS**.
+  Published via `V2/scripts/push-e7d1-overview.ps1` (token DPAPI in-memory) → **v7**, `success`, in folder;
   other 10 dashboards untouched; datasource/nginx/Docker/CSV/Python/PBI/weights/thresholds unchanged; no
-  alerts/plugins/deletes; no manual commit. **Oscar visually confirmed the Overview now shows data**;
-  formal sign-off pending. Token `E7D1_OVERVIEW_MVP_REPAIRED_PENDING_VISUAL_ACCEPTANCE`.
+  alerts/plugins/deletes; no manual commit. **Oscar formally accepted (visually).**
+  Token `E7D1_OVERVIEW_MVP_COMPLETED_VISUALLY_ACCEPTED`.
   URL `http://localhost:3000/d/aegis-forecast-drift-foundation`. See `engineering/E7_grafana/E7D1_*` (5 docs).
