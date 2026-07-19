@@ -1,0 +1,30 @@
+{
+  "uid": "aegis-forecast-drift-performance",
+  "title": "AEGIS Forecast Drift — Performance",
+  "description": "E7D.0 structural shell. Performance drift family (weight 20%), governed V2 snapshot (read-only). Analytical panels arrive in E7D.3.",
+  "tags": ["aegis", "forecast-drift", "aegis-nav", "e7d0", "shell", "performance"],
+  "editable": true,
+  "schemaVersion": 39,
+  "version": 0,
+  "time": { "from": "now-5y", "to": "now" },
+  "timepicker": { "hidden": true },
+  "refresh": "",
+  "links": [
+    { "asDropdown": true, "title": "AEGIS Sections", "type": "dashboards", "tags": ["aegis-nav"], "icon": "external link", "includeVars": false, "keepTime": true, "targetBlank": false, "tooltip": "", "url": "" }
+  ],
+  "templating": {
+    "list": [
+      { "name": "region", "label": "Region", "type": "query", "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" }, "query": { "refId": "variable", "type": "csv", "source": "url", "format": "table", "parser": "backend", "url": "http://aegis-csv/forecast_drift_signals.csv", "url_options": { "method": "GET", "data": "" }, "root_selector": "", "columns": [ { "selector": "region", "text": "", "type": "string" } ], "filters": [] }, "includeAll": true, "multi": true, "allValue": null, "current": { "text": "All", "value": "$__all", "selected": false }, "refresh": 1, "sort": 1, "hide": 0 },
+      { "name": "forecast_key", "label": "Forecast Key", "type": "query", "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" }, "query": { "refId": "variable", "type": "csv", "source": "url", "format": "table", "parser": "backend", "url": "http://aegis-csv/forecast_drift_signals.csv", "url_options": { "method": "GET", "data": "" }, "root_selector": "", "columns": [ { "selector": "forecast_key", "text": "", "type": "string" } ], "filters": [] }, "includeAll": true, "multi": true, "allValue": null, "current": { "text": "All", "value": "$__all", "selected": false }, "refresh": 1, "sort": 1, "hide": 0 },
+      { "name": "forecast_version", "label": "Forecast Version", "type": "query", "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" }, "query": { "refId": "variable", "type": "csv", "source": "url", "format": "table", "parser": "backend", "url": "http://aegis-csv/forecast_drift_signals.csv", "url_options": { "method": "GET", "data": "" }, "root_selector": "", "columns": [ { "selector": "forecast_version", "text": "", "type": "string" } ], "filters": [] }, "includeAll": true, "multi": true, "allValue": null, "current": { "text": "All", "value": "$__all", "selected": false }, "refresh": 1, "sort": 1, "hide": 0 },
+      { "name": "drift_status", "label": "Drift Status", "type": "query", "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" }, "query": { "refId": "variable", "type": "csv", "source": "url", "format": "table", "parser": "backend", "url": "http://aegis-csv/forecast_drift_signals.csv", "url_options": { "method": "GET", "data": "" }, "root_selector": "", "columns": [ { "selector": "drift_status", "text": "", "type": "string" } ], "filters": [] }, "includeAll": true, "multi": true, "allValue": null, "current": { "text": "All", "value": "$__all", "selected": false }, "refresh": 1, "sort": 1, "hide": 0 },
+      { "name": "run_id", "label": "Run ID", "type": "query", "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" }, "query": { "refId": "variable", "type": "csv", "source": "url", "format": "table", "parser": "backend", "url": "http://aegis-csv/forecast_drift_runs.csv", "url_options": { "method": "GET", "data": "" }, "root_selector": "", "columns": [ { "selector": "calculation_run_id", "text": "", "type": "string" } ], "filters": [] }, "includeAll": true, "multi": true, "allValue": null, "current": { "text": "All", "value": "$__all", "selected": false }, "refresh": 1, "sort": 1, "hide": 0 }
+    ]
+  },
+  "panels": [
+    { "id": 1, "type": "text", "title": "", "gridPos": { "h": 3, "w": 24, "x": 0, "y": 0 }, "options": { "mode": "markdown", "content": "**AEGIS Forecast Drift**  ·  [Overview](/d/aegis-forecast-drift-foundation) · [Forecast](/d/aegis-forecast-drift-forecast) · **Performance** · [Shape](/d/aegis-forecast-drift-shape) · [Stability](/d/aegis-forecast-drift-stability) · [Volatility](/d/aegis-forecast-drift-volatility) · [Events](/d/aegis-forecast-drift-events) · [Historical Timeline](/d/aegis-forecast-drift-timeline) · [Top Forecast Keys](/d/aegis-forecast-drift-top-keys) · [Top Scenarios](/d/aegis-forecast-drift-top-scenarios) · [Settings & Data Quality](/d/aegis-forecast-drift-settings)" } },
+    { "id": 2, "type": "text", "title": "", "gridPos": { "h": 4, "w": 24, "x": 0, "y": 3 }, "options": { "mode": "markdown", "content": "# AEGIS Forecast Drift — Performance\n\nGoverned forecast drift monitoring — **V2** snapshot (read-only)." } },
+    { "id": 3, "type": "text", "title": "About this section", "gridPos": { "h": 7, "w": 24, "x": 0, "y": 7 }, "options": { "mode": "markdown", "content": "### Purpose\nPerformance drift family (governed weight **20%**): accuracy / error-based drift between forecast versions (`performance_drift_score`).\n\n### Status\n🚧 **Structural shell** created in **E7D.0**. Analytical panels will be built in **E7D.3**.\n\n### Data source\nGoverned **V2** snapshot (read-only) via datasource `aegis-forecast-drift-csv` — `forecast_drift_signals.csv` + `forecast_drift_family_scores.csv`." } }
+  ],
+  "annotations": { "list": [] }
+}

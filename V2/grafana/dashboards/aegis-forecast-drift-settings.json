@@ -1,0 +1,26 @@
+{
+  "uid": "aegis-forecast-drift-settings",
+  "title": "AEGIS Forecast Drift — Settings & Data Quality",
+  "description": "E7D.0 structural shell. Governance, data quality (18 checks), thresholds & weights — read-only. Analytical panels arrive in E7D.11.",
+  "tags": ["aegis", "forecast-drift", "aegis-nav", "e7d0", "shell", "settings"],
+  "editable": true,
+  "schemaVersion": 39,
+  "version": 0,
+  "time": { "from": "now-5y", "to": "now" },
+  "timepicker": { "hidden": true },
+  "refresh": "",
+  "links": [
+    { "asDropdown": true, "title": "AEGIS Sections", "type": "dashboards", "tags": ["aegis-nav"], "icon": "external link", "includeVars": false, "keepTime": true, "targetBlank": false, "tooltip": "", "url": "" }
+  ],
+  "templating": {
+    "list": [
+      { "name": "run_id", "label": "Run ID", "type": "query", "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" }, "query": { "refId": "variable", "type": "csv", "source": "url", "format": "table", "parser": "backend", "url": "http://aegis-csv/forecast_drift_runs.csv", "url_options": { "method": "GET", "data": "" }, "root_selector": "", "columns": [ { "selector": "calculation_run_id", "text": "", "type": "string" } ], "filters": [] }, "includeAll": true, "multi": true, "allValue": null, "current": { "text": "All", "value": "$__all", "selected": false }, "refresh": 1, "sort": 1, "hide": 0 }
+    ]
+  },
+  "panels": [
+    { "id": 1, "type": "text", "title": "", "gridPos": { "h": 3, "w": 24, "x": 0, "y": 0 }, "options": { "mode": "markdown", "content": "**AEGIS Forecast Drift**  ·  [Overview](/d/aegis-forecast-drift-foundation) · [Forecast](/d/aegis-forecast-drift-forecast) · [Performance](/d/aegis-forecast-drift-performance) · [Shape](/d/aegis-forecast-drift-shape) · [Stability](/d/aegis-forecast-drift-stability) · [Volatility](/d/aegis-forecast-drift-volatility) · [Events](/d/aegis-forecast-drift-events) · [Historical Timeline](/d/aegis-forecast-drift-timeline) · [Top Forecast Keys](/d/aegis-forecast-drift-top-keys) · [Top Scenarios](/d/aegis-forecast-drift-top-scenarios) · **Settings & Data Quality**" } },
+    { "id": 2, "type": "text", "title": "", "gridPos": { "h": 4, "w": 24, "x": 0, "y": 3 }, "options": { "mode": "markdown", "content": "# AEGIS Forecast Drift — Settings & Data Quality\n\nGoverned monitoring metadata — **V2** snapshot (read-only). _Governed & read-only — not editable configuration._" } },
+    { "id": 3, "type": "text", "title": "About this section", "gridPos": { "h": 9, "w": 24, "x": 0, "y": 7 }, "options": { "mode": "markdown", "content": "### Purpose\nGovernance and data-quality transparency: the **18 data-quality checks**, latest governed run, freshness, sources, lineage, coverage, versioning, and the governed model parameters.\n\n### Status\n🚧 **Structural shell** created in **E7D.0**. The full panel set (18/18 check detail, weights, thresholds, lineage) will be built in **E7D.11** per `E7D0_settings_data_quality_contract.md`.\n\n### Governed model parameters (read-only, not editable here)\n- **Weights:** Performance 20% · Shape 40% · Stability 30% · Volatility 10%\n- **Severity thresholds:** Healthy 0–20 · Watch 20–40 · Warning 40–70 · Critical 70+\n- **Service / Scenario status:** `service` empty (0) → use `forecast_key`; `scenario` single value (`Enterprise`).\n\n### Governance note\nAll thresholds, weights and classifications live in the **V1** Python engine. This dashboard **reads** governed datasets only — *el dashboard no cocina datos.*" } }
+  ],
+  "annotations": { "list": [] }
+}

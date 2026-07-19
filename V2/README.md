@@ -101,3 +101,40 @@ inside the `aegis-net` Docker network (no host port). The pre-existing Grafana
   (secret-free, UID ref). Foundation preview only — no E7D, no alerts, no threshold/data change.
   URL `http://localhost:3000/d/aegis-forecast-drift-foundation/aegis-forecast-drift`.
   Token `E7C_DASHBOARD_FOUNDATION_PREVIEW_COMPLETED`. See `engineering/E7_grafana/E7C_*`.
+- **E7D.0** — Dashboard **Information Architecture & Shared Navigation** (structure only). Product
+  backbone = **11 dashboards** in folder `AEGIS Forecast Drift` (uid `afsjccp27s0e8d`) sharing one
+  navigation contract, one shared-filter contract and one visual design system. **Overview** = the E7C
+  dashboard retitled `AEGIS Forecast Drift — Overview` (uid `aegis-forecast-drift-foundation` retained;
+  proposed `-overview` not adopted to avoid deleting the existing dashboard) with the shared nav bar,
+  corrected `Forecast Key` label and new `forecast_version` variable. **10 shells** created (Forecast,
+  Performance, Shape, Stability, Volatility, Events, Historical Timeline, **Top Forecast Keys** [replaces
+  mockup *Top Services* — governed `service` column empty], **Top Scenarios** [single `Enterprise`],
+  Settings & Data Quality) — each with shared navigation + applicable shared filters + a purpose panel,
+  **no analytical panels**. Shared filters are data-driven (region 9 / forecast_key 12 / forecast_version
+  14 / drift_status 4 / run_id 1). Published via `V2/scripts/push-e7d0-structure.ps1` (token DPAPI
+  in-memory): Overview v2, shells v1, all in folder; foreign `advs2xz` untouched; datasource unchanged;
+  MCP `✓ Connected`; repo secret-literal scan CLEAN. Governed JSON exports in `V2/grafana/dashboards/`.
+  No E7D.1, no alerts, no threshold/weight/data change. Token `E7D0_INFORMATION_ARCHITECTURE_COMPLETED`.
+  See `engineering/E7_grafana/E7D0_*` (8 docs).
+- **E7D.1** — **Overview MVP** (analytical panels) — **REPAIRED, PENDING VISUAL ACCEPTANCE**. Transformed the
+  Overview (uid `aegis-forecast-drift-foundation`, retained) from foundation-preview into a full governed
+  analytical dashboard: **7 components / 15 panels** — KPIs (Total Signals 168 · Total Events 71 · Avg Drift
+  28.8 · Critical 14 · Warning 34 · Watch 38 · Healthy 82), Drift Status donut (82/38/34/14), Avg Drift over
+  time (14 forecast-version points, thresholds 20/40/70, UTC), Signals by dominant family (Stability 88 ·
+  Volatility 45 · Shape 27 · Performance 8, neutral color), Forecast Keys by drift risk (12 keys, avg desc —
+  NAM-SDF 42.74 — with band-colored Max Drift Status), Latest Governed Run (1 · Success · 2026-07-13 22:44
+  UTC · 168 · 71), Data Quality 18/18. All 5 shared filters bound via one `filterExpression` (backend
+  parser); the Infinity date-arithmetic bug **and** the frontend ISO-date variable time-inference were fixed
+  by filtering `forecast_version` through a non-date **`v`-prefixed label** (`fv_label`) + quoted `run_id`.
+  **The first build (v3) rendered "No data" on every panel** — root cause: template variables lacked the
+  `queryType:"infinity"` wrapper (empty dropdowns) + panels 23/24 aliased a filtered column. Fixed and
+  republished **v5**. A **second defect** (the `forecast_version` variable red-triangled because its ISO-date
+  values were inferred as `time`) was fixed in **v6** via the `v`-prefixed label across the variable + 10
+  signal panels (trend panel keeps `forecast_version:timestamp` for its X-axis, drops the version clause);
+  broken build archived under `V2/grafana/dashboards/archive/`. Post-repair
+  end-to-end per-panel replay: **13/13 filter panels PASS, 0 FAIL**; analytical reconciliation 21/21.
+  Published via `V2/scripts/push-e7d1-overview.ps1` (token DPAPI in-memory) → **v6**, `success`, in folder;
+  other 10 dashboards untouched; datasource/nginx/Docker/CSV/Python/PBI/weights/thresholds unchanged; no
+  alerts/plugins/deletes; no manual commit. **Oscar visually confirmed the Overview now shows data**;
+  formal sign-off pending. Token `E7D1_OVERVIEW_MVP_REPAIRED_PENDING_VISUAL_ACCEPTANCE`.
+  URL `http://localhost:3000/d/aegis-forecast-drift-foundation`. See `engineering/E7_grafana/E7D1_*` (5 docs).

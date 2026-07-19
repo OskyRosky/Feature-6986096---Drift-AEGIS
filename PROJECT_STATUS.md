@@ -1,11 +1,81 @@
 # PROJECT STATUS — AEGIS Forecast Drift Framework
 
 **Feature 6986096 — Integrate Cross-Functional Capacity Feedback Signals to Align and Improve Capacity Mitigation Actions**
-Last updated: 2026-07-18
+Last updated: 2026-07-19
 
 > Microsoft internal / confidential. Engineering stages (E-prefix) build the product; product/document versions (V1/V2/V3) are separate. See `engineering/ROADMAP.md`.
 
 ## Current stage
+**E7D.1 — Overview MVP (analytical panels): COMPLETED — VISUALLY ACCEPTED (2026-07-19).**
+> The first published build (**v3**) rendered **"No data" on every panel** inside Grafana (empty filters)
+> even though external `/api/ds/query` tests passed. **Root cause (two defects):** (1) the 5 template
+> variables were stored as **flat Infinity queries without the `queryType:"infinity"` wrapper**, so the
+> plugin treated them as legacy → empty dropdowns → `${var:singlequote}` → `region IN ()` → backend error on
+> every panel; (2) panels 23/24 **aliased a filtered column** (`Forecast Key`/`Run ID`), which the backend
+> filter could not resolve (`No parameter 'forecast_key'/'calculation_run_id' found`). **Both fixed** (variable
+> wrapper restored; filtered columns' `text`==selector with display headers moved to rename/`displayName`)
+> and republished as **v5**. A **second defect** then surfaced: the `forecast_version` variable alone showed a
+> red error triangle because Grafana's frontend infers its **ISO-date** option values as a `time` field,
+> emptying that variable → `forecast_version IN ()` → all signal panels "No data" again. **Fixed (v6)** by
+> filtering on a non-date **`v`-prefixed label** (`fv_label = 'v' + forecast_version`) across the variable and
+> 10 signal panels (the trend panel keeps `forecast_version:timestamp` for its X-axis and drops the version
+> clause). Broken JSON archived at
+> `V2/grafana/dashboards/archive/aegis-forecast-drift-foundation-e7d1-broken.json`. Post-repair **end-to-end
+> per-panel replay of the published targets (All-expanded interpolation): 13/13 filter panels PASS, 0 FAIL.**
+> Oscar **visually confirmed** the data and numbers, then requested a final **visual polish (v7)** — donut
+> severity colors (Healthy green / Watch yellow / Warning orange / Critical red), a 2024-anchored time axis
+> (`2024-03-01 → 2026-06-01`, removing the empty 2022 gap), a slimmer nav/header (`h:3→h:2`, no content or
+> links removed, panels reflowed), and a corrected filter-semantics note (KPIs/distribution/families/ranking
+> honor all five filters; the **trend intentionally ignores Forecast Version** to preserve full history).
+> Polish re-validated **13/13 PASS**, data still visible; **Oscar formally accepted**. Do **not** start E7D.2
+> until authorized.
+
+Transformed the **Overview** (uid `aegis-forecast-drift-foundation` **retained**) from the E7C/E7D.0
+foundation-preview into a complete **governed analytical dashboard** — **7 components / 15 panels** — adapting
+the Power BI V1 Overview logic to Grafana + the read-only governed V2 CSV snapshot (**the dashboard does not
+cook data**). Components: **A** KPI row (Total Signals **168** · Total Events **71** · Avg Drift **28.8** ·
+Critical **14** · Warning **34** · Watch **38** · Healthy **82**); **B** Drift Status donut (82/38/34/14,
+severity palette); **C** Avg Drift Score over time (14 `forecast_version` points, dashed thresholds 20/40/70,
+UTC); **D** Signals by dominant family (Stability 88 · Volatility 45 · Shape 27 · Performance 8, **neutral**
+color); **E** Forecast Keys by drift risk (12 keys, avg desc — **NAM-SDF 42.74** top — with band-colored
+Max Drift Status); **F** Latest Governed Run (1 · Success · 2026-07-13 22:44 UTC · 168 · 71); **G** Data
+Quality **18 / 18**. All **5 shared filters** bound via a single `filterExpression` (backend parser); the
+Infinity date-arithmetic bug **and** the frontend ISO-date variable time-inference were **fixed** by
+filtering `forecast_version` through a non-date **`v`-prefixed label** (`fv_label`) and quoting `run_id`
+(no Overview question left unanswerable by a CSV limitation). **Analytical reconciliation 21/21, 0
+mismatches** via read-only `/api/ds/query`; severity KPIs and family counts each sum to 168. Published via
+`V2/scripts/push-e7d1-overview.ps1` (service-account token **DPAPI-decrypted in memory only**, never
+printed): Overview → **v7** (repaired ×2, polished ×1), `status=success`, `inFolder=True`, 15 panels. Foreign `advs2xz`
+**untouched**; datasource `aegis-forecast-drift-csv`, nginx, Docker, CSVs, Python, Power BI V1, weights,
+thresholds **unchanged**; no alerts/plugins; no dashboard deleted; **the other 10 dashboards were not
+touched**; **no manual commit**; MCP/token/DPAPI unchanged; repo secret-free. Token:
+**E7D1_OVERVIEW_MVP_COMPLETED_VISUALLY_ACCEPTED**. Deliverables: `engineering/E7_grafana/E7D1_*`
+(5 docs) + updated `V2/grafana/dashboards/aegis-forecast-drift-foundation.json` + broken-build archive +
+`V2/scripts/push-e7d1-overview.ps1`. **Open risk R1** unchanged.
+URL `http://localhost:3000/d/aegis-forecast-drift-foundation`.
+Next: **E7D.2** — **awaiting visual review + explicit authorization**.
+
+**E7D.0 — Dashboard Information Architecture & Shared Navigation: COMPLETE (2026-07-19).**
+Materialized the **product backbone** in Grafana: **11 dashboards** in folder **`AEGIS Forecast Drift`**
+(uid `afsjccp27s0e8d`), all sharing one navigation contract, one shared-filter contract and one visual
+design system. **Overview** = the E7C dashboard retitled to **`AEGIS Forecast Drift — Overview`**
+(uid `aegis-forecast-drift-foundation` **retained** — the proposed `aegis-forecast-drift-overview` was
+**not** adopted because a safe UID change requires deleting the existing dashboard, which is prohibited),
+keeping its E7C functional panels, now with the shared nav bar, the corrected **`Forecast Key`** label and
+the new **`forecast_version`** variable (14 values). **10 structural shells** created (Forecast, Performance,
+Shape, Stability, Volatility, Events, Historical Timeline, **Top Forecast Keys** [replaces mockup *Top
+Services* — `service` empty], **Top Scenarios** [single `Enterprise`], Settings & Data Quality) — each with
+shared navigation + applicable shared filters + a purpose/roadmap text panel; **no analytical panels**.
+Shared filters (data-driven, no empties): region 9 / forecast_key 12 / forecast_version 14 / drift_status 4 /
+run_id 1. Published via `V2/scripts/push-e7d0-structure.ps1` (service-account token DPAPI-decrypted **in
+memory only**, never printed): Overview → **v2**, 10 shells → **v1**, all `status=success`, all `inFolder=True`.
+Foreign dashboard `advs2xz` **untouched**; datasource `aegis-forecast-drift-csv` **unchanged**; MCP
+`✓ Connected`; token-literal repo scan **CLEAN**. **No E7D.1**, no alerts, no threshold/weight/data change;
+token not revoked; DPAPI not deleted; MCP not unregistered; no dashboard deleted; **no manual commit**.
+Token: **E7D0_INFORMATION_ARCHITECTURE_COMPLETED**. Deliverables: `engineering/E7_grafana/E7D0_*` (8 docs)
++ 11 governed JSON exports in `V2/grafana/dashboards/`. **Open risk R1** unchanged.
+Next: **E7D.1 — Overview MVP** — **awaiting visual review + explicit authorization**.
+
 **E7C — Grafana Dashboard Foundation Preview: COMPLETE (2026-07-18).** Built the visual/technical
 foundation of the AEGIS Forecast Drift dashboard **via MCP** (consume-only). Created folder
 **`AEGIS Forecast Drift`** (uid `afsjccp27s0e8d`) and dashboard **`AEGIS Forecast Drift`**
@@ -186,7 +256,7 @@ compile with values identical to Python (status 14/34/38/82, deep, 18/18, True),
 | E5A | Python Drift Engine | ✅ Complete |
 | E5B | Production Dataset Validation & Export Hardening | ✅ Complete (offline + live validated) |
 | E6 | Power BI MVP (local, consume-only) | ◑ Partial (model + measures + specs + TMDL; .pbix visuals manual) |
-| E7 | Grafana MVP (local, consume-only) | ◑ In progress (E7A ✅; E7A.1/E7A.2/E7B.0/E7B.1/E7B.2/E7B.3/E7B.4/E7B.5 ✅; E7C ✅ foundation dashboard `aegis-forecast-drift-foundation` (folder `afsjccp27s0e8d`, 4 vars + 4 panels, data OK); E7D ⏳) |
+| E7 | Grafana MVP (local, consume-only) | ◑ In progress (E7A ✅; E7A.1/E7A.2/E7B.0/E7B.1/E7B.2/E7B.3/E7B.4/E7B.5 ✅; E7C ✅ foundation dashboard `aegis-forecast-drift-foundation` (folder `afsjccp27s0e8d`, data OK); **E7D.0 ✅** product backbone = 11 dashboards (Overview + 10 shells, shared nav/filters/visual system); E7D.1–E7D.12 ⏳) |
 | E8 | Cloud Deployment & Governance | ⏳ |
 
 ## Key validated facts (E1B)
