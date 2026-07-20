@@ -2,6 +2,8 @@
 
 Baselines recomputed directly from the served CSVs (`V2/data/processed/current/`, sole truth) and matched against the panel definitions. All diffs = 0.
 
+> **v5 repair note (2026-07-20):** the family Avg (id51) and Risk Matrix (id60) values below are the governed **excl-empty** means. In published version 4 those two panels incorrectly averaged non-computable scores as 0 (id51 Volatility rendered 48.03, matrix NAM-SDF Volatility 70.47). Version 5 fixes this (id51 = query A `family_score != ''` mean + query B counts, joined by family; id60 = four per-metric `!= ''` queries joined by key), so the live dashboard now renders exactly the values in this document. Confirmed visually by Oscar.
+
 ## Gate A — Cardinality (PASS)
 | Check | Value | Expected |
 |-------|-------|----------|

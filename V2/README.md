@@ -371,8 +371,7 @@ inside the `aegis-net` Docker network (no host port). The pre-existing Grafana
   **Stop before E7D.9B.** Token `E7D9A_TOP_RISK_NAVIGATION_COMPLETED_VISUALLY_ACCEPTED`.
   URL `http://localhost:3000/d/aegis-forecast-drift-top-keys`. See `engineering/E7_grafana/E7D9A_top_risk_*` (3 docs).
 
-- **E7D.9B** — **Top Risk Dashboard Content** (governed rankings & concentration) — **IMPLEMENTED — PENDING VISUAL
-  ACCEPTANCE (Oscar)**. Converted the E7D.9A shell (UID `aegis-forecast-drift-top-keys` **preserved**) into a governed
+- **E7D.9B** — **Top Risk Dashboard Content** (governed rankings & concentration) — **COMPLETED — VISUALLY ACCEPTED (Oscar, 2026-07-20)**. Converted the E7D.9A shell (UID `aegis-forecast-drift-top-keys` **preserved**) into a governed
   executive/operational view: removed the 5 empty collapsed rows + provisional note and added **15 analytical panels**
   driven exclusively by the governed `forecast_drift_score` (primary ranking = **average per dimension**) and
   `forecast_drift_family_scores` (family ranking, aggregated **standalone** — never joined-then-counted). KPI row
@@ -383,12 +382,41 @@ inside the `aegis-net` Docker network (no host port). The pre-existing Grafana
   Governed Run + Data Quality (18/18). **Cardinality Gate A PASS** (signals 168 = 168 distinct id; family_scores
   672 = 168×4; no signals×family_scores join). All rankings/KPIs/matrix reconcile to the served CSVs with **zero diffs**;
   ternary computed columns validated live via `/api/ds/query`. Published via `V2/scripts/push-e7d9b-top-risk.ps1`
-  (token DPAPI in-memory) → `success` version 4; E7D.9A shell archived to
+  (token DPAPI in-memory) → `success` version 4, then **repaired & republished version 5** (a read-only audit found
+  id51/id60 averaged non-computable family scores as 0 → fixed: id51 computable-only mean via `family_score != ''` +
+  counts joined by `drift_family`; id60 four per-metric `!= ''` queries joined by `forecast_key`, empties → null not 0;
+  **Oscar visually accepted** Volatility 56.04, Performance 7.71, matrix NAM-SDF 82.21/8.80); E7D.9A shell archived to
   `archive/aegis-forecast-drift-top-risk-shell-e7d9a.json`. **Documented deviations:** per-key Dominant Family omitted
   from the summary (14 versions/key, no groupBy mode); Family panels honor Forecast Key + Forecast Version only
   (family_scores lacks region/status/run); family bar colored by severity thresholds (brand colors in
   computability/matrix/details). **No CSV/Python/PowerBI/datasource/Docker/nginx/token/DPAPI/MCP/weights/thresholds
   change; no other dashboard touched; no manual commit; R1 unchanged.** Token
-  `E7D9B_TOP_RISK_DASHBOARD_IMPLEMENTED_PENDING_VISUAL_ACCEPTANCE`. **Stop before E7D.11. Await Oscar's visual
-  acceptance.** URL `http://localhost:3000/d/aegis-forecast-drift-top-keys`. See
+  `E7D9B_TOP_RISK_DASHBOARD_COMPLETED_VISUALLY_ACCEPTED`. **Stop before E7D.11 (not yet authorized).** URL `http://localhost:3000/d/aegis-forecast-drift-top-keys`. See
   `engineering/E7_grafana/E7D9B_top_risk_*` (8 docs).
+- **E7D.10** — ~~Top Scenarios~~ — **ABSORBED INTO TOP RISK** at E7D.9A; no standalone implementation.
+- **E7D.11** — **Settings & Data Quality Dashboard Content** (governed checks & model parameters) — **COMPLETED —
+  VISUALLY ACCEPTED (Oscar, 2026-07-20)**. Rebuilt the Settings & Data Quality dashboard (uid
+  `aegis-forecast-drift-settings` **preserved**) from the E7D.0 shell into a governed, **read-only** view of the **18
+  governed data-quality checks** + model parameters. **GATE A PASSED** — the 18 checks are sourced authoritatively from
+  `validation/_data_quality_checks.csv` (18 rows, all PASS) + `checks.py`; **none invented / split / merged / renamed**
+  (`canonical_check_name` verbatim; category/scope/rule/expected are a documented presentation layer). A reproducible
+  generator `V2/scripts/build-e7d11-check-catalog.ps1` derives the machine-readable catalog
+  `validation/forecast_drift_data_quality_checks.csv` (SHA-256 `9E76361…551EE1`) and **aborts if ≠ 18**. **Serving —
+  Option B (Oscar-authorized 2026-07-20):** a **single** exact-match nginx allowlist rule
+  (`location = /forecast_drift_data_quality_checks.csv`) was added (no wildcard, no directory listing,
+  `location / { return 404; }` preserved); `nginx -t` OK; **only the aegis-csv container restarted** (Grafana not
+  restarted). The catalog is served as a **byte-identical copy** in `data/processed/current/` (same checksum). Endpoint
+  from the Grafana container: **HTTP 200**, 19 lines, 18 distinct IDs, 18 PASS, 0 FAIL. The catalog table reads it via
+  **Infinity URL** `http://aegis-csv/forecast_drift_data_quality_checks.csv` (**not hardcoded, not inline**). **22
+  panels** — Data Quality **18/18** (green), Checks Passed **18** / Failed **0** / Total **18**, Run Status Success,
+  Latest Validation Run, **18-check catalog**, Checks by Category (9 derived categories → 18), Governed Weights
+  (20/40/30/10 = 100), Status Thresholds & boundary behavior ([0,20)/[20,40)/[40,70)/[70,100]), Computability Coverage
+  (156/168 · 168/168 · 168/168 · 144/168), Non-Computable Reasons (NO_REALIZED_OVERLAP 12 · INSUFFICIENT_VERSIONS 24),
+  Dataset Inventory (168/672/71/1/18), Data Lineage, Governance Rules, Known Limitations, Latest Governed Run —
+  Provenance. All figures reconcile to the governed CSVs / `settings.py` with **zero diffs**, verified live via
+  `/api/ds/query`. Published via `V2/scripts/push-e7d11-settings-data-quality.ps1` (token DPAPI in-memory) → `success`
+  version 4; E7D.0 shell archived to `archive/aegis-forecast-drift-settings-shell-e7d11.json`. **No score / weight /
+  threshold / validation-logic change; no other dashboard touched; no manual commit; R1 unchanged.** Token
+  `E7D11_SETTINGS_DATA_QUALITY_COMPLETED_VISUALLY_ACCEPTED`. **Carry-over to E7D.12:** verify the governed refresh
+  auto-regenerates the `validation/` + `current/` catalog copies (matching SHA-256). **Stop before E7D.12 (not yet
+  authorized).** URL `http://localhost:3000/d/aegis-forecast-drift-settings`. See `engineering/E7_grafana/E7D11_*` (10 docs).

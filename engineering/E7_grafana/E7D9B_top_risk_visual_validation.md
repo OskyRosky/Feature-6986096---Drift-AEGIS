@@ -1,11 +1,11 @@
 # E7D.9B — Top Risk · Visual Validation
 
-**Status:** PENDING Oscar's visual acceptance. Token `E7D9B_TOP_RISK_DASHBOARD_IMPLEMENTED_PENDING_VISUAL_ACCEPTANCE`.
+**Status:** ✅ VISUALLY ACCEPTED by Oscar (2026-07-20). Token `E7D9B_TOP_RISK_DASHBOARD_COMPLETED_VISUALLY_ACCEPTED`. Published version 5 (post-repair of the id51/id60 non-computable-as-zero bug).
 
 The agent browser is unauthenticated, so the agent validates data (CSV reconciliation + live `/api/ds/query`) and publish status; Oscar validates the rendered visuals in his authenticated session at `http://localhost:3000/d/aegis-forecast-drift-top-keys`.
 
 ## Publish confirmation
-- `POST /api/dashboards/db` → status `success`, version `4`, uid `aegis-forecast-drift-top-keys`.
+- `POST /api/dashboards/db` → status `success`, version `5` (post-repair), uid `aegis-forecast-drift-top-keys`.
 - Live audit: title `AEGIS Forecast Drift — Top Risk`, tags `aegis|forecast-drift|aegis-nav|top-risk|e7d9b`, 17 panels (ids 1,2,10–14,20,21,30,40,50,51,60,70,80,90).
 - UID preserved → aegis-nav dropdown and canonical URL intact. Folder `afsjccp27s0e8d`.
 
@@ -24,4 +24,4 @@ The agent browser is unauthenticated, so the agent validates data (CSV reconcili
 12. **Shared nav** shows **Top Risk** bold, all 10 links present.
 
 ## Acceptance
-On Oscar's explicit approval, promote all E7D.9B artifacts + status to `E7D9B_TOP_RISK_DASHBOARD_COMPLETED_VISUALLY_ACCEPTED`. Do not self-declare acceptance. Stop before E7D.11 (Settings & Data Quality). No manual commit.
+Oscar confirmed the rendered visuals on 2026-07-20: Drift Family Computability shows Volatility 56.04 / Stability 38.93 / Shape 26.03 / Performance 7.71; the Risk Concentration Matrix excludes non-computable values (governed zeros for CAN/JPN Performance preserved); KPIs, rankings, Consolidated Risk Details and Data Quality remain correct. All E7D.9B artifacts + status promoted to `E7D9B_TOP_RISK_DASHBOARD_COMPLETED_VISUALLY_ACCEPTED`. Stop before E7D.11 (Settings & Data Quality) — not yet authorized. No manual commit.

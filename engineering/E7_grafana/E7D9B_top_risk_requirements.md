@@ -1,6 +1,6 @@
 # E7D.9B — Top Risk Dashboard · Requirements
 
-**Status token:** `E7D9B_TOP_RISK_DASHBOARD_IMPLEMENTED_PENDING_VISUAL_ACCEPTANCE`
+**Status token:** `E7D9B_TOP_RISK_DASHBOARD_COMPLETED_VISUALLY_ACCEPTED` (published version 5, visually accepted by Oscar 2026-07-20)
 **Dashboard:** AEGIS Forecast Drift — Top Risk · UID `aegis-forecast-drift-top-keys` (preserved) · `/d/aegis-forecast-drift-top-keys`
 **Scope:** analytical content only. Navigation shell from E7D.9A retained; no changes to any other dashboard, CSV, datasource, nginx, Docker, weights or thresholds.
 

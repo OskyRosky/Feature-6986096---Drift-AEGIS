@@ -6,28 +6,50 @@ Last updated: 2026-07-20
 > Microsoft internal / confidential. Engineering stages (E-prefix) build the product; product/document versions (V1/V2/V3) are separate. See `engineering/ROADMAP.md`.
 
 ## Current stage
-**E7D.9B — Top Risk Dashboard Content: IMPLEMENTED — PENDING VISUAL ACCEPTANCE (Oscar).**
+**E7D.11 — Settings & Data Quality Dashboard Content: COMPLETED — VISUALLY ACCEPTED (Oscar, 2026-07-20).**
+> **Analytical content only** (navigation shell from E7D.0 replaced). Converted the Settings & Data Quality shell
+> (UID `aegis-forecast-drift-settings` **preserved**) into a governed, read-only view of the **18 governed
+> data-quality checks** + model parameters. **GATE A PASSED** — the 18 checks are sourced authoritatively from
+> `validation/_data_quality_checks.csv` (18 rows, all PASS) + `checks.py`; **none invented, split, merged or
+> renamed** (`canonical_check_name` verbatim; category/scope/rule/expected are a documented presentation layer). A
+> reproducible generator `V2/scripts/build-e7d11-check-catalog.ps1` derives the machine-readable catalog
+> `validation/forecast_drift_data_quality_checks.csv` (SHA-256 `9E76361…551EE1`) and **aborts if ≠ 18**.
+> **Serving — Option B (Oscar-authorized 2026-07-20):** a **single** exact-match nginx allowlist rule
+> (`location = /forecast_drift_data_quality_checks.csv`) was added (no wildcard, no listing, `location / { return 404; }`
+> preserved); `nginx -t` OK; **only aegis-csv restarted** (Grafana not restarted). The catalog is served as a
+> **byte-identical copy** in `current/` (same checksum). Endpoint from the Grafana container: **HTTP 200**, 19 lines,
+> 18 distinct IDs, 18 PASS, 0 FAIL. The catalog table reads it via **Infinity URL** (not hardcoded, not inline).
+> **22 panels:** nav, header, about; KPI row (Data Quality **18/18** green, Checks Passed **18**, Checks Failed **0**,
+> Checks Total **18**, Run Status Success), Latest Validation Run, **18-check catalog**, Checks by Category (9 derived
+> categories → 18), Governed Weights (20/40/30/10 = 100), Status Thresholds & boundary behavior
+> ([0,20)/[20,40)/[40,70)/[70,100]), Computability Coverage (156/168, 168/168, 168/168, 144/168), Non-Computable
+> Reasons (NO_REALIZED_OVERLAP 12, INSUFFICIENT_VERSIONS 24), Dataset Inventory (168/672/71/1/18), Data Lineage,
+> Governance Rules, Known Limitations, Latest Governed Run — Provenance. All figures reconcile to the governed
+> CSVs / `settings.py` with **zero diffs**, verified live via `/api/ds/query`. Published via
+> `V2/scripts/push-e7d11-settings-data-quality.ps1` (token **DPAPI in-memory only**) → `success` version 4; E7D.0
+> shell archived to `archive/aegis-forecast-drift-settings-shell-e7d11.json`. **No score/weight/threshold/validation
+> logic change; no other dashboard touched; no manual commit; R1 unchanged.** Deliverables:
+> `engineering/E7_grafana/E7D11_*` (10 docs), rebuilt `aegis-forecast-drift-settings.json`, the two publish/build
+> scripts, the governed catalog, and one nginx allowlist line. Token
+> **E7D11_SETTINGS_DATA_QUALITY_COMPLETED_VISUALLY_ACCEPTED**. **Oscar visually confirmed** DQ 18/18, catalog
+> DQ-01..DQ-18, Checks Passed 18 / Failed 0, working local filters, weights/thresholds/computability/reasons/inventory/
+> lineage correct, read-only with no secrets, and no No-data/broken panels. **Carry-over to E7D.12:** verify the
+> governed refresh auto-regenerates the `validation/` + `current/` catalog copies (matching SHA-256). **Do not start
+> E7D.12 (not yet authorized).** URL `http://localhost:3000/d/aegis-forecast-drift-settings`.
+
+<details><summary>Previous stage — E7D.9B (COMPLETED — VISUALLY ACCEPTED, Oscar 2026-07-20)</summary>
+
 > **Analytical content only** (navigation shell from E7D.9A retained). Converted the Top Risk shell (UID
-> `aegis-forecast-drift-top-keys` **preserved**) into a governed executive/operational view: removed the 5 empty
-> collapsed rows + provisional note and added **15 analytical panels** driven exclusively by the governed
-> `forecast_drift_score` (primary ranking = **average per dimension**) and `forecast_drift_family_scores`
-> (family ranking, aggregated **standalone**). Panels: KPI row (Forecast Keys 12 · Avg 28.83 · Critical 14 ·
-> Drift Events 71), Highest-Risk Forecast Key (**NAM-SDF 42.74**), Top Forecast Keys / Regions / Forecast Versions
-> bars, Top Drift Families + Computability, **Risk Concentration Matrix** (key × family, built from signals native
-> family columns — **no join**), **Consolidated Risk Details** (168 rows, per-signal explanations, drill links to
-> Forecast/Events/Historical Timeline), Latest Governed Run + Data Quality (18/18). **Cardinality Gate A PASS**
-> (signals 168 = 168 distinct id; family_scores 672 = 168×4; no signals×family_scores join). All rankings/KPIs/matrix
-> reconcile to the served CSVs with **zero diffs**. Ternary computed columns validated live via `/api/ds/query`.
-> Published via `V2/scripts/push-e7d9b-top-risk.ps1` (token **DPAPI in-memory only**) → `success` version 4; E7D.9A
-> shell archived to `archive/aegis-forecast-drift-top-risk-shell-e7d9a.json`. **Documented deviations:** per-key
-> Dominant Family omitted from the summary (14 versions/key, no groupBy mode); Family panels honor Forecast Key +
-> Forecast Version only (family_scores lacks region/status/run); family bar colored by severity thresholds (brand
-> colors in computability/matrix/details). **No CSV/Python/PowerBI/datasource/Docker/nginx/token/DPAPI/MCP/weights/
-> thresholds change; no other dashboard touched; no manual commit; R1 unchanged.** Deliverables:
-> `engineering/E7_grafana/E7D9B_top_risk_*` (8 docs), rebuilt `aegis-forecast-drift-top-keys.json`,
-> `V2/scripts/push-e7d9b-top-risk.ps1`. Token **E7D9B_TOP_RISK_DASHBOARD_IMPLEMENTED_PENDING_VISUAL_ACCEPTANCE**.
-> **Stop before E7D.11. Await Oscar's visual acceptance.**
-> URL `http://localhost:3000/d/aegis-forecast-drift-top-keys`.
+> `aegis-forecast-drift-top-keys` **preserved**) into a governed executive/operational view: **15 analytical panels**
+> on `forecast_drift_score` (avg per dimension) + `forecast_drift_family_scores` (standalone). KPIs (Keys 12 · Avg
+> 28.83 · Critical 14 · Events 71), Highest-Risk **NAM-SDF 42.74**, Top Keys/Regions/Versions bars, Top Drift Families
+> + Computability, **Risk Concentration Matrix** (key × family, no join), **Consolidated Risk Details** (168 rows +
+> drill links), Latest Run + Data Quality 18/18. **Cardinality Gate A PASS.** Repaired & republished **version 5**
+> (id51/id60 non-computable-as-zero fixed); Oscar visually accepted (Volatility 56.04, Performance 7.71; matrix
+> NAM-SDF 82.21/8.80). Token **E7D9B_TOP_RISK_DASHBOARD_COMPLETED_VISUALLY_ACCEPTED**. See
+> `engineering/E7_grafana/E7D9B_top_risk_*` (8 docs). URL `http://localhost:3000/d/aegis-forecast-drift-top-keys`.
+
+</details>
 
 <details><summary>Previous stage — E7D.9A (COMPLETED — VISUALLY ACCEPTED, Oscar 2026-07-20)</summary>
 
