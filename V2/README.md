@@ -288,3 +288,36 @@ inside the `aegis-net` Docker network (no host port). The pre-existing Grafana
   browser unauthenticated → live render **visually accepted by Oscar (2026-07-19)**. Do **not** start E7D.7 (Events).
   Token `E7D6_VOLATILITY_MVP_COMPLETED_VISUALLY_ACCEPTED`.
   URL `http://localhost:3000/d/aegis-forecast-drift-volatility`. See `engineering/E7_grafana/E7D6_volatility_*` (5 docs).
+
+- **E7D.7** — **Events MVP** (governed event log) — **REPAIRED, PENDING VISUAL ACCEPTANCE (Oscar)**. Transformed the
+  Events dashboard (uid `aegis-forecast-drift-events`, retained) from the E7D.0 shell into a **read-only** operational
+  view of the governed drift-**event** log. **Data finding:** `forecast_drift_event_history.csv` is a thin 7-column
+  lifecycle table (all `new_status=Open`, single `changed_at`) — **not** the rich source; the **71 governed events are
+  the `forecast_drift_signals.csv` subset where `is_event=1`**, which carries every rich field (forecast_key, region,
+  dominant_drift_family, forecast_drift_score, drift_status, explanation, event_status). **13 panels:** Total Events
+  (**71**), Critical (**14**), Warning (**34**), Affected Forecast Keys (**12**), Latest Event, Events by Drift Family
+  donut (shape 26/stability 24/volatility 15/performance 6, non-severity palette), Events by Drift Status donut
+  (Critical 14/Warning 34/Watch 13/Healthy 10, severity palette), Events by Forecast Key barchart (single detection
+  instant → **no over-time trend**), Governed Event Log (71 rows, newest-first, native column-filter search, wrapped
+  Explanation), Latest Governed Run (1·Success·168·71), Data Quality 18/18. **Read-only** — no resolve/ack/close/edit,
+  no invented lifecycle states (only governed `event_status=Open` shown), no invented Severity (`drift_status` = the
+  governed band; `severity` alias not surfaced), no invented Service/Scenario/Event Type (empty/single/absent).
+  **6 filters:** forecast_key, forecast_version (via `fv_label`), region, drift_status, run_id, **drift_family** (local)
+  — *documented deviation vs E7D.0 matrix* (Events adds forecast_version + drift_family because events are the signals
+  subset). **Nothing hardcoded** (71 = `is_event=1`; the mockup's "170" is illustrative; the CSV is the sole truth).
+  Infinity rule reaffirmed: every `filterExpression` column must be selected/computed (`fv_label = 'v'+forecast_version`
+  needs `forecast_version` selected). Reconciliation **0 discrepancies** (KPIs + distributions + affected keys +
+  explanation 71/71 + event_status Open + max 84.72 + run footer + **9 filter scenarios**: All 71 / NAM 29 / Critical 14
+  / Run1 71 / shape 26 / NAM-MSIT 9 / v2026-05-01 5 / back-to-All 71 / NAM+Critical 9). Published **only** the Events
+  dashboard via `V2/scripts/push-e7d7-events.ps1` (token DPAPI in-memory) → **v4**, `success`, in folder, 13 panels,
+  `keepTime=false`/`includeVars=true`, saved range 2026-07-01→07-31 (UTC, picker hidden); shell archived at
+  `V2/grafana/dashboards/archive/aegis-forecast-drift-events-shell.json`. **Visual repair (v5):** the
+  Events-by-Drift-Status donut now uses explicit `byName` fixed-color overrides (Healthy green / Watch yellow /
+  Warning orange / Critical red) instead of palette-classic, and the Latest Event panel height was reduced
+  h:4→h:3 (KPIs re-verified unchanged: 71 / 14 / 34 / 12, DQ 18/18). **Allowed exception:** shared `links` block
+  keeps keepTime=false/includeVars=true. Historical Timeline, Top Forecast Keys, Top Scenarios, Settings & Data Quality
+  **not started**. Overview + Forecast + Performance + Shape + Stability + Volatility, datasource, nginx, Docker, CSVs,
+  Python, Power BI, weights, thresholds, alerts, plugins, token, DPAPI, MCP untouched; JSON secret-free; no manual
+  commit. Agent browser unauthenticated → live render **awaits Oscar's confirmation**. **Stop before E7D.8.**
+  Token `E7D7_EVENTS_MVP_REPAIRED_PENDING_VISUAL_ACCEPTANCE`.
+  URL `http://localhost:3000/d/aegis-forecast-drift-events`. See `engineering/E7_grafana/E7D7_events_*` (6 docs).
