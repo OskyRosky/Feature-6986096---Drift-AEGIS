@@ -11,7 +11,7 @@
   "timepicker": { "hidden": true },
   "refresh": "",
   "links": [
-    { "asDropdown": true, "title": "AEGIS Sections", "type": "dashboards", "tags": ["aegis-nav"], "icon": "external link", "includeVars": false, "keepTime": true, "targetBlank": false, "tooltip": "", "url": "" }
+    { "asDropdown": true, "title": "AEGIS Sections", "type": "dashboards", "tags": ["aegis-nav"], "icon": "external link", "includeVars": true, "keepTime": false, "targetBlank": false, "tooltip": "", "url": "" }
   ],
   "templating": {
     "list": [

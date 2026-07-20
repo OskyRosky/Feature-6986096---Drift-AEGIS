@@ -6,6 +6,222 @@ Last updated: 2026-07-19
 > Microsoft internal / confidential. Engineering stages (E-prefix) build the product; product/document versions (V1/V2/V3) are separate. See `engineering/ROADMAP.md`.
 
 ## Current stage
+**E7D.6 — Volatility MVP (analytical panels): COMPLETED — VISUALLY ACCEPTED (Oscar, 2026-07-19).**
+> Built the **Volatility** section (uid `aegis-forecast-drift-volatility` **retained**) from the E7D.0 structural
+> shell into a full governed analytical dashboard for the volatility drift family (governed weight **10%**).
+> **Deliberately NOT a mechanical clone of Stability/Shape** — Volatility is only **partially computable**:
+> **13 panels** — **A** Average Volatility Drift Score (**56.04**, bands 20/40/70); **B** Volatility Signals
+> Computable (**144**); **D** Volatility Coverage (**85.7 %** = 144 ÷ 168); **E** Maximum Volatility Drift Score
+> (**100.00**); **F** Volatility Drift Score over time (**12** `forecast_version` points, UTC — **ignores the
+> Forecast Version filter**, axis starts **2024-06-01**; peak **78.13** @ 2026-01-01); **G** Volatility Drift
+> Score by Forecast Key (**horizontal barchart**, NAM-SDF **82.21** top); **H** Volatility Signal Details
+> (per-signal, score desc, Computable Yes/No, full width, shows non-computable rows); **I** Volatility Profile —
+> Governed Auxiliary Metrics (from `forecast_drift_family_scores.csv`: `rolling_stddev/cov/mad`,
+> `oscillation_count`, `sign_change_freq`, `volatility_class`; 144 rows); **J** Non-computable Summary
+> (**INSUFFICIENT_VERSIONS = 24**); **K** Latest Governed Run (1 · Success · 2026-07-13 22:44 UTC · 168 · 71);
+> **L** Data Quality 18/18. **No value is hardcoded** — every KPI reduces the datasource live. **Scope decisions
+> justified by the data:** the **24 non-computable** signals are exactly the first two versions of each of the 12
+> keys (`2024-04-01`, `2024-05-01`), governed by `not_computable_reason = INSUFFICIENT_VERSIONS` → a
+> **Non-computable Summary panel IS built** (unlike Stability/Shape at 168/168); **Coverage is a first-class KPI**
+> (85.7 %, denominator = full filtered universe, dynamic); averages/max **exclude** non-computable signals (never
+> zeroed); the governed **auxiliary metrics live in family_scores.csv (not signals.csv)** and are surfaced in a
+> dedicated **Volatility Profile** table honoring only `forecast_key` + `forecast_version` (family_scores has no
+> region/status/run columns — documented two-table exception); a **ranking barchart** (new panel type) answers the
+> key-level dispersion question; the trend starts at the **first computable bucket 2024-06-01**. **Reused the
+> stable E7D.1–E7D.5 mechanism verbatim** (`queryType`-wrapped variables, `v`-prefixed `fv_label`, quoted
+> `run_id`, `convertFieldType` before numeric reducers; note Infinity requires **`==`** for equality in the
+> family_scores filters). **Structural validator 0 failures. Reconciliation 0 discrepancies** (4 KPI + 12-bucket
+> trend + key ranking + aux 144 + non-computable 24 + 8 filter scenarios, incl. the decisive non-computable
+> Published **only** the Volatility
+> dashboard via `V2/scripts/push-e7d6-volatility.ps1` (token **DPAPI-decrypted in memory only**, never printed) →
+> **v3** (post-acceptance polish), `success`, `inFolder=True`, 13 panels; shell backed up at
+> `V2/grafana/dashboards/archive/aegis-forecast-drift-volatility-shell.json`. **Post-acceptance polish (v3):**
+> confirmed the trend's saved time range begins at the first real bucket (`from = 2024-06-01`; `linear` +
+> `showPoints=always` preserved; query/12 buckets unchanged — the "2021" gap was a client-side time override, not
+> in the model); and set the Volatility Profile `rolling_stddev` (raw 221.6 → 1,270,234, no governed unit) to an
+> explicit **`locale`** unit (full thousands-grouped integer) instead of the ambiguous `short` K/Mil — no data
+> recalculated; KPIs re-verified unchanged. **Shared navigation-contract fix (v4):** the **AEGIS Sections**
+> dropdown (`dashboard.links`, tag `aegis-nav`) had `keepTime: true` → it carried the previous dashboard's **live**
+> time range into the target (the real cause of the "from 2021" trend when navigating in via AEGIS nav). Set
+> `keepTime: false` (target loads its **own** saved range) + `includeVars: true` (preserve the 5 global filters)
+> and republished this to **all 11 dashboards** (foundation, forecast, performance, shape, stability, volatility,
+> events, timeline, top-keys, top-scenarios, settings) — **only the `links` block changed** (no queries, data,
+> panels, filters, thresholds or time ranges). **Overview, Forecast, Performance, Shape, Stability and the other 5
+> dashboards otherwise untouched** (nav `links` block only); datasource, nginx, Docker, CSVs, Python, Power BI V1,
+> weights, thresholds, alerts, plugins, token, DPAPI, MCP all **unchanged**; repo secret-free; **no manual
+> commit**. The agent browser session is unauthenticated, so the **live render awaits Oscar's confirmation**
+> (`engineering/E7_grafana/E7D6_volatility_visual_validation.md`). Deliverables:
+> `engineering/E7_grafana/E7D6_volatility_*` (5 docs) + rebuilt
+> `V2/grafana/dashboards/aegis-forecast-drift-volatility.json` + shell archive +
+> `V2/scripts/push-e7d6-volatility.ps1`. **Open risk R1** unchanged. Token
+> **E7D6_VOLATILITY_MVP_COMPLETED_VISUALLY_ACCEPTED**. **Stop before E7D.7 (Events).**
+> URL `http://localhost:3000/d/aegis-forecast-drift-volatility`.
+
+**E7D.5 — Stability MVP (analytical panels): COMPLETED — VISUALLY ACCEPTED (2026-07-19).**
+> Built the **Stability** section (uid `aegis-forecast-drift-stability` **retained**) from the E7D.0 structural
+> shell into a full governed analytical dashboard for the stability drift family (governed weight **30%**) by
+> **cloning the visually-accepted Shape (E7D.4) structure** and swapping the governed metric to
+> `stability_drift_score`: **8 analytical components / 10 panels** — **A** Average Stability Drift Score
+> (**38.93**, bands 20/40/70); **B** Stability Signals Computable (**168**); **C** Stability Coverage
+> (**100.0 %** = 168 ÷ 168, green ≥ 0.9); **D** Maximum Stability Drift Score (**100.00**); **E** Stability Drift
+> Score over time (14 `forecast_version` points, UTC — **ignores the Forecast Version filter**; peak **74.14** @
+> 2025-12-01, secondary **56.47** @ 2026-04-06 / **55.36** @ 2026-03-07, low **16.08** @ 2026-04-16); **F**
+> Stability Signal Details (per-signal, score desc, Computable Yes/No, full width); **H** Latest Governed Run
+> (1 · Success · 2026-07-13 22:44 UTC · 168 · 71); **I** Data Quality 18/18. **No value is hardcoded** — every
+> KPI reduces the datasource live. **Scope decisions justified by the data:** Stability is **168/168 computable
+> (0 non-computable)** so the **Non-computable Summary panel is intentionally omitted** (Details widened to full
+> width); the governed snapshot exposes a **single** stability metric (`stability_drift_score`) with **no**
+> auxiliary/MAPE-equivalent, so the 4th KPI slot is **Maximum Stability Drift Score** and the Details table
+> carries no Current/Previous columns. The richer stability auxiliaries in `forecast_drift_family_scores.csv`
+> (`structural_break_flag`, `cumulative_revision_pct`, `version_count`) are **populated but intentionally not
+> integrated** into this single-source MVP — recorded as a future enhancement. **Reused the stable
+> E7D.1–E7D.4 mechanism verbatim** (`queryType`-wrapped variables, `v`-prefixed `fv_label`, quoted `run_id`, no
+> aliasing of filtered columns, transform aggregation; boolean fix `convertFieldType is_comp → number` before
+> `mean` on Coverage); the accepted Shape v3 polish (time range from **2024-04-01**, trend `lineInterpolation`
+> **linear**, points visible) was applied from the start. **Structural validator 0 real failures.**
+> **Reconciliation all-matched, 0 discrepancies** (4 KPI + 14-bucket trend + 6 filter scenarios:
+> All→168/38.93/100 %, NAM-SDF→14/54.78, region NAM→42/50.71, Critical→14/95.35, v2025-12-01→12/74.14, missing
+> key→0/empty). Published **only** the Stability dashboard via `V2/scripts/push-e7d5-stability.ps1` (token
+> **DPAPI-decrypted in memory only**, never printed) → **v2**, `success`, `inFolder=True`, 10 panels; shell
+> backed up at `V2/grafana/dashboards/archive/aegis-forecast-drift-stability-shell.json`. **Overview, Forecast,
+> Performance, Shape and the other 6 dashboards untouched**; datasource, nginx, Docker, CSVs, Python, Power BI
+> V1, weights, thresholds, alerts, plugins, token, DPAPI, MCP all **unchanged**; repo secret-free; **no manual
+> commit**. The agent browser session is unauthenticated, so the **live render awaits Oscar's confirmation**
+> (`engineering/E7_grafana/E7D5_stability_visual_validation.md`). Deliverables:
+> `engineering/E7_grafana/E7D5_stability_*` (5 docs) + rebuilt
+> `V2/grafana/dashboards/aegis-forecast-drift-stability.json` + shell archive +
+> `V2/scripts/push-e7d5-stability.ps1`. **Open risk R1** unchanged. **Oscar visually accepted on 2026-07-19**
+> (metrics, trend, details table and governance). Token **E7D5_STABILITY_MVP_COMPLETED_VISUALLY_ACCEPTED**.
+> URL `http://localhost:3000/d/aegis-forecast-drift-stability`.
+
+**E7D.4 — Shape MVP (analytical panels): COMPLETED — VISUALLY ACCEPTED (2026-07-19).**
+> Rebuilt the **Shape** section (uid `aegis-forecast-drift-shape` **retained**) from the E7D.0 structural shell
+> into a full governed analytical dashboard for the shape drift family (governed weight **40%**): **8 analytical
+> components / 10 panels** — **A** Average Shape Drift Score (**26.03**, bands 20/40/70); **B** Shape Signals
+> Computable (**168**); **C** Shape Coverage (**100.0 %** = 168 ÷ 168, green ≥ 0.9); **D** Maximum Shape Drift
+> Score (**100.00**); **E** Shape Drift Score over time (14 `forecast_version` points, UTC — **ignores the
+> Forecast Version filter**; peak **62.60** @ 2025-12-01, secondary **44.08** @ 2026-03-07, low **9.59** @
+> 2026-04-16); **F** Shape Signal Details (per-signal, score desc, Computable Yes/No, full width); **H** Latest
+> Governed Run (1 · Success · 2026-07-13 22:44 UTC · 168 · 71); **I** Data Quality 18/18. **No value is
+> hardcoded** — every KPI reduces the datasource live. **Scope decisions justified by the data:** Shape is
+> **168/168 computable (0 non-computable)** so the **Non-computable Summary panel is intentionally omitted** (no
+> empty panel; Details widened to full width); the governed snapshot exposes a **single** shape metric
+> (`shape_drift_score`) with **no** auxiliary/MAPE-equivalent, so the 4th KPI slot is **Maximum Shape Drift
+> Score** instead of an aux-metric KPI, and the Details table carries no Current/Previous auxiliary columns.
+> **Reused the stable E7D.1/E7D.2/E7D.3 mechanism verbatim** (`queryType`-wrapped variables, `v`-prefixed
+> `fv_label`, quoted `run_id`, no aliasing of filtered columns, transform aggregation; the E7D.3 boolean fix —
+> `convertFieldType is_comp → number` before `mean` — applied to Coverage); Run + Data Quality cloned 1:1.
+> **Structural validator 0 failures.** **Reconciliation all-matched, 0 discrepancies** (4 KPI + 14-bucket trend +
+> 6 filter scenarios: All→168/26.03/100 %, NAM-SDF→14/42.22, region NAM→42/36.50, Critical→14/89.45,
+> v2025-12-01→12/62.60, missing key→0/empty). Published **only** the Shape dashboard via
+> `V2/scripts/push-e7d4-shape.ps1` (token **DPAPI-decrypted in memory only**, never printed) → **v2**, `success`,
+> `inFolder=True`, 10 panels; shell backed up at
+> `V2/grafana/dashboards/archive/aegis-forecast-drift-shape-shell.json`. **Overview, Forecast, Performance and
+> the other 7 dashboards untouched**; datasource, nginx, Docker, CSVs, Python, Power BI V1, weights, thresholds,
+> alerts, plugins, token, DPAPI, MCP all **unchanged**; repo secret-free; **no manual commit**. The agent browser
+> session is unauthenticated, so the **live render awaits Oscar's confirmation**
+> (`engineering/E7_grafana/E7D4_shape_visual_validation.md`). Deliverables:
+> `engineering/E7_grafana/E7D4_shape_*` (5 docs) + rebuilt
+> `V2/grafana/dashboards/aegis-forecast-drift-shape.json` + shell archive + `V2/scripts/push-e7d4-shape.ps1`.
+> **Oscar visually accepted on 2026-07-19** (metrics, details table and governance). A minor post-acceptance
+> polish (v3) was applied to the trend panel only — time range starts at the first real data (**2024-04-01**,
+> removing the empty pre-2024 space) and `lineInterpolation` **smooth → linear** with real per-version points
+> kept visible; no query / metric / filter / KPI / table / other-dashboard change; KPIs re-verified intact
+> (26.03 / 168 / 100.0 % / 100.00 / DQ 18/18). **Do not start E7D.5 (Stability).** **Open risk R1** unchanged.
+> Token **E7D4_SHAPE_MVP_COMPLETED_VISUALLY_ACCEPTED**.
+> URL `http://localhost:3000/d/aegis-forecast-drift-shape`.
+
+**E7D.3 — Performance MVP (analytical panels): COMPLETED — VISUALLY ACCEPTED (2026-07-19).**
+> Transformed the **Performance** section (uid `aegis-forecast-drift-performance` **retained**) from the E7D.0
+> structural shell (3 text panels) into a full governed analytical dashboard for the performance drift family
+> (governed weight **20%**): **9 analytical components / 11 panels** — **A** Average Performance Drift Score
+> (**7.71**, severity bands 20/40/70); **B** Performance Signals Computable (**156**); **C** Average MAPE Change
+> (**0.81 %**, `MAPE_deep` rows, percent unit); **D** Performance Coverage (**92.9 %** = 156 ÷ 168, green ≥ 0.9);
+> **E** Performance Drift Score over time (13 `forecast_version` points, thresholds 20/40/70, UTC — **ignores the
+> Forecast Version filter**; peaks **38.19** @ 2025-06-01 and **23.19** @ 2026-03-07); **F** Performance Signal
+> Details (per-signal, sorted by score desc, Computable Yes/No, severity status); **G** Non-computable
+> Performance Summary (**NO_REALIZED_OVERLAP 12**, from family scores); **H** Latest Governed Run (1 · Success ·
+> 2026-07-13 22:44 UTC · 168 · 71); **I** Data Quality 18/18. **No value is hardcoded** — every KPI reduces the
+> datasource live. **Computability predicate solved**: `performance_drift_score` is empty for non-computable
+> rows and Infinity coerces empty cells unreliably (numeric `>= 0` → HTTP 400 / truthy-empty; ternary computed
+> columns unsupported), so the score is selected as **string** and filtered with `performance_drift_score != ''`
+> (156 rows), converted to number via `convertFieldType` for the mean/trend, with a **boolean computed flag**
+> for coverage. **Reused the stable E7D.1/E7D.2 mechanism verbatim** (`queryType`-wrapped variables, `v`-prefixed
+> `fv_label`, quoted `run_id`, no aliasing of filtered columns, transform aggregation); Run + Data Quality
+> panels cloned 1:1 from Forecast. **Reconciliation all-matched, 0 mismatches** (4 KPI + 4 consistency +
+> 13-bucket trend + details spot-check + 7 filter scenarios: All→156/7.71, NAM-MSIT→13/18.39, region NAM→39,
+> v2025-06-01→12/38.19, Critical→14/30.03, missing key→0); pre-publish structural validator **0 failures**.
+> Published **only** the Performance dashboard via `V2/scripts/push-e7d3-performance.ps1` (token **DPAPI-decrypted
+> in memory only**, never printed) → **v2**, `success`, `inFolder=True`, 11 panels; shell backed up at
+> `V2/grafana/dashboards/archive/aegis-forecast-drift-performance-shell.json`. **Oscar's v2 visual review found
+> one defect** (all other panels confirmed working): **Performance Coverage rendered completely empty**. **Root
+> cause:** coverage reduces the computed flag `is_comp` (`performance_drift_score != ''`) with `mean`, but
+> despite `type:"number"` Infinity returns `is_comp` as a **boolean** field (`is_comp : boolean`, `True/False`),
+> and `mean` over a boolean yields no value → empty. **Fix (v3):** added a single `convertFieldType is_comp →
+> number` transform to that panel (True→1/False→0) before the `mean` reducer — no layout/query/filter/unit change
+> — giving 156÷168 = **92.9 %**. **Denominator confirmed dynamic, not hardcoded** (headless boolean→number→mean:
+> All 168/156→92.9 %, Forecast Key NAM-MSIT 14/13→92.9 %, Region NAM 42/39→92.9 %, Version v2025-06-01
+> 12/12→100 %, back to All 168/156→92.9 %). Republished **only** Performance → **v3**, `success`, `inFolder=True`,
+> 11 panels. **Overview, Forecast and the other
+> 8 dashboards untouched**; datasource `aegis-forecast-drift-csv`, nginx, Docker, CSVs, Python, Power BI V1,
+> weights, thresholds, alerts, plugins, token, DPAPI, MCP all **unchanged**; repo secret-free; **no manual
+> commit** (R1 auto-commit untouched). **Documented data limitations**: only `MAPE_deep` rows expose
+> Current/Previous MAPE in the details table (blank elsewhere by design); the Non-computable Summary honors only
+> Forecast Key + Forecast Version (family scores lack region/status/run_id). The agent browser session is
+> unauthenticated, so the **live render awaits Oscar's confirmation**
+> (`engineering/E7_grafana/E7D3_performance_visual_validation.md`). Deliverables:
+> `engineering/E7_grafana/E7D3_performance_*` (5 docs) + rebuilt
+> `V2/grafana/dashboards/aegis-forecast-drift-performance.json` + shell archive +
+> `V2/scripts/push-e7d3-performance.ps1`. **Do not start E7D.4.** **Open risk R1** unchanged.
+> **Oscar visually accepted v3 on 2026-07-19** (Performance Coverage 92.9 %; all other components working).
+> Token **E7D3_PERFORMANCE_MVP_COMPLETED_VISUALLY_ACCEPTED**.
+> URL `http://localhost:3000/d/aegis-forecast-drift-performance`.
+
+**E7D.2 — Forecast MVP (analytical panels): COMPLETED — VISUALLY ACCEPTED (2026-07-19).**
+> Oscar's first visual review of **v2** found **two mandatory defects** (all other panels confirmed working):
+> (1) **Drift Status Distribution** colored slices **by position** (`palette-classic` ignored the value
+> mappings) — **fixed** with explicit per-value `byName` overrides (Healthy→green / Watch→yellow / Warning→
+> orange / Critical→red, `color.mode:fixed`), so color is bound to value/series not position; (2) the **Drift
+> Score Heatmap rendered empty** (only the Forecast Key column) — **root cause:** the 14-target Infinity pivot
+> fired 14 GETs to one URL, Infinity **coalesced responses per URL** so only target A returned data and the
+> join left just `forecast_key`. **Fixed** by rebuilding the heatmap as a **single Infinity query** pivoted by
+> the native **`groupingToMatrix`** transform (`sortBy fv_label` → `groupingToMatrix` → `organize`) — one
+> query = no coalescing = stable 12×14 matrix that also now **honors the shared filters**. Republished **v3**.
+> Source-data gate re-confirmed (single query 168 rows / 12 keys / 14 versions; APC-MULTITENANT v2024-04-01 =
+> 25.6). **Oscar's second visual review (2026-07-19) confirmed both repairs** — the status donut shows the
+> correct severity colors and the heatmap renders all 12 keys × 14 versions with values and colored
+> backgrounds; all other panels (filters, trend, gauge, ranking, Latest Run, Data Quality) render correctly.
+> Token **E7D2_FORECAST_MVP_COMPLETED_VISUALLY_ACCEPTED**.
+
+**E7D.2 — Forecast MVP — build detail (published v3, 2026-07-19):**
+> Transformed the **Forecast** section (uid `aegis-forecast-drift-forecast` **retained**) from the E7D.0
+> structural shell (3 text panels) into a full governed analytical dashboard: **8 components / 10 panels** —
+> **A** Overall Forecast Drift Score gauge (mean **28.8**, severity bands 0/20/40/70); **B** Drift Family
+> Distribution donut (Stability 88 · Volatility 45 · Shape 27 · Performance 8, **neutral** colors); **C**
+> Drift Status Distribution donut (Healthy 82 · Watch 38 · Warning 34 · Critical 14, **severity** colors);
+> **D** Avg Drift Score over time (14 `forecast_version` points, thresholds 20/40/70, UTC — **ignores the
+> Forecast Version filter** to preserve full history); **E** Forecast Keys by avg drift score (12 keys, desc,
+> **NAM-SDF 42.74** top, neutral); **F** **Drift Score Heatmap** (12 keys × 14 versions, one governed score
+> per cell, severity background — a single-query pivot via the native `groupingToMatrix` transform, replacing
+> the unstable 14-target join, since Grafana has no native categorical pivot); **G** Latest Governed Run (1 · Success · 2026-07-13 22:44
+> UTC · 168 · 71); **H** Data Quality 18/18. **Reused the stable E7D.1 mechanism verbatim** (`queryType`-
+> wrapped variables, `v`-prefixed `fv_label` filter, quoted `run_id`, no aliasing of filtered columns,
+> transform-based aggregation). **Reconciliation 18/18** (8 panel metrics + 4 consistency + 6 filter
+> scenarios: All→168, Critical→14, NAM-SDF→14, NAM→42, v2025-12-01→12 mean 53.3); pre-publish structural
+> validator **0 failures**; single-query heatmap source gate **168 rows / 12 keys / 14 versions**. Published
+> **only** the Forecast dashboard via `V2/scripts/push-e7d2-forecast.ps1` (token **DPAPI-decrypted in memory
+> only**, never printed) → **v3** (v2 was the initial build, repaired per Oscar's review above), `success`,
+> `inFolder=True`, 10 panels. Shell backed up at
+> `V2/grafana/dashboards/archive/aegis-forecast-drift-forecast-shell.json`. **Overview and the other 9
+> dashboards untouched**; datasource `aegis-forecast-drift-csv`, nginx, Docker, CSVs, Python, Power BI V1,
+> weights, thresholds, alerts, plugins, token, DPAPI, MCP all **unchanged**; repo secret-free; **no manual
+> commit (R1 auto-commit untouched). Token **E7D2_FORECAST_MVP_COMPLETED_VISUALLY_ACCEPTED**;
+> visually accepted by Oscar 2026-07-19 (`engineering/E7_grafana/E7D2_forecast_visual_validation.md`).
+> Deliverables: `engineering/E7_grafana/E7D2_forecast_*` (6 docs) + rebuilt
+> `V2/grafana/dashboards/aegis-forecast-drift-forecast.json` + shell archive +
+> `V2/scripts/push-e7d2-forecast.ps1`. Do **not** start E7D.3. **Open risk R1** unchanged.
+> URL `http://localhost:3000/d/aegis-forecast-drift-forecast`.
+
 **E7D.1 — Overview MVP (analytical panels): COMPLETED — VISUALLY ACCEPTED (2026-07-19).**
 > The first published build (**v3**) rendered **"No data" on every panel** inside Grafana (empty filters)
 > even though external `/api/ds/query` tests passed. **Root cause (two defects):** (1) the 5 template
@@ -256,7 +472,7 @@ compile with values identical to Python (status 14/34/38/82, deep, 18/18, True),
 | E5A | Python Drift Engine | ✅ Complete |
 | E5B | Production Dataset Validation & Export Hardening | ✅ Complete (offline + live validated) |
 | E6 | Power BI MVP (local, consume-only) | ◑ Partial (model + measures + specs + TMDL; .pbix visuals manual) |
-| E7 | Grafana MVP (local, consume-only) | ◑ In progress (E7A ✅; E7A.1/E7A.2/E7B.0/E7B.1/E7B.2/E7B.3/E7B.4/E7B.5 ✅; E7C ✅ foundation dashboard `aegis-forecast-drift-foundation` (folder `afsjccp27s0e8d`, data OK); **E7D.0 ✅** product backbone = 11 dashboards (Overview + 10 shells, shared nav/filters/visual system); E7D.1–E7D.12 ⏳) |
+| E7 | Grafana MVP (local, consume-only) | ◑ In progress (E7A ✅; E7A.1/E7A.2/E7B.0/E7B.1/E7B.2/E7B.3/E7B.4/E7B.5 ✅; E7C ✅ foundation dashboard `aegis-forecast-drift-foundation` (folder `afsjccp27s0e8d`, data OK); **E7D.0 ✅** product backbone = 11 dashboards (Overview + 10 shells, shared nav/filters/visual system); **E7D.1 ✅** Overview MVP (visually accepted); **E7D.2 ✅** Forecast MVP (visually accepted); **E7D.3 ✅** Performance MVP (visually accepted); **E7D.4 ✅** Shape MVP (visually accepted); **E7D.5 ✅** Stability MVP (visually accepted); **E7D.6 ✅** Volatility MVP (visually accepted); E7D.7–E7D.12 ⏳) |
 | E8 | Cloud Deployment & Governance | ⏳ |
 
 ## Key validated facts (E1B)

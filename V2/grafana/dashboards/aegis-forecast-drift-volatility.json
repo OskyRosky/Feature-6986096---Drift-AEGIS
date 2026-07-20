@@ -1,30 +1,752 @@
 {
   "uid": "aegis-forecast-drift-volatility",
   "title": "AEGIS Forecast Drift — Volatility",
-  "description": "E7D.0 structural shell. Volatility drift family (weight 10%), governed V2 snapshot (read-only). Analytical panels arrive in E7D.6.",
-  "tags": ["aegis", "forecast-drift", "aegis-nav", "e7d0", "shell", "volatility"],
+  "description": "Volatility drift family (governed weight 10%): rolling dispersion / oscillation / sign-change behavior via volatility_drift_score. Governed read-only V2 snapshot through datasource aegis-forecast-drift-csv (forecast_drift_signals.csv + forecast_drift_family_scores.csv + forecast_drift_runs.csv). Volatility is only PARTIALLY computable: 144 of 168 signals have a volatility_drift_score (coverage 85.7%); the 24 non-computable signals are governed by not_computable_reason = INSUFFICIENT_VERSIONS (the first two forecast versions of each key lack enough history). Governed auxiliary metrics (rolling_stddev, rolling_cov, rolling_mad, oscillation_count, sign_change_freq, volatility_class) live in the family-scores table and are surfaced in a dedicated profile panel keyed by forecast_key + forecast_version. The drift trend intentionally ignores the Forecast Version filter to preserve the full historical series.",
+  "tags": ["aegis", "forecast-drift", "aegis-nav", "volatility", "e7d6"],
   "editable": true,
   "schemaVersion": 39,
   "version": 0,
-  "time": { "from": "now-5y", "to": "now" },
+  "timezone": "utc",
+  "time": { "from": "2024-06-01T00:00:00.000Z", "to": "2026-06-01T00:00:00.000Z" },
   "timepicker": { "hidden": true },
   "refresh": "",
   "links": [
-    { "asDropdown": true, "title": "AEGIS Sections", "type": "dashboards", "tags": ["aegis-nav"], "icon": "external link", "includeVars": false, "keepTime": true, "targetBlank": false, "tooltip": "", "url": "" }
+    { "asDropdown": true, "title": "AEGIS Sections", "type": "dashboards", "tags": ["aegis-nav"], "icon": "external link", "includeVars": true, "keepTime": false, "targetBlank": false, "tooltip": "", "url": "" }
   ],
   "templating": {
     "list": [
-      { "name": "region", "label": "Region", "type": "query", "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" }, "query": { "refId": "variable", "type": "csv", "source": "url", "format": "table", "parser": "backend", "url": "http://aegis-csv/forecast_drift_signals.csv", "url_options": { "method": "GET", "data": "" }, "root_selector": "", "columns": [ { "selector": "region", "text": "", "type": "string" } ], "filters": [] }, "includeAll": true, "multi": true, "allValue": null, "current": { "text": "All", "value": "$__all", "selected": false }, "refresh": 1, "sort": 1, "hide": 0 },
-      { "name": "forecast_key", "label": "Forecast Key", "type": "query", "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" }, "query": { "refId": "variable", "type": "csv", "source": "url", "format": "table", "parser": "backend", "url": "http://aegis-csv/forecast_drift_signals.csv", "url_options": { "method": "GET", "data": "" }, "root_selector": "", "columns": [ { "selector": "forecast_key", "text": "", "type": "string" } ], "filters": [] }, "includeAll": true, "multi": true, "allValue": null, "current": { "text": "All", "value": "$__all", "selected": false }, "refresh": 1, "sort": 1, "hide": 0 },
-      { "name": "forecast_version", "label": "Forecast Version", "type": "query", "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" }, "query": { "refId": "variable", "type": "csv", "source": "url", "format": "table", "parser": "backend", "url": "http://aegis-csv/forecast_drift_signals.csv", "url_options": { "method": "GET", "data": "" }, "root_selector": "", "columns": [ { "selector": "forecast_version", "text": "", "type": "string" } ], "filters": [] }, "includeAll": true, "multi": true, "allValue": null, "current": { "text": "All", "value": "$__all", "selected": false }, "refresh": 1, "sort": 1, "hide": 0 },
-      { "name": "drift_status", "label": "Drift Status", "type": "query", "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" }, "query": { "refId": "variable", "type": "csv", "source": "url", "format": "table", "parser": "backend", "url": "http://aegis-csv/forecast_drift_signals.csv", "url_options": { "method": "GET", "data": "" }, "root_selector": "", "columns": [ { "selector": "drift_status", "text": "", "type": "string" } ], "filters": [] }, "includeAll": true, "multi": true, "allValue": null, "current": { "text": "All", "value": "$__all", "selected": false }, "refresh": 1, "sort": 1, "hide": 0 },
-      { "name": "run_id", "label": "Run ID", "type": "query", "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" }, "query": { "refId": "variable", "type": "csv", "source": "url", "format": "table", "parser": "backend", "url": "http://aegis-csv/forecast_drift_runs.csv", "url_options": { "method": "GET", "data": "" }, "root_selector": "", "columns": [ { "selector": "calculation_run_id", "text": "", "type": "string" } ], "filters": [] }, "includeAll": true, "multi": true, "allValue": null, "current": { "text": "All", "value": "$__all", "selected": false }, "refresh": 1, "sort": 1, "hide": 0 }
+      {
+        "name": "forecast_key",
+        "label": "Forecast Key",
+        "type": "query",
+        "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+        "query": {
+          "queryType": "infinity",
+          "refId": "variable",
+          "infinityQuery": {
+            "refId": "variable", "type": "csv", "source": "url", "format": "table", "parser": "backend",
+            "url": "http://aegis-csv/forecast_drift_signals.csv",
+            "url_options": { "method": "GET", "data": "" }, "root_selector": "",
+            "columns": [ { "selector": "forecast_key", "text": "", "type": "string" } ], "filters": []
+          }
+        },
+        "includeAll": true, "multi": true, "allValue": null,
+        "current": { "text": "All", "value": "$__all", "selected": false },
+        "refresh": 1, "sort": 1, "hide": 0
+      },
+      {
+        "name": "forecast_version",
+        "label": "Forecast Version",
+        "type": "query",
+        "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+        "query": {
+          "queryType": "infinity",
+          "refId": "variable",
+          "infinityQuery": {
+            "refId": "variable", "type": "csv", "source": "url", "format": "table", "parser": "backend",
+            "url": "http://aegis-csv/forecast_drift_signals.csv",
+            "url_options": { "method": "GET", "data": "" }, "root_selector": "",
+            "columns": [ { "selector": "forecast_version", "text": "forecast_version", "type": "string" } ],
+            "computed_columns": [ { "selector": "'v' + forecast_version", "text": "__value" } ],
+            "filters": []
+          }
+        },
+        "includeAll": true, "multi": true, "allValue": null,
+        "current": { "text": "All", "value": "$__all", "selected": false },
+        "refresh": 1, "sort": 1, "hide": 0
+      },
+      {
+        "name": "region",
+        "label": "Region",
+        "type": "query",
+        "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+        "query": {
+          "queryType": "infinity",
+          "refId": "variable",
+          "infinityQuery": {
+            "refId": "variable", "type": "csv", "source": "url", "format": "table", "parser": "backend",
+            "url": "http://aegis-csv/forecast_drift_signals.csv",
+            "url_options": { "method": "GET", "data": "" }, "root_selector": "",
+            "columns": [ { "selector": "region", "text": "", "type": "string" } ], "filters": []
+          }
+        },
+        "includeAll": true, "multi": true, "allValue": null,
+        "current": { "text": "All", "value": "$__all", "selected": false },
+        "refresh": 1, "sort": 1, "hide": 0
+      },
+      {
+        "name": "drift_status",
+        "label": "Drift Status",
+        "type": "query",
+        "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+        "query": {
+          "queryType": "infinity",
+          "refId": "variable",
+          "infinityQuery": {
+            "refId": "variable", "type": "csv", "source": "url", "format": "table", "parser": "backend",
+            "url": "http://aegis-csv/forecast_drift_signals.csv",
+            "url_options": { "method": "GET", "data": "" }, "root_selector": "",
+            "columns": [ { "selector": "drift_status", "text": "", "type": "string" } ], "filters": []
+          }
+        },
+        "includeAll": true, "multi": true, "allValue": null,
+        "current": { "text": "All", "value": "$__all", "selected": false },
+        "refresh": 1, "sort": 1, "hide": 0
+      },
+      {
+        "name": "run_id",
+        "label": "Run ID",
+        "type": "query",
+        "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+        "query": {
+          "queryType": "infinity",
+          "refId": "variable",
+          "infinityQuery": {
+            "refId": "variable", "type": "csv", "source": "url", "format": "table", "parser": "backend",
+            "url": "http://aegis-csv/forecast_drift_runs.csv",
+            "url_options": { "method": "GET", "data": "" }, "root_selector": "",
+            "columns": [ { "selector": "calculation_run_id", "text": "", "type": "string" } ], "filters": []
+          }
+        },
+        "includeAll": true, "multi": true, "allValue": null,
+        "current": { "text": "All", "value": "$__all", "selected": false },
+        "refresh": 1, "sort": 1, "hide": 0
+      }
     ]
   },
   "panels": [
-    { "id": 1, "type": "text", "title": "", "gridPos": { "h": 3, "w": 24, "x": 0, "y": 0 }, "options": { "mode": "markdown", "content": "**AEGIS Forecast Drift**  ·  [Overview](/d/aegis-forecast-drift-foundation) · [Forecast](/d/aegis-forecast-drift-forecast) · [Performance](/d/aegis-forecast-drift-performance) · [Shape](/d/aegis-forecast-drift-shape) · [Stability](/d/aegis-forecast-drift-stability) · **Volatility** · [Events](/d/aegis-forecast-drift-events) · [Historical Timeline](/d/aegis-forecast-drift-timeline) · [Top Forecast Keys](/d/aegis-forecast-drift-top-keys) · [Top Scenarios](/d/aegis-forecast-drift-top-scenarios) · [Settings & Data Quality](/d/aegis-forecast-drift-settings)" } },
-    { "id": 2, "type": "text", "title": "", "gridPos": { "h": 4, "w": 24, "x": 0, "y": 3 }, "options": { "mode": "markdown", "content": "# AEGIS Forecast Drift — Volatility\n\nGoverned forecast drift monitoring — **V2** snapshot (read-only)." } },
-    { "id": 3, "type": "text", "title": "About this section", "gridPos": { "h": 7, "w": 24, "x": 0, "y": 7 }, "options": { "mode": "markdown", "content": "### Purpose\nVolatility drift family (governed weight **10%**): rolling dispersion, oscillation and sign-change behavior (`volatility_drift_score`, `rolling_stddev`, `oscillation_count`, `volatility_class`).\n\n### Status\n🚧 **Structural shell** created in **E7D.0**. Analytical panels will be built in **E7D.6**.\n\n### Data source\nGoverned **V2** snapshot (read-only) via datasource `aegis-forecast-drift-csv` — `forecast_drift_signals.csv` + `forecast_drift_family_scores.csv`." } }
+    {
+      "id": 1,
+      "type": "text",
+      "title": "",
+      "gridPos": { "h": 2, "w": 24, "x": 0, "y": 0 },
+      "options": {
+        "mode": "markdown",
+        "content": "**AEGIS Forecast Drift**  ·  [Overview](/d/aegis-forecast-drift-foundation) · [Forecast](/d/aegis-forecast-drift-forecast) · [Performance](/d/aegis-forecast-drift-performance) · [Shape](/d/aegis-forecast-drift-shape) · [Stability](/d/aegis-forecast-drift-stability) · **Volatility** · [Events](/d/aegis-forecast-drift-events) · [Historical Timeline](/d/aegis-forecast-drift-timeline) · [Top Forecast Keys](/d/aegis-forecast-drift-top-keys) · [Top Scenarios](/d/aegis-forecast-drift-top-scenarios) · [Settings & Data Quality](/d/aegis-forecast-drift-settings)"
+      }
+    },
+    {
+      "id": 2,
+      "type": "text",
+      "title": "",
+      "gridPos": { "h": 2, "w": 24, "x": 0, "y": 2 },
+      "options": {
+        "mode": "markdown",
+        "content": "**AEGIS Forecast Drift — Volatility** · Governed read-only **V2** snapshot via datasource `aegis-forecast-drift-csv`. Rolling dispersion / oscillation / sign-change behavior (`volatility_drift_score`, governed family weight **10%**). **Partial computability:** **144 / 168** signals are computable (**coverage 85.7 %**); the **24** non-computable signals are governed by `not_computable_reason = INSUFFICIENT_VERSIONS` (first two versions of each key). Governed auxiliary metrics (`rolling_stddev`, `rolling_cov`, `rolling_mad`, `oscillation_count`, `sign_change_freq`, `volatility_class`) come from the family-scores table (keyed by Forecast Key + Forecast Version). KPIs, ranking and the signal details table honor all five shared filters; the drift trend ignores Forecast Version to keep the full historical series."
+      }
+    },
+    {
+      "id": 10,
+      "type": "stat",
+      "title": "Average Volatility Drift Score",
+      "description": "Mean volatility_drift_score across the filtered computable signals (rows with a non-empty volatility_drift_score). Non-computable signals are excluded (not treated as zero). Bands: Healthy 0–20 · Watch 20–40 · Warning 40–70 · Critical 70+. Honors the five shared filters.",
+      "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+      "gridPos": { "h": 5, "w": 6, "x": 0, "y": 4 },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+          "type": "csv", "source": "url", "format": "table", "parser": "backend",
+          "url": "http://aegis-csv/forecast_drift_signals.csv",
+          "url_options": { "method": "GET", "data": "" }, "root_selector": "",
+          "columns": [
+            { "selector": "volatility_drift_score", "text": "volatility_drift_score", "type": "string" },
+            { "selector": "region", "text": "region", "type": "string" },
+            { "selector": "forecast_key", "text": "forecast_key", "type": "string" },
+            { "selector": "forecast_version", "text": "forecast_version", "type": "string" },
+            { "selector": "drift_status", "text": "drift_status", "type": "string" },
+            { "selector": "calculation_run_id", "text": "calculation_run_id", "type": "string" }
+          ],
+          "computed_columns": [ { "selector": "'v' + forecast_version", "text": "fv_label" } ],
+          "filters": [],
+          "filterExpression": "region IN (${region:singlequote}) && forecast_key IN (${forecast_key:singlequote}) && fv_label IN (${forecast_version:singlequote}) && drift_status IN (${drift_status:singlequote}) && calculation_run_id IN (${run_id:singlequote}) && volatility_drift_score != ''"
+        }
+      ],
+      "transformations": [
+        { "id": "convertFieldType", "options": { "fields": {}, "conversions": [ { "targetField": "volatility_drift_score", "destinationType": "number" } ] } }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short", "decimals": 2,
+          "color": { "mode": "thresholds" },
+          "thresholds": { "mode": "absolute", "steps": [ { "color": "green", "value": null }, { "color": "yellow", "value": 20 }, { "color": "orange", "value": 40 }, { "color": "red", "value": 70 } ] }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": { "calcs": ["mean"], "fields": "/^volatility_drift_score$/", "values": false },
+        "orientation": "auto", "colorMode": "value", "graphMode": "none", "justifyMode": "center", "textMode": "value"
+      }
+    },
+    {
+      "id": 11,
+      "type": "stat",
+      "title": "Volatility Signals Computable",
+      "description": "Count of filtered signals with a non-empty volatility_drift_score (a volatility profile could be computed). At filters = All this is 144 of 168 (the other 24 lack enough version history — see Non-computable Summary). Honors the five shared filters.",
+      "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+      "gridPos": { "h": 5, "w": 6, "x": 6, "y": 4 },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+          "type": "csv", "source": "url", "format": "table", "parser": "backend",
+          "url": "http://aegis-csv/forecast_drift_signals.csv",
+          "url_options": { "method": "GET", "data": "" }, "root_selector": "",
+          "columns": [
+            { "selector": "volatility_drift_score", "text": "volatility_drift_score", "type": "string" },
+            { "selector": "region", "text": "region", "type": "string" },
+            { "selector": "forecast_key", "text": "forecast_key", "type": "string" },
+            { "selector": "forecast_version", "text": "forecast_version", "type": "string" },
+            { "selector": "drift_status", "text": "drift_status", "type": "string" },
+            { "selector": "calculation_run_id", "text": "calculation_run_id", "type": "string" }
+          ],
+          "computed_columns": [ { "selector": "'v' + forecast_version", "text": "fv_label" } ],
+          "filters": [],
+          "filterExpression": "region IN (${region:singlequote}) && forecast_key IN (${forecast_key:singlequote}) && fv_label IN (${forecast_version:singlequote}) && drift_status IN (${drift_status:singlequote}) && calculation_run_id IN (${run_id:singlequote}) && volatility_drift_score != ''"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short", "decimals": 0,
+          "color": { "mode": "fixed", "fixedColor": "blue" }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": { "calcs": ["count"], "fields": "/^volatility_drift_score$/", "values": false },
+        "orientation": "auto", "colorMode": "value", "graphMode": "none", "justifyMode": "center", "textMode": "value"
+      }
+    },
+    {
+      "id": 13,
+      "type": "stat",
+      "title": "Volatility Coverage",
+      "description": "Share of the filtered signal universe that is computable for volatility (non-empty volatility_drift_score ÷ all filtered signals). The denominator is every filtered signal, so this KPI does NOT apply the computability filter. At filters = All this is 144 ÷ 168 = 85.7 %. Honors the five shared filters.",
+      "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+      "gridPos": { "h": 5, "w": 6, "x": 12, "y": 4 },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+          "type": "csv", "source": "url", "format": "table", "parser": "backend",
+          "url": "http://aegis-csv/forecast_drift_signals.csv",
+          "url_options": { "method": "GET", "data": "" }, "root_selector": "",
+          "columns": [
+            { "selector": "volatility_drift_score", "text": "volatility_drift_score", "type": "string" },
+            { "selector": "region", "text": "region", "type": "string" },
+            { "selector": "forecast_key", "text": "forecast_key", "type": "string" },
+            { "selector": "forecast_version", "text": "forecast_version", "type": "string" },
+            { "selector": "drift_status", "text": "drift_status", "type": "string" },
+            { "selector": "calculation_run_id", "text": "calculation_run_id", "type": "string" }
+          ],
+          "computed_columns": [
+            { "selector": "'v' + forecast_version", "text": "fv_label" },
+            { "selector": "volatility_drift_score != ''", "text": "is_comp", "type": "number" }
+          ],
+          "filters": [],
+          "filterExpression": "region IN (${region:singlequote}) && forecast_key IN (${forecast_key:singlequote}) && fv_label IN (${forecast_version:singlequote}) && drift_status IN (${drift_status:singlequote}) && calculation_run_id IN (${run_id:singlequote})"
+        }
+      ],
+      "transformations": [
+        { "id": "convertFieldType", "options": { "fields": {}, "conversions": [ { "targetField": "is_comp", "destinationType": "number" } ] } }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit", "decimals": 1,
+          "color": { "mode": "thresholds" },
+          "thresholds": { "mode": "absolute", "steps": [ { "color": "red", "value": null }, { "color": "yellow", "value": 0.7 }, { "color": "green", "value": 0.9 } ] }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": { "calcs": ["mean"], "fields": "/^is_comp$/", "values": false },
+        "orientation": "auto", "colorMode": "value", "graphMode": "none", "justifyMode": "center", "textMode": "value"
+      }
+    },
+    {
+      "id": 14,
+      "type": "stat",
+      "title": "Maximum Volatility Drift Score",
+      "description": "Highest volatility_drift_score across the filtered computable signals — the single most volatile divergence in the current selection. Non-computable signals excluded. Bands: Healthy 0–20 · Watch 20–40 · Warning 40–70 · Critical 70+. Honors the five shared filters.",
+      "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+      "gridPos": { "h": 5, "w": 6, "x": 18, "y": 4 },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+          "type": "csv", "source": "url", "format": "table", "parser": "backend",
+          "url": "http://aegis-csv/forecast_drift_signals.csv",
+          "url_options": { "method": "GET", "data": "" }, "root_selector": "",
+          "columns": [
+            { "selector": "volatility_drift_score", "text": "volatility_drift_score", "type": "string" },
+            { "selector": "region", "text": "region", "type": "string" },
+            { "selector": "forecast_key", "text": "forecast_key", "type": "string" },
+            { "selector": "forecast_version", "text": "forecast_version", "type": "string" },
+            { "selector": "drift_status", "text": "drift_status", "type": "string" },
+            { "selector": "calculation_run_id", "text": "calculation_run_id", "type": "string" }
+          ],
+          "computed_columns": [ { "selector": "'v' + forecast_version", "text": "fv_label" } ],
+          "filters": [],
+          "filterExpression": "region IN (${region:singlequote}) && forecast_key IN (${forecast_key:singlequote}) && fv_label IN (${forecast_version:singlequote}) && drift_status IN (${drift_status:singlequote}) && calculation_run_id IN (${run_id:singlequote}) && volatility_drift_score != ''"
+        }
+      ],
+      "transformations": [
+        { "id": "convertFieldType", "options": { "fields": {}, "conversions": [ { "targetField": "volatility_drift_score", "destinationType": "number" } ] } }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short", "decimals": 2,
+          "color": { "mode": "thresholds" },
+          "thresholds": { "mode": "absolute", "steps": [ { "color": "green", "value": null }, { "color": "yellow", "value": 20 }, { "color": "orange", "value": 40 }, { "color": "red", "value": 70 } ] }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": { "calcs": ["max"], "fields": "/^volatility_drift_score$/", "values": false },
+        "orientation": "auto", "colorMode": "value", "graphMode": "none", "justifyMode": "center", "textMode": "value"
+      }
+    },
+    {
+      "id": 30,
+      "type": "timeseries",
+      "title": "Volatility Drift Score Over Time (by Forecast Version)",
+      "description": "Mean volatility_drift_score per forecast version across the computable signals. The series starts at 2024-06-01 — the first two versions of each key (2024-04-01, 2024-05-01) are non-computable (INSUFFICIENT_VERSIONS) and are excluded, not shown as zero. Dashed thresholds mark the Watch (20), Warning (40) and Critical (70) bands. This trend intentionally ignores the Forecast Version filter; it still honors Region, Forecast Key, Drift Status and Run ID.",
+      "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 9 },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+          "type": "csv", "source": "url", "format": "table", "parser": "backend",
+          "url": "http://aegis-csv/forecast_drift_signals.csv",
+          "url_options": { "method": "GET", "data": "" }, "root_selector": "",
+          "columns": [
+            { "selector": "forecast_version", "text": "forecast_version", "type": "timestamp" },
+            { "selector": "volatility_drift_score", "text": "volatility_drift_score", "type": "string" },
+            { "selector": "region", "text": "region", "type": "string" },
+            { "selector": "forecast_key", "text": "forecast_key", "type": "string" },
+            { "selector": "drift_status", "text": "drift_status", "type": "string" },
+            { "selector": "calculation_run_id", "text": "calculation_run_id", "type": "string" }
+          ],
+          "filters": [],
+          "filterExpression": "region IN (${region:singlequote}) && forecast_key IN (${forecast_key:singlequote}) && drift_status IN (${drift_status:singlequote}) && calculation_run_id IN (${run_id:singlequote}) && volatility_drift_score != ''"
+        }
+      ],
+      "transformations": [
+        { "id": "convertFieldType", "options": { "fields": {}, "conversions": [ { "targetField": "volatility_drift_score", "destinationType": "number" } ] } },
+        {
+          "id": "groupBy",
+          "options": {
+            "fields": {
+              "forecast_version": { "aggregations": [], "operation": "groupby" },
+              "volatility_drift_score": { "aggregations": ["mean"], "operation": "aggregate" }
+            }
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short", "decimals": 1,
+          "color": { "mode": "fixed", "fixedColor": "blue" },
+          "custom": {
+            "drawStyle": "line", "lineWidth": 2, "fillOpacity": 10, "showPoints": "always", "pointSize": 6,
+            "lineInterpolation": "linear", "spanNulls": true,
+            "thresholdsStyle": { "mode": "dashed" }
+          },
+          "thresholds": { "mode": "absolute", "steps": [ { "color": "green", "value": null }, { "color": "yellow", "value": 20 }, { "color": "orange", "value": 40 }, { "color": "red", "value": 70 } ] }
+        },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "volatility_drift_score (mean)" }, "properties": [ { "id": "displayName", "value": "Avg Volatility Drift Score" } ] }
+        ]
+      },
+      "options": {
+        "legend": { "displayMode": "list", "placement": "bottom", "showLegend": false },
+        "tooltip": { "mode": "single", "sort": "none" }
+      }
+    },
+    {
+      "id": 40,
+      "type": "barchart",
+      "title": "Volatility Drift Score by Forecast Key",
+      "description": "Average volatility_drift_score per Forecast Key across the filtered computable signals, sorted descending (most volatile keys first). Non-computable signals excluded. Horizontal bars with the value labelled; thresholds 20/40/70. Honors the five shared filters.",
+      "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+      "gridPos": { "h": 9, "w": 24, "x": 0, "y": 17 },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+          "type": "csv", "source": "url", "format": "table", "parser": "backend",
+          "url": "http://aegis-csv/forecast_drift_signals.csv",
+          "url_options": { "method": "GET", "data": "" }, "root_selector": "",
+          "columns": [
+            { "selector": "forecast_key", "text": "forecast_key", "type": "string" },
+            { "selector": "volatility_drift_score", "text": "volatility_drift_score", "type": "string" },
+            { "selector": "region", "text": "region", "type": "string" },
+            { "selector": "forecast_version", "text": "forecast_version", "type": "string" },
+            { "selector": "drift_status", "text": "drift_status", "type": "string" },
+            { "selector": "calculation_run_id", "text": "calculation_run_id", "type": "string" }
+          ],
+          "computed_columns": [ { "selector": "'v' + forecast_version", "text": "fv_label" } ],
+          "filters": [],
+          "filterExpression": "region IN (${region:singlequote}) && forecast_key IN (${forecast_key:singlequote}) && fv_label IN (${forecast_version:singlequote}) && drift_status IN (${drift_status:singlequote}) && calculation_run_id IN (${run_id:singlequote}) && volatility_drift_score != ''"
+        }
+      ],
+      "transformations": [
+        { "id": "convertFieldType", "options": { "fields": {}, "conversions": [ { "targetField": "volatility_drift_score", "destinationType": "number" } ] } },
+        {
+          "id": "groupBy",
+          "options": {
+            "fields": {
+              "forecast_key": { "aggregations": [], "operation": "groupby" },
+              "volatility_drift_score": { "aggregations": ["mean"], "operation": "aggregate" }
+            }
+          }
+        },
+        { "id": "sortBy", "options": { "fields": {}, "sort": [ { "field": "volatility_drift_score (mean)", "desc": true } ] } }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short", "decimals": 2,
+          "color": { "mode": "thresholds" },
+          "thresholds": { "mode": "absolute", "steps": [ { "color": "green", "value": null }, { "color": "yellow", "value": 20 }, { "color": "orange", "value": 40 }, { "color": "red", "value": 70 } ] }
+        },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "volatility_drift_score (mean)" }, "properties": [ { "id": "displayName", "value": "Avg Volatility Drift Score" } ] }
+        ]
+      },
+      "options": {
+        "orientation": "horizontal",
+        "xTickLabelRotation": 0,
+        "showValue": "always",
+        "stacking": "none",
+        "legend": { "displayMode": "list", "placement": "bottom", "showLegend": false },
+        "tooltip": { "mode": "single", "sort": "none" }
+      }
+    },
+    {
+      "id": 50,
+      "type": "table",
+      "title": "Volatility Signal Details",
+      "description": "Per-signal volatility detail across the filtered universe, sorted by volatility drift score descending. Built from forecast_drift_signals.csv so it honors all five shared filters (Region, Forecast Key, Forecast Version, Drift Status, Run ID). Governed auxiliary volatility metrics (rolling stddev / CoV / MAD / oscillation / sign-change) are not present in this signals table — they are surfaced in the Volatility Profile panel below. Non-computable signals show a blank score and Computable = No.",
+      "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+      "gridPos": { "h": 11, "w": 24, "x": 0, "y": 26 },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+          "type": "csv", "source": "url", "format": "table", "parser": "backend",
+          "url": "http://aegis-csv/forecast_drift_signals.csv",
+          "url_options": { "method": "GET", "data": "" }, "root_selector": "",
+          "columns": [
+            { "selector": "forecast_key", "text": "forecast_key", "type": "string" },
+            { "selector": "forecast_version", "text": "forecast_version", "type": "string" },
+            { "selector": "previous_forecast_version", "text": "previous_forecast_version", "type": "string" },
+            { "selector": "region", "text": "region", "type": "string" },
+            { "selector": "drift_status", "text": "drift_status", "type": "string" },
+            { "selector": "volatility_drift_score", "text": "volatility_drift_score", "type": "string" },
+            { "selector": "calculation_run_id", "text": "calculation_run_id", "type": "string" }
+          ],
+          "computed_columns": [
+            { "selector": "'v' + forecast_version", "text": "fv_label" },
+            { "selector": "volatility_drift_score != ''", "text": "is_comp", "type": "number" }
+          ],
+          "filters": [],
+          "filterExpression": "region IN (${region:singlequote}) && forecast_key IN (${forecast_key:singlequote}) && fv_label IN (${forecast_version:singlequote}) && drift_status IN (${drift_status:singlequote}) && calculation_run_id IN (${run_id:singlequote})"
+        }
+      ],
+      "transformations": [
+        { "id": "convertFieldType", "options": { "fields": {}, "conversions": [ { "targetField": "volatility_drift_score", "destinationType": "number" } ] } },
+        { "id": "sortBy", "options": { "fields": {}, "sort": [ { "field": "volatility_drift_score", "desc": true } ] } },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": { "calculation_run_id": true, "fv_label": true },
+            "renameByName": {
+              "forecast_key": "Forecast Key",
+              "forecast_version": "Forecast Version",
+              "previous_forecast_version": "Previous Version",
+              "region": "Region",
+              "drift_status": "Drift Status",
+              "volatility_drift_score": "Volatility Drift Score",
+              "is_comp": "Computable"
+            },
+            "indexByName": {
+              "forecast_key": 0,
+              "forecast_version": 1,
+              "previous_forecast_version": 2,
+              "region": 3,
+              "drift_status": 4,
+              "volatility_drift_score": 5,
+              "is_comp": 6,
+              "calculation_run_id": 7,
+              "fv_label": 8
+            }
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": { "custom": { "align": "left", "filterable": false }, "unit": "short" },
+        "overrides": [
+          {
+            "matcher": { "id": "byName", "options": "Volatility Drift Score" },
+            "properties": [ { "id": "decimals", "value": 2 }, { "id": "custom.align", "value": "right" } ]
+          },
+          {
+            "matcher": { "id": "byName", "options": "Computable" },
+            "properties": [
+              { "id": "custom.align", "value": "center" },
+              { "id": "custom.cellOptions", "value": { "type": "color-text" } },
+              { "id": "mappings", "value": [ { "type": "value", "options": { "1": { "text": "Yes", "color": "green", "index": 0 }, "0": { "text": "No", "color": "red", "index": 1 } } } ] }
+            ]
+          },
+          {
+            "matcher": { "id": "byName", "options": "Drift Status" },
+            "properties": [
+              { "id": "custom.cellOptions", "value": { "type": "color-text" } },
+              { "id": "mappings", "value": [ { "type": "value", "options": { "Healthy": { "color": "green", "index": 0 }, "Watch": { "color": "yellow", "index": 1 }, "Warning": { "color": "orange", "index": 2 }, "Critical": { "color": "red", "index": 3 } } } ] }
+            ]
+          }
+        ]
+      },
+      "options": { "showHeader": true, "cellHeight": "sm", "footer": { "show": false, "reducer": ["sum"], "fields": "" } }
+    },
+    {
+      "id": 55,
+      "type": "table",
+      "title": "Volatility Profile — Governed Auxiliary Metrics",
+      "description": "Governed volatility auxiliaries from forecast_drift_family_scores.csv (drift_family = 'volatility', computed rows only): Volatility Class, Rolling StdDev (absolute dispersion in the series' native ungoverned scale — displayed as a full locale-grouped integer, e.g. 1,270,234; no SI K/Mil abbreviation), Rolling CoV (coefficient of variation, ratio), Rolling MAD (median absolute deviation, ratio), Oscillation Count (direction reversals) and Sign-Change Frequency (ratio 0–1). This table is keyed by Forecast Key + Forecast Version, so it honors ONLY those two shared filters (the family-scores table has no region / drift_status / run_id columns). Sorted by Rolling CoV descending.",
+      "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+      "gridPos": { "h": 9, "w": 16, "x": 0, "y": 37 },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+          "type": "csv", "source": "url", "format": "table", "parser": "backend",
+          "url": "http://aegis-csv/forecast_drift_family_scores.csv",
+          "url_options": { "method": "GET", "data": "" }, "root_selector": "",
+          "columns": [
+            { "selector": "forecast_key", "text": "forecast_key", "type": "string" },
+            { "selector": "forecast_version", "text": "forecast_version", "type": "string" },
+            { "selector": "volatility_class", "text": "volatility_class", "type": "string" },
+            { "selector": "rolling_stddev", "text": "rolling_stddev", "type": "string" },
+            { "selector": "rolling_cov", "text": "rolling_cov", "type": "string" },
+            { "selector": "rolling_mad", "text": "rolling_mad", "type": "string" },
+            { "selector": "oscillation_count", "text": "oscillation_count", "type": "string" },
+            { "selector": "sign_change_freq", "text": "sign_change_freq", "type": "string" },
+            { "selector": "drift_family", "text": "drift_family", "type": "string" },
+            { "selector": "eligibility_status", "text": "eligibility_status", "type": "string" }
+          ],
+          "computed_columns": [ { "selector": "'v' + forecast_version", "text": "fv_label" } ],
+          "filters": [],
+          "filterExpression": "drift_family == 'volatility' && eligibility_status == 'COMPUTED' && forecast_key IN (${forecast_key:singlequote}) && fv_label IN (${forecast_version:singlequote})"
+        }
+      ],
+      "transformations": [
+        {
+          "id": "convertFieldType",
+          "options": {
+            "fields": {},
+            "conversions": [
+              { "targetField": "rolling_stddev", "destinationType": "number" },
+              { "targetField": "rolling_cov", "destinationType": "number" },
+              { "targetField": "rolling_mad", "destinationType": "number" },
+              { "targetField": "oscillation_count", "destinationType": "number" },
+              { "targetField": "sign_change_freq", "destinationType": "number" }
+            ]
+          }
+        },
+        { "id": "sortBy", "options": { "fields": {}, "sort": [ { "field": "rolling_cov", "desc": true } ] } },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": { "drift_family": true, "eligibility_status": true, "fv_label": true },
+            "renameByName": {
+              "forecast_key": "Forecast Key",
+              "forecast_version": "Forecast Version",
+              "volatility_class": "Volatility Class",
+              "rolling_stddev": "Rolling StdDev",
+              "rolling_cov": "Rolling CoV",
+              "rolling_mad": "Rolling MAD",
+              "oscillation_count": "Oscillation Count",
+              "sign_change_freq": "Sign-Change Freq"
+            },
+            "indexByName": {
+              "forecast_key": 0,
+              "forecast_version": 1,
+              "volatility_class": 2,
+              "rolling_stddev": 3,
+              "rolling_cov": 4,
+              "rolling_mad": 5,
+              "oscillation_count": 6,
+              "sign_change_freq": 7,
+              "drift_family": 8,
+              "eligibility_status": 9,
+              "fv_label": 10
+            }
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": { "custom": { "align": "left", "filterable": false }, "unit": "short" },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "Rolling StdDev" }, "properties": [ { "id": "unit", "value": "locale" }, { "id": "decimals", "value": 0 }, { "id": "custom.align", "value": "right" } ] },
+          { "matcher": { "id": "byName", "options": "Rolling CoV" }, "properties": [ { "id": "decimals", "value": 3 }, { "id": "custom.align", "value": "right" } ] },
+          { "matcher": { "id": "byName", "options": "Rolling MAD" }, "properties": [ { "id": "decimals", "value": 3 }, { "id": "custom.align", "value": "right" } ] },
+          { "matcher": { "id": "byName", "options": "Oscillation Count" }, "properties": [ { "id": "decimals", "value": 0 }, { "id": "custom.align", "value": "right" } ] },
+          { "matcher": { "id": "byName", "options": "Sign-Change Freq" }, "properties": [ { "id": "decimals", "value": 2 }, { "id": "custom.align", "value": "right" } ] },
+          {
+            "matcher": { "id": "byName", "options": "Volatility Class" },
+            "properties": [
+              { "id": "custom.cellOptions", "value": { "type": "color-text" } },
+              { "id": "mappings", "value": [ { "type": "value", "options": { "stable": { "color": "green", "index": 0 }, "variable": { "color": "yellow", "index": 1 }, "erratic": { "color": "orange", "index": 2 }, "erratic_single_spike": { "color": "red", "index": 3 } } } ] }
+            ]
+          }
+        ]
+      },
+      "options": { "showHeader": true, "cellHeight": "sm", "footer": { "show": false, "reducer": ["sum"], "fields": "" } }
+    },
+    {
+      "id": 56,
+      "type": "table",
+      "title": "Non-computable Summary",
+      "description": "Governed reason why 24 of the 168 volatility signals cannot be scored, from forecast_drift_family_scores.csv (drift_family = 'volatility', eligibility_status = 'NOT_COMPUTABLE'), grouped by not_computable_reason. All 24 are INSUFFICIENT_VERSIONS (the first two versions of each key lack enough history to compute rolling dispersion). Keyed by Forecast Key + Forecast Version, so it honors only those two shared filters.",
+      "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+      "gridPos": { "h": 9, "w": 8, "x": 16, "y": 37 },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+          "type": "csv", "source": "url", "format": "table", "parser": "backend",
+          "url": "http://aegis-csv/forecast_drift_family_scores.csv",
+          "url_options": { "method": "GET", "data": "" }, "root_selector": "",
+          "columns": [
+            { "selector": "not_computable_reason", "text": "not_computable_reason", "type": "string" },
+            { "selector": "forecast_key", "text": "forecast_key", "type": "string" },
+            { "selector": "forecast_version", "text": "forecast_version", "type": "string" },
+            { "selector": "drift_family", "text": "drift_family", "type": "string" },
+            { "selector": "eligibility_status", "text": "eligibility_status", "type": "string" }
+          ],
+          "computed_columns": [ { "selector": "'v' + forecast_version", "text": "fv_label" } ],
+          "filters": [],
+          "filterExpression": "drift_family == 'volatility' && eligibility_status == 'NOT_COMPUTABLE' && forecast_key IN (${forecast_key:singlequote}) && fv_label IN (${forecast_version:singlequote})"
+        }
+      ],
+      "transformations": [
+        {
+          "id": "groupBy",
+          "options": {
+            "fields": {
+              "not_computable_reason": { "aggregations": [], "operation": "groupby" },
+              "forecast_key": { "aggregations": ["count"], "operation": "aggregate" }
+            }
+          }
+        },
+        { "id": "sortBy", "options": { "fields": {}, "sort": [ { "field": "forecast_key (count)", "desc": true } ] } },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {},
+            "renameByName": {
+              "not_computable_reason": "Reason",
+              "forecast_key (count)": "Signals"
+            },
+            "indexByName": { "not_computable_reason": 0, "forecast_key (count)": 1 }
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": { "custom": { "align": "left", "filterable": false }, "unit": "short" },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "Signals" }, "properties": [ { "id": "decimals", "value": 0 }, { "id": "custom.align", "value": "right" }, { "id": "color", "value": { "mode": "fixed", "fixedColor": "orange" } }, { "id": "custom.cellOptions", "value": { "type": "color-text" } } ] }
+        ]
+      },
+      "options": { "showHeader": true, "cellHeight": "sm", "footer": { "show": false, "reducer": ["sum"], "fields": "" } }
+    },
+    {
+      "id": 60,
+      "type": "table",
+      "title": "Latest Governed Run",
+      "description": "Metadata of the governed calculation run selected by the Run ID filter (forecast_drift_runs.csv).",
+      "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+      "gridPos": { "h": 6, "w": 16, "x": 0, "y": 46 },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+          "type": "csv", "source": "url", "format": "table", "parser": "backend",
+          "url": "http://aegis-csv/forecast_drift_runs.csv",
+          "url_options": { "method": "GET", "data": "" }, "root_selector": "",
+          "columns": [
+            { "selector": "calculation_run_id", "text": "calculation_run_id", "type": "string" },
+            { "selector": "run_status", "text": "Status", "type": "string" },
+            { "selector": "run_finished_at", "text": "Finished At (UTC)", "type": "timestamp" },
+            { "selector": "signals_written", "text": "Signals Written", "type": "number" },
+            { "selector": "events_created", "text": "Events Created", "type": "number" }
+          ],
+          "filters": [],
+          "filterExpression": "calculation_run_id IN (${run_id:singlequote})"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": { "custom": { "align": "left", "filterable": false } },
+        "overrides": [
+          {
+            "matcher": { "id": "byName", "options": "calculation_run_id" },
+            "properties": [ { "id": "displayName", "value": "Run ID" }, { "id": "custom.align", "value": "left" } ]
+          },
+          {
+            "matcher": { "id": "byName", "options": "Finished At (UTC)" },
+            "properties": [ { "id": "unit", "value": "time:YYYY-MM-DD HH:mm" }, { "id": "custom.align", "value": "left" } ]
+          },
+          {
+            "matcher": { "id": "byName", "options": "Status" },
+            "properties": [
+              { "id": "custom.cellOptions", "value": { "type": "color-text" } },
+              { "id": "mappings", "value": [ { "type": "value", "options": { "Success": { "color": "green", "index": 0 } } } ] }
+            ]
+          },
+          {
+            "matcher": { "id": "byName", "options": "Signals Written" },
+            "properties": [ { "id": "decimals", "value": 0 }, { "id": "custom.align", "value": "right" } ]
+          },
+          {
+            "matcher": { "id": "byName", "options": "Events Created" },
+            "properties": [ { "id": "decimals", "value": 0 }, { "id": "custom.align", "value": "right" } ]
+          }
+        ]
+      },
+      "options": { "showHeader": true, "cellHeight": "sm", "footer": { "show": false, "reducer": ["sum"], "fields": "" } }
+    },
+    {
+      "id": 70,
+      "type": "stat",
+      "title": "Data Quality — Checks Passed",
+      "description": "Governance checks passed vs total for the selected run. Per-check detail lives in Settings & Data Quality.",
+      "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+      "gridPos": { "h": 6, "w": 8, "x": 16, "y": 46 },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+          "type": "csv", "source": "url", "format": "table", "parser": "backend",
+          "url": "http://aegis-csv/forecast_drift_runs.csv",
+          "url_options": { "method": "GET", "data": "" }, "root_selector": "",
+          "columns": [
+            { "selector": "checks_passed", "text": "checks_passed", "type": "number" },
+            { "selector": "checks_total", "text": "checks_total", "type": "number" },
+            { "selector": "calculation_run_id", "text": "calculation_run_id", "type": "string" }
+          ],
+          "computed_columns": [ { "selector": "checks_passed + ' / ' + checks_total", "text": "dq" } ],
+          "filters": [],
+          "filterExpression": "calculation_run_id IN (${run_id:singlequote})"
+        }
+      ],
+      "fieldConfig": { "defaults": { "color": { "mode": "fixed", "fixedColor": "green" } }, "overrides": [] },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "/^dq$/", "values": false },
+        "orientation": "auto", "colorMode": "background", "graphMode": "none", "justifyMode": "center", "textMode": "value"
+      }
+    }
   ],
   "annotations": { "list": [] }
 }
