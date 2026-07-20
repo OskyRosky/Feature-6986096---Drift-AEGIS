@@ -122,7 +122,7 @@
       "gridPos": { "h": 2, "w": 24, "x": 0, "y": 0 },
       "options": {
         "mode": "markdown",
-        "content": "**AEGIS Forecast Drift**  ·  [Overview](/d/aegis-forecast-drift-foundation) · [Forecast](/d/aegis-forecast-drift-forecast) · [Performance](/d/aegis-forecast-drift-performance) · **Shape** · [Stability](/d/aegis-forecast-drift-stability) · [Volatility](/d/aegis-forecast-drift-volatility) · [Events](/d/aegis-forecast-drift-events) · [Historical Timeline](/d/aegis-forecast-drift-timeline) · [Top Forecast Keys](/d/aegis-forecast-drift-top-keys) · [Top Scenarios](/d/aegis-forecast-drift-top-scenarios) · [Settings & Data Quality](/d/aegis-forecast-drift-settings)"
+        "content": "**AEGIS Forecast Drift**  ·  [Overview](/d/aegis-forecast-drift-foundation) · [Forecast](/d/aegis-forecast-drift-forecast) · [Performance](/d/aegis-forecast-drift-performance) · **Shape** · [Stability](/d/aegis-forecast-drift-stability) · [Volatility](/d/aegis-forecast-drift-volatility) · [Events](/d/aegis-forecast-drift-events) · [Historical Timeline](/d/aegis-forecast-drift-timeline) · [Top Risk](/d/aegis-forecast-drift-top-keys) · [Settings & Data Quality](/d/aegis-forecast-drift-settings)"
       }
     },
     {

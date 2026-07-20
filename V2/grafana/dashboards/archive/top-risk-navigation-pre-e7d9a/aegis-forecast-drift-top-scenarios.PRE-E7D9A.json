@@ -1,8 +1,8 @@
 {
   "uid": "aegis-forecast-drift-top-scenarios",
   "title": "AEGIS Forecast Drift — Top Scenarios",
-  "description": "RETIRED FROM NAVIGATION — consolidated into Top Risk (E7D.9A). Preserved for rollback; not linked from the AEGIS Sections nav. Canonical replacement: /d/aegis-forecast-drift-top-keys.",
-  "tags": ["aegis", "forecast-drift", "shell", "top-scenarios", "absorbed-into-top-risk"],
+  "description": "E7D.0 structural shell. Ranking of scenarios by drift, governed V2 snapshot (read-only). Analytical panels arrive in E7D.10.",
+  "tags": ["aegis", "forecast-drift", "aegis-nav", "e7d0", "shell", "top-scenarios"],
   "editable": true,
   "schemaVersion": 39,
   "version": 0,
@@ -20,9 +20,9 @@
     ]
   },
   "panels": [
-    { "id": 1, "type": "text", "title": "", "gridPos": { "h": 3, "w": 24, "x": 0, "y": 0 }, "options": { "mode": "markdown", "content": "**AEGIS Forecast Drift**  ·  [Overview](/d/aegis-forecast-drift-foundation) · [Forecast](/d/aegis-forecast-drift-forecast) · [Performance](/d/aegis-forecast-drift-performance) · [Shape](/d/aegis-forecast-drift-shape) · [Stability](/d/aegis-forecast-drift-stability) · [Volatility](/d/aegis-forecast-drift-volatility) · [Events](/d/aegis-forecast-drift-events) · [Historical Timeline](/d/aegis-forecast-drift-timeline) · [Top Risk](/d/aegis-forecast-drift-top-keys) · [Settings & Data Quality](/d/aegis-forecast-drift-settings)" } },
+    { "id": 1, "type": "text", "title": "", "gridPos": { "h": 3, "w": 24, "x": 0, "y": 0 }, "options": { "mode": "markdown", "content": "**AEGIS Forecast Drift**  ·  [Overview](/d/aegis-forecast-drift-foundation) · [Forecast](/d/aegis-forecast-drift-forecast) · [Performance](/d/aegis-forecast-drift-performance) · [Shape](/d/aegis-forecast-drift-shape) · [Stability](/d/aegis-forecast-drift-stability) · [Volatility](/d/aegis-forecast-drift-volatility) · [Events](/d/aegis-forecast-drift-events) · [Historical Timeline](/d/aegis-forecast-drift-timeline) · [Top Forecast Keys](/d/aegis-forecast-drift-top-keys) · **Top Scenarios** · [Settings & Data Quality](/d/aegis-forecast-drift-settings)" } },
     { "id": 2, "type": "text", "title": "", "gridPos": { "h": 4, "w": 24, "x": 0, "y": 3 }, "options": { "mode": "markdown", "content": "# AEGIS Forecast Drift — Top Scenarios\n\nGoverned forecast drift monitoring — **V2** snapshot (read-only)." } },
-    { "id": 3, "type": "text", "title": "About this section", "gridPos": { "h": 7, "w": 24, "x": 0, "y": 7 }, "options": { "mode": "markdown", "content": "> **This dashboard has been consolidated into Top Risk.** Retired from navigation in E7D.9A; preserved for rollback. Canonical destination: [Top Risk](/d/aegis-forecast-drift-top-keys).\n\n### Purpose\nRanking of **scenarios** by drift, kept in the architecture for future multi-scenario snapshots.\n\n### Status\n🚧 **Structural shell** created in **E7D.0**. Analytical panels will be built in **E7D.10**.\n\n### Data source\nGoverned **V2** snapshot (read-only) via datasource `aegis-forecast-drift-csv` — `forecast_drift_signals.csv` (`scenario`).\n\n### Known data limitations\nThe governed snapshot currently contains **only one scenario: `Enterprise`** (1 value). This ranking will be single-row until additional scenarios appear; no global `scenario` filter is created while a single value exists." } }
+    { "id": 3, "type": "text", "title": "About this section", "gridPos": { "h": 7, "w": 24, "x": 0, "y": 7 }, "options": { "mode": "markdown", "content": "### Purpose\nRanking of **scenarios** by drift, kept in the architecture for future multi-scenario snapshots.\n\n### Status\n🚧 **Structural shell** created in **E7D.0**. Analytical panels will be built in **E7D.10**.\n\n### Data source\nGoverned **V2** snapshot (read-only) via datasource `aegis-forecast-drift-csv` — `forecast_drift_signals.csv` (`scenario`).\n\n### Known data limitations\nThe governed snapshot currently contains **only one scenario: `Enterprise`** (1 value). This ranking will be single-row until additional scenarios appear; no global `scenario` filter is created while a single value exists." } }
   ],
   "annotations": { "list": [] }
 }

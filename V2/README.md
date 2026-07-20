@@ -289,7 +289,7 @@ inside the `aegis-net` Docker network (no host port). The pre-existing Grafana
   Token `E7D6_VOLATILITY_MVP_COMPLETED_VISUALLY_ACCEPTED`.
   URL `http://localhost:3000/d/aegis-forecast-drift-volatility`. See `engineering/E7_grafana/E7D6_volatility_*` (5 docs).
 
-- **E7D.7** — **Events MVP** (governed event log) — **REPAIRED, PENDING VISUAL ACCEPTANCE (Oscar)**. Transformed the
+- **E7D.7** — **Events MVP** (governed event log) — **COMPLETED, VISUALLY ACCEPTED (Oscar, 2026-07-20)**. Transformed the
   Events dashboard (uid `aegis-forecast-drift-events`, retained) from the E7D.0 shell into a **read-only** operational
   view of the governed drift-**event** log. **Data finding:** `forecast_drift_event_history.csv` is a thin 7-column
   lifecycle table (all `new_status=Open`, single `changed_at`) — **not** the rich source; the **71 governed events are
@@ -318,6 +318,77 @@ inside the `aegis-net` Docker network (no host port). The pre-existing Grafana
   keeps keepTime=false/includeVars=true. Historical Timeline, Top Forecast Keys, Top Scenarios, Settings & Data Quality
   **not started**. Overview + Forecast + Performance + Shape + Stability + Volatility, datasource, nginx, Docker, CSVs,
   Python, Power BI, weights, thresholds, alerts, plugins, token, DPAPI, MCP untouched; JSON secret-free; no manual
-  commit. Agent browser unauthenticated → live render **awaits Oscar's confirmation**. **Stop before E7D.8.**
-  Token `E7D7_EVENTS_MVP_REPAIRED_PENDING_VISUAL_ACCEPTANCE`.
+  commit. **Oscar visually accepted on 2026-07-20** (Latest Event full row, status colors, data + all panels). **Stop before E7D.8 (Historical Timeline) — awaiting authorization.**
+  Token `E7D7_EVENTS_MVP_COMPLETED_VISUALLY_ACCEPTED`.
   URL `http://localhost:3000/d/aegis-forecast-drift-events`. See `engineering/E7_grafana/E7D7_events_*` (6 docs).
+
+- **E7D.8** — **Historical Timeline MVP** (governed chronological view) — **COMPLETED — VISUALLY ACCEPTED (Oscar, 2026-07-20)**. Rebuilt
+  the Historical Timeline (uid `aegis-forecast-drift-timeline`, retained) from the E7D.0 shell into a **read-only** governed
+  timeline. **Central rule upheld — NO FABRICATED HISTORY:** each of the **71** records is a governed drift event
+  (`is_event=1`, run 1) positioned by **`forecast_version`** — the only governed field with real temporal spread (14
+  versions in signals, **12 among events**, 2024-04→2026-05). `detected_on=created_at=changed_at` collapse to a **single**
+  detection instant (2026-07-13 22:38 UTC) → surfaced as a fact, not 71 clumped rows. Lifecycle = **71 initial `Open`, 0
+  transitions** → reported verbatim; no invented status changes; no invented Forecast Generated / Alert Triggered activity.
+  **Date Range is FUNCTIONAL (the key acceptance), proven live via `/api/ds/query`:** All **71** · YTD **40** · Last180d
+  **32** · Last90d **5** · Last60d/30d **0** · 2024 **5** · 2025 **26** · 2026 **40**. Mechanism (reverse-engineered via
+  probes 1–7): the Infinity backend **ignores the native time range** and cannot cast numbers/dates (`>=`/`<=` only on
+  numbers; no `toDate`/`int64`/`startsWith`; `+` concatenates), so the timeline uses `fv_label='v'+forecast_version` and a
+  **custom `date_range` variable** filtering by `contains('${date_range:raw}', '|'+fv_label+'|')` over pipe-bounded version
+  haystacks; the **native time picker is hidden** (would be a dead control). **14 panels:** nav, header, temporal-model note,
+  KPIs (Timeline Records 71 / Drift Events 71 / Forecast Versions 12 / Affected Forecast Keys 12 / Lifecycle Records 71),
+  Historical Timeline table (drift by forecast_version, newest first, colored family+status, wrapped explanation), Drift
+  Events by Forecast Version barchart (chronological, sums to 71), Timeline Records by Forecast Key barchart, Historical
+  Details table (Timeline Date / Date Basis / Timeline Type / Forecast Key / Region / Previous Version / Drift Family /
+  Drift Score / Drift Status / Lifecycle Status / Explanation / Run ID), Latest Governed Run (1·Success·168·71), Data Quality
+  (`18 / 18 checks passed`). **7 filters:** forecast_key, forecast_version (`fv_label`), region, drift_status, run_id,
+  drift_family, **date_range** (custom, default *All available history*). **Documented deviations:** native picker hidden;
+  no Timeline Type dropdown (single governed category); filter set adds region+forecast_version+drift_family vs the E7D.0
+  matrix; **Timeline Records == Drift Events (=71)** by construction. **GATES A–F all pass; reconciliation 0 discrepancies.**
+  Published **only** the Timeline dashboard via `V2/scripts/push-e7d8-timeline.ps1` (token DPAPI in-memory) → **v3**,
+  `success`, in folder, 14 panels, keepTime=false/includeVars=true/UTC/timepicker hidden; shell archived at
+  `V2/grafana/dashboards/archive/aegis-forecast-drift-timeline-shell.json`. All other dashboards + CSV/Python/PBI/datasource/nginx/Docker/token/DPAPI/MCP/weights/
+  thresholds **unchanged**; no manual commit. **Visual repair before acceptance:** Data Quality rebuilt as the known-good
+  Shape/Stability/Volatility **stat** (`dq = checks_passed + ' / ' + checks_total`, `colorMode background`, no organize
+  transform) after the initial `dq_label`+`lastNotNull` stat rendered “No data”; Lifecycle Records `textMode`→`value`
+  (republished **v5**). **Oscar visually accepted 2026-07-20** (18 / 18 large green, KPIs 71/71/12/12/71, Latest Run,
+  Date Range functional). Token `E7D8_HISTORICAL_TIMELINE_MVP_COMPLETED_VISUALLY_ACCEPTED`.
+  URL `http://localhost:3000/d/aegis-forecast-drift-timeline`. See `engineering/E7_grafana/E7D8_timeline_*` (7 docs).
+
+- **E7D.9A** — **Top Risk Navigation Consolidation** (navigation + shell only) — **COMPLETED — VISUALLY ACCEPTED (Oscar,
+  2026-07-20)**. Consolidated the two ranking destinations **Top Forecast Keys** + **Top Scenarios** into one executive
+  section **Top Risk**. **Canonical dashboard = the existing Top Forecast Keys shell, UID `aegis-forecast-drift-top-keys`
+  preserved** (no link/provisioning breakage) — renamed *AEGIS Forecast Drift — Top Risk*, retagged `top-risk`/`e7d9a`,
+  description set to the governed-ranking blurb; shell shows shared nav + 5 shared filters + header + a provisional note
+  (*“Top Risk analytical content will be implemented in E7D.9B”*) + **5 collapsed rows** (Top Forecast Keys, Top Regions,
+  Top Forecast Versions, Top Drift Families, Risk Details) **with no queries/data**. **Top Scenarios**
+  (uid `aegis-forecast-drift-top-scenarios`) is **RETIRED FROM NAVIGATION / ABSORBED INTO TOP RISK** — `aegis-nav` tag
+  removed (out of the dropdown), queries/UID untouched, preserved for rollback with a visible “consolidated into Top
+  Risk” banner. Navigation applied to all 11 dashboards: the markdown nav panel lists 10 sections (Overview → Settings)
+  with a single **Top Risk** link; `/api/search?tag=aegis-nav` returns **10** dashboards (Top Risk present, Top Scenarios
+  absent). `includeVars=true`, `keepTime=false` preserved. Published via `V2/scripts/push-e7d9a-top-risk-navigation.ps1`
+  (token DPAPI in-memory) — 11/11 `success`; backups under `archive/top-risk-navigation-pre-e7d9a/`. **No queries/KPIs/
+  tables built; no dashboard deleted; no CSV/Python/datasource/Docker/nginx/token/DPAPI/MCP change; no manual commit.**
+  **Stop before E7D.9B.** Token `E7D9A_TOP_RISK_NAVIGATION_COMPLETED_VISUALLY_ACCEPTED`.
+  URL `http://localhost:3000/d/aegis-forecast-drift-top-keys`. See `engineering/E7_grafana/E7D9A_top_risk_*` (3 docs).
+
+- **E7D.9B** — **Top Risk Dashboard Content** (governed rankings & concentration) — **IMPLEMENTED — PENDING VISUAL
+  ACCEPTANCE (Oscar)**. Converted the E7D.9A shell (UID `aegis-forecast-drift-top-keys` **preserved**) into a governed
+  executive/operational view: removed the 5 empty collapsed rows + provisional note and added **15 analytical panels**
+  driven exclusively by the governed `forecast_drift_score` (primary ranking = **average per dimension**) and
+  `forecast_drift_family_scores` (family ranking, aggregated **standalone** — never joined-then-counted). KPI row
+  (Forecast Keys 12 · Avg 28.83 · Critical 14 · Drift Events 71), Highest-Risk Forecast Key (**NAM-SDF 42.74**), Top
+  Forecast Keys / Regions / Forecast Versions bars, Top Drift Families + Drift Family Computability, **Risk
+  Concentration Matrix** (key × family, built from signals **native** family columns — **no join**), **Consolidated Risk
+  Details** (168 rows, per-signal governed explanations, drill links to Forecast/Events/Historical Timeline), Latest
+  Governed Run + Data Quality (18/18). **Cardinality Gate A PASS** (signals 168 = 168 distinct id; family_scores
+  672 = 168×4; no signals×family_scores join). All rankings/KPIs/matrix reconcile to the served CSVs with **zero diffs**;
+  ternary computed columns validated live via `/api/ds/query`. Published via `V2/scripts/push-e7d9b-top-risk.ps1`
+  (token DPAPI in-memory) → `success` version 4; E7D.9A shell archived to
+  `archive/aegis-forecast-drift-top-risk-shell-e7d9a.json`. **Documented deviations:** per-key Dominant Family omitted
+  from the summary (14 versions/key, no groupBy mode); Family panels honor Forecast Key + Forecast Version only
+  (family_scores lacks region/status/run); family bar colored by severity thresholds (brand colors in
+  computability/matrix/details). **No CSV/Python/PowerBI/datasource/Docker/nginx/token/DPAPI/MCP/weights/thresholds
+  change; no other dashboard touched; no manual commit; R1 unchanged.** Token
+  `E7D9B_TOP_RISK_DASHBOARD_IMPLEMENTED_PENDING_VISUAL_ACCEPTANCE`. **Stop before E7D.11. Await Oscar's visual
+  acceptance.** URL `http://localhost:3000/d/aegis-forecast-drift-top-keys`. See
+  `engineering/E7_grafana/E7D9B_top_risk_*` (8 docs).

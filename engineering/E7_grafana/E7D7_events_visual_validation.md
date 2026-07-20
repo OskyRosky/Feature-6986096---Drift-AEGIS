@@ -2,7 +2,7 @@
 
 **Stage:** E7D.7 · **Date:** 2026-07-19
 **URL:** http://localhost:3000/d/aegis-forecast-drift-events
-**Token stays** `E7D7_EVENTS_MVP_REPAIRED_PENDING_VISUAL_ACCEPTANCE` until Oscar confirms.
+**Token:** `E7D7_EVENTS_MVP_COMPLETED_VISUALLY_ACCEPTED` — **visually accepted by Oscar on 2026-07-20.**
 
 > The agent's shared browser session is **unauthenticated**, so click-through and pixel checks must be
 > done by Oscar in his authenticated session. Structural/data checks below were verified via the API.
@@ -51,6 +51,7 @@
 
 ## Decision
 
-- If all boxes pass → reply with explicit visual acceptance; token advances to
-  `E7D7_EVENTS_MVP_COMPLETED_VISUALLY_ACCEPTED`.
-- Otherwise → list defects; agent iterates on Events only.
+- **ACCEPTED by Oscar on 2026-07-20.** Latest Event shows the full row without clipping; Events by Drift
+  Status uses the correct explicit colors (Healthy green / Watch yellow / Warning orange / Critical red);
+  data and all other panels working. Token advanced to `E7D7_EVENTS_MVP_COMPLETED_VISUALLY_ACCEPTED`.
+  **E7D.8 (Historical Timeline) not started — awaits explicit authorization.**

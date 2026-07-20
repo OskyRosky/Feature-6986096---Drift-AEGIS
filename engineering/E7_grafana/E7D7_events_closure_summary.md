@@ -4,7 +4,7 @@
 **Date:** 2026-07-19
 **Dashboard:** `AEGIS Forecast Drift — Events` · uid `aegis-forecast-drift-events` · published **v6**
 **URL:** http://localhost:3000/d/aegis-forecast-drift-events
-**Outcome token:** `E7D7_EVENTS_MVP_REPAIRED_PENDING_VISUAL_ACCEPTANCE`
+**Outcome token:** `E7D7_EVENTS_MVP_COMPLETED_VISUALLY_ACCEPTED` (Oscar, 2026-07-20)
 
 ## 1. What was built
 
@@ -47,9 +47,11 @@ run 1 Success, signals 168, events 71, checks 18/18.
 
 ## 6. Pending
 
-**Oscar's visual acceptance** (see `E7D7_events_visual_validation.md`). Agent browser is unauthenticated,
-so click-through/pixel checks require Oscar's session. On explicit acceptance the token advances to
-`E7D7_EVENTS_MVP_COMPLETED_VISUALLY_ACCEPTED`.
+**None — visually accepted by Oscar on 2026-07-20** (Latest Event shows the full row without clipping;
+Events by Drift Status uses the correct explicit colors Healthy green / Watch yellow / Warning orange /
+Critical red; data and all other panels working). Token advanced to
+`E7D7_EVENTS_MVP_COMPLETED_VISUALLY_ACCEPTED`. **Next stage E7D.8 (Historical Timeline) awaits explicit
+authorization — not started.**
 
 ## 5b. Visual repair (v5, 2026-07-19)
 
@@ -64,7 +66,7 @@ other dashboards changed):
 
 KPIs re-verified via live API after republish (v6): Total **71**, Critical **14**, Warning **34**,
 Affected Forecast Keys **12**, Data Quality **18/18** — all unchanged. Token now
-`E7D7_EVENTS_MVP_REPAIRED_PENDING_VISUAL_ACCEPTANCE`.
+`E7D7_EVENTS_MVP_COMPLETED_VISUALLY_ACCEPTED` (Oscar visual acceptance 2026-07-20).
 
 ## 7. Boundary
 

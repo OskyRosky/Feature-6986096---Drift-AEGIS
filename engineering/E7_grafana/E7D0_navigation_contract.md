@@ -19,7 +19,7 @@ Navigation is therefore implemented with **native, sustainable** mechanisms only
 - Uses **local relative paths + stable UIDs** — no external hostname, no `http://localhost:3000` hardcoding,
   no HTML, no plugins.
 
-Fixed order & targets:
+Fixed order & targets (updated in **E7D.9A** — Top Forecast Keys + Top Scenarios consolidated into **Top Risk**):
 
 | Order | Label | Target |
 |-------|-------|--------|
@@ -31,9 +31,14 @@ Fixed order & targets:
 | 6 | Volatility | `/d/aegis-forecast-drift-volatility` |
 | 7 | Events | `/d/aegis-forecast-drift-events` |
 | 8 | Historical Timeline | `/d/aegis-forecast-drift-timeline` |
-| 9 | Top Forecast Keys | `/d/aegis-forecast-drift-top-keys` |
-| 10 | Top Scenarios | `/d/aegis-forecast-drift-top-scenarios` |
-| 11 | Settings & Data Quality | `/d/aegis-forecast-drift-settings` |
+| 9 | Top Risk | `/d/aegis-forecast-drift-top-keys` |
+| 10 | Settings & Data Quality | `/d/aegis-forecast-drift-settings` |
+
+> **E7D.9A consolidation (2026-07-20):** the former sections **Top Forecast Keys** (order 9) and **Top Scenarios**
+> (order 10) were merged into a single **Top Risk** section. The **canonical dashboard reuses the Top Forecast Keys
+> UID `aegis-forecast-drift-top-keys`** (preserved to avoid breaking links/provisioning). **Top Scenarios**
+> (uid `aegis-forecast-drift-top-scenarios`) is retired from navigation (its `aegis-nav` dashboard tag removed) but
+> preserved for rollback. The `aegis-nav` dropdown therefore lists **10** dashboards.
 
 ### 2. Native dashboard links dropdown (secondary — Grafana top bar)
 
@@ -45,8 +50,10 @@ Each dashboard declares a native `links` entry:
 ```
 
 - Renders a **"AEGIS Sections"** dropdown in Grafana's dashboard top bar.
-- Auto-populated by the shared tag **`aegis-nav`** carried by all 11 dashboards.
-- `keepTime: true` preserves the time range while navigating.
+- Auto-populated by the shared tag **`aegis-nav`** carried by the active dashboards (**10** after E7D.9A;
+  Top Scenarios' tag was removed on retirement).
+- `keepTime: false` — the target loads its own saved range (corrected in E7D.6; the original `true` caused stale
+  time ranges). `includeVars: true` preserves the shared template variables across navigation.
 
 ## Rules honored
 
