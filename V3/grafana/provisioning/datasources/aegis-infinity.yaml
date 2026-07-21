@@ -1,0 +1,18 @@
+# AEGIS Forecast Drift — Infinity datasource provisioning (E7A)
+# Source of truth lives under V2/. Applied to the running Grafana by copying this
+# file into /etc/grafana/provisioning/datasources/ and restarting Grafana.
+# Contains NO secrets (internal URL only).
+apiVersion: 1
+
+datasources:
+  - name: AEGIS Forecast Drift CSV
+    uid: aegis-forecast-drift-csv
+    type: yesoreyeram-infinity-datasource
+    access: proxy
+    url: http://aegis-csv
+    isDefault: false
+    editable: false
+    jsonData:
+      # Restrict Infinity to the internal CSV host only.
+      allowedHosts:
+        - http://aegis-csv

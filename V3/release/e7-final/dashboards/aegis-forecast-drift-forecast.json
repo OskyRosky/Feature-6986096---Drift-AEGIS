@@ -1,0 +1,581 @@
+{
+  "uid": "aegis-forecast-drift-forecast",
+  "title": "AEGIS Forecast Drift — Forecast",
+  "description": "Forecast-level view of overall drift, family contribution, severity, historical movement and forecast-key risk. Governed read-only V2 snapshot via datasource aegis-forecast-drift-csv. The historical trend intentionally ignores the Forecast Version filter to preserve the full series; all other panels honor the five shared filters.",
+  "tags": ["aegis", "forecast-drift", "aegis-nav", "forecast", "e7d2"],
+  "editable": true,
+  "schemaVersion": 39,
+  "version": 0,
+  "timezone": "utc",
+  "time": { "from": "2024-03-01T00:00:00.000Z", "to": "2026-06-01T00:00:00.000Z" },
+  "timepicker": { "hidden": true },
+  "refresh": "",
+  "links": [
+    { "asDropdown": true, "title": "AEGIS Sections", "type": "dashboards", "tags": ["aegis-nav"], "icon": "external link", "includeVars": true, "keepTime": false, "targetBlank": false, "tooltip": "", "url": "" }
+  ],
+  "templating": {
+    "list": [
+      {
+        "name": "forecast_key",
+        "label": "Forecast Key",
+        "type": "query",
+        "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+        "query": {
+          "queryType": "infinity",
+          "refId": "variable",
+          "infinityQuery": {
+            "refId": "variable", "type": "csv", "source": "url", "format": "table", "parser": "backend",
+            "url": "http://aegis-csv/forecast_drift_signals.csv",
+            "url_options": { "method": "GET", "data": "" }, "root_selector": "",
+            "columns": [ { "selector": "forecast_key", "text": "", "type": "string" } ], "filters": []
+          }
+        },
+        "includeAll": true, "multi": true, "allValue": null,
+        "current": { "text": "All", "value": "$__all", "selected": false },
+        "refresh": 1, "sort": 1, "hide": 0
+      },
+      {
+        "name": "forecast_version",
+        "label": "Forecast Version",
+        "type": "query",
+        "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+        "query": {
+          "queryType": "infinity",
+          "refId": "variable",
+          "infinityQuery": {
+            "refId": "variable", "type": "csv", "source": "url", "format": "table", "parser": "backend",
+            "url": "http://aegis-csv/forecast_drift_signals.csv",
+            "url_options": { "method": "GET", "data": "" }, "root_selector": "",
+            "columns": [ { "selector": "forecast_version", "text": "forecast_version", "type": "string" } ],
+            "computed_columns": [ { "selector": "'v' + forecast_version", "text": "__value" } ],
+            "filters": []
+          }
+        },
+        "includeAll": true, "multi": true, "allValue": null,
+        "current": { "text": "All", "value": "$__all", "selected": false },
+        "refresh": 1, "sort": 1, "hide": 0
+      },
+      {
+        "name": "region",
+        "label": "Region",
+        "type": "query",
+        "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+        "query": {
+          "queryType": "infinity",
+          "refId": "variable",
+          "infinityQuery": {
+            "refId": "variable", "type": "csv", "source": "url", "format": "table", "parser": "backend",
+            "url": "http://aegis-csv/forecast_drift_signals.csv",
+            "url_options": { "method": "GET", "data": "" }, "root_selector": "",
+            "columns": [ { "selector": "region", "text": "", "type": "string" } ], "filters": []
+          }
+        },
+        "includeAll": true, "multi": true, "allValue": null,
+        "current": { "text": "All", "value": "$__all", "selected": false },
+        "refresh": 1, "sort": 1, "hide": 0
+      },
+      {
+        "name": "drift_status",
+        "label": "Drift Status",
+        "type": "query",
+        "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+        "query": {
+          "queryType": "infinity",
+          "refId": "variable",
+          "infinityQuery": {
+            "refId": "variable", "type": "csv", "source": "url", "format": "table", "parser": "backend",
+            "url": "http://aegis-csv/forecast_drift_signals.csv",
+            "url_options": { "method": "GET", "data": "" }, "root_selector": "",
+            "columns": [ { "selector": "drift_status", "text": "", "type": "string" } ], "filters": []
+          }
+        },
+        "includeAll": true, "multi": true, "allValue": null,
+        "current": { "text": "All", "value": "$__all", "selected": false },
+        "refresh": 1, "sort": 1, "hide": 0
+      },
+      {
+        "name": "run_id",
+        "label": "Run ID",
+        "type": "query",
+        "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+        "query": {
+          "queryType": "infinity",
+          "refId": "variable",
+          "infinityQuery": {
+            "refId": "variable", "type": "csv", "source": "url", "format": "table", "parser": "backend",
+            "url": "http://aegis-csv/forecast_drift_runs.csv",
+            "url_options": { "method": "GET", "data": "" }, "root_selector": "",
+            "columns": [ { "selector": "calculation_run_id", "text": "", "type": "string" } ], "filters": []
+          }
+        },
+        "includeAll": true, "multi": true, "allValue": null,
+        "current": { "text": "All", "value": "$__all", "selected": false },
+        "refresh": 1, "sort": 1, "hide": 0
+      }
+    ]
+  },
+  "panels": [
+    {
+      "id": 1,
+      "type": "text",
+      "title": "",
+      "gridPos": { "h": 2, "w": 24, "x": 0, "y": 0 },
+      "options": {
+        "mode": "markdown",
+        "content": "**AEGIS Forecast Drift**  ·  [Overview](/d/aegis-forecast-drift-foundation) · **Forecast** · [Performance](/d/aegis-forecast-drift-performance) · [Shape](/d/aegis-forecast-drift-shape) · [Stability](/d/aegis-forecast-drift-stability) · [Volatility](/d/aegis-forecast-drift-volatility) · [Events](/d/aegis-forecast-drift-events) · [Historical Timeline](/d/aegis-forecast-drift-timeline) · [Top Risk](/d/aegis-forecast-drift-top-keys) · [Settings & Data Quality](/d/aegis-forecast-drift-settings)"
+      }
+    },
+    {
+      "id": 2,
+      "type": "text",
+      "title": "",
+      "gridPos": { "h": 2, "w": 24, "x": 0, "y": 2 },
+      "options": {
+        "mode": "markdown",
+        "content": "**AEGIS Forecast Drift — Forecast** · Governed read-only **V2** snapshot via datasource `aegis-forecast-drift-csv`. Overall score, family contribution, severity, forecast-key risk and the drift heatmap honor all five shared filters (Forecast Key · Forecast Version · Region · Drift Status · Run ID). The drift trend intentionally ignores Forecast Version to preserve the full historical evolution."
+      }
+    },
+    {
+      "id": 10,
+      "type": "gauge",
+      "title": "Overall Forecast Drift Score",
+      "description": "Average forecast_drift_score across the filtered signals (0–100). Bands: Healthy 0–20 · Watch 20–40 · Warning 40–70 · Critical 70+.",
+      "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+      "gridPos": { "h": 8, "w": 8, "x": 0, "y": 4 },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+          "type": "csv", "source": "url", "format": "table", "parser": "backend",
+          "url": "http://aegis-csv/forecast_drift_signals.csv",
+          "url_options": { "method": "GET", "data": "" }, "root_selector": "",
+          "columns": [
+            { "selector": "forecast_drift_score", "text": "score", "type": "number" },
+            { "selector": "region", "text": "region", "type": "string" },
+            { "selector": "forecast_key", "text": "forecast_key", "type": "string" },
+            { "selector": "forecast_version", "text": "forecast_version", "type": "string" },
+            { "selector": "drift_status", "text": "drift_status", "type": "string" },
+            { "selector": "calculation_run_id", "text": "calculation_run_id", "type": "string" }
+          ],
+          "computed_columns": [ { "selector": "'v' + forecast_version", "text": "fv_label" } ],
+          "filters": [],
+          "filterExpression": "region IN (${region:singlequote}) && forecast_key IN (${forecast_key:singlequote}) && fv_label IN (${forecast_version:singlequote}) && drift_status IN (${drift_status:singlequote}) && calculation_run_id IN (${run_id:singlequote})"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "min": 0, "max": 100, "unit": "short", "decimals": 1,
+          "color": { "mode": "thresholds" },
+          "thresholds": { "mode": "absolute", "steps": [ { "color": "green", "value": null }, { "color": "yellow", "value": 20 }, { "color": "orange", "value": 40 }, { "color": "red", "value": 70 } ] }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": { "calcs": ["mean"], "fields": "score", "values": false },
+        "orientation": "auto", "showThresholdLabels": false, "showThresholdMarkers": true
+      }
+    },
+    {
+      "id": 20,
+      "type": "piechart",
+      "title": "Drift Family Distribution",
+      "description": "Distribution of filtered signals by dominant drift family (performance / shape / stability / volatility). Family is a category — colors are neutral and distinct from severity.",
+      "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+      "gridPos": { "h": 8, "w": 8, "x": 8, "y": 4 },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+          "type": "csv", "source": "url", "format": "table", "parser": "backend",
+          "url": "http://aegis-csv/forecast_drift_signals.csv",
+          "url_options": { "method": "GET", "data": "" }, "root_selector": "",
+          "columns": [
+            { "selector": "dominant_drift_family", "text": "family", "type": "string" },
+            { "selector": "drift_event_id", "text": "signals", "type": "string" },
+            { "selector": "region", "text": "region", "type": "string" },
+            { "selector": "forecast_key", "text": "forecast_key", "type": "string" },
+            { "selector": "forecast_version", "text": "forecast_version", "type": "string" },
+            { "selector": "drift_status", "text": "drift_status", "type": "string" },
+            { "selector": "calculation_run_id", "text": "calculation_run_id", "type": "string" }
+          ],
+          "computed_columns": [ { "selector": "'v' + forecast_version", "text": "fv_label" } ],
+          "filters": [],
+          "filterExpression": "region IN (${region:singlequote}) && forecast_key IN (${forecast_key:singlequote}) && fv_label IN (${forecast_version:singlequote}) && drift_status IN (${drift_status:singlequote}) && calculation_run_id IN (${run_id:singlequote})"
+        }
+      ],
+      "transformations": [
+        {
+          "id": "groupBy",
+          "options": {
+            "fields": {
+              "family": { "aggregations": [], "operation": "groupby" },
+              "signals": { "aggregations": ["count"], "operation": "aggregate" }
+            }
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short", "decimals": 0,
+          "color": { "mode": "palette-classic" },
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "stability": { "text": "Stability", "color": "#3274D9", "index": 0 },
+                "volatility": { "text": "Volatility", "color": "#B877D9", "index": 1 },
+                "shape": { "text": "Shape", "color": "#37A2B8", "index": 2 },
+                "performance": { "text": "Performance", "color": "#FF7EB6", "index": 3 }
+              }
+            }
+          ]
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": true },
+        "pieType": "donut",
+        "legend": { "displayMode": "table", "placement": "right", "values": ["value", "percent"] },
+        "displayLabels": ["name", "value"]
+      }
+    },
+    {
+      "id": 21,
+      "type": "piechart",
+      "title": "Drift Status Distribution",
+      "description": "Distribution of filtered signals by drift status (Healthy / Watch / Warning / Critical).",
+      "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 4 },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+          "type": "csv", "source": "url", "format": "table", "parser": "backend",
+          "url": "http://aegis-csv/forecast_drift_signals.csv",
+          "url_options": { "method": "GET", "data": "" }, "root_selector": "",
+          "columns": [
+            { "selector": "drift_status", "text": "drift_status", "type": "string" },
+            { "selector": "drift_event_id", "text": "signals", "type": "string" },
+            { "selector": "region", "text": "region", "type": "string" },
+            { "selector": "forecast_key", "text": "forecast_key", "type": "string" },
+            { "selector": "forecast_version", "text": "forecast_version", "type": "string" },
+            { "selector": "calculation_run_id", "text": "calculation_run_id", "type": "string" }
+          ],
+          "computed_columns": [ { "selector": "'v' + forecast_version", "text": "fv_label" } ],
+          "filters": [],
+          "filterExpression": "region IN (${region:singlequote}) && forecast_key IN (${forecast_key:singlequote}) && fv_label IN (${forecast_version:singlequote}) && drift_status IN (${drift_status:singlequote}) && calculation_run_id IN (${run_id:singlequote})"
+        }
+      ],
+      "transformations": [
+        {
+          "id": "groupBy",
+          "options": {
+            "fields": {
+              "drift_status": { "aggregations": [], "operation": "groupby" },
+              "signals": { "aggregations": ["count"], "operation": "aggregate" }
+            }
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short", "decimals": 0,
+          "color": { "mode": "palette-classic" },
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "Healthy": { "color": "green", "index": 0 },
+                "Watch": { "color": "yellow", "index": 1 },
+                "Warning": { "color": "orange", "index": 2 },
+                "Critical": { "color": "red", "index": 3 }
+              }
+            }
+          ]
+        },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "Healthy" }, "properties": [ { "id": "color", "value": { "mode": "fixed", "fixedColor": "green" } } ] },
+          { "matcher": { "id": "byName", "options": "Watch" }, "properties": [ { "id": "color", "value": { "mode": "fixed", "fixedColor": "yellow" } } ] },
+          { "matcher": { "id": "byName", "options": "Warning" }, "properties": [ { "id": "color", "value": { "mode": "fixed", "fixedColor": "orange" } } ] },
+          { "matcher": { "id": "byName", "options": "Critical" }, "properties": [ { "id": "color", "value": { "mode": "fixed", "fixedColor": "red" } } ] }
+        ]
+      },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": true },
+        "pieType": "donut",
+        "legend": { "displayMode": "table", "placement": "right", "values": ["value", "percent"] },
+        "displayLabels": ["name", "value"]
+      }
+    },
+    {
+      "id": 30,
+      "type": "timeseries",
+      "title": "Average Drift Score Over Time (by Forecast Version)",
+      "description": "Mean forecast_drift_score per forecast version. Dashed thresholds mark the Watch (20), Warning (40) and Critical (70) bands. This trend intentionally ignores the Forecast Version filter to preserve the full historical evolution; it still honors Region, Forecast Key, Drift Status and Run ID.",
+      "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 12 },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+          "type": "csv", "source": "url", "format": "table", "parser": "backend",
+          "url": "http://aegis-csv/forecast_drift_signals.csv",
+          "url_options": { "method": "GET", "data": "" }, "root_selector": "",
+          "columns": [
+            { "selector": "forecast_version", "text": "forecast_version", "type": "timestamp" },
+            { "selector": "forecast_drift_score", "text": "score", "type": "number" },
+            { "selector": "region", "text": "region", "type": "string" },
+            { "selector": "forecast_key", "text": "forecast_key", "type": "string" },
+            { "selector": "drift_status", "text": "drift_status", "type": "string" },
+            { "selector": "calculation_run_id", "text": "calculation_run_id", "type": "string" }
+          ],
+          "filters": [],
+          "filterExpression": "region IN (${region:singlequote}) && forecast_key IN (${forecast_key:singlequote}) && drift_status IN (${drift_status:singlequote}) && calculation_run_id IN (${run_id:singlequote})"
+        }
+      ],
+      "transformations": [
+        {
+          "id": "groupBy",
+          "options": {
+            "fields": {
+              "forecast_version": { "aggregations": [], "operation": "groupby" },
+              "score": { "aggregations": ["mean"], "operation": "aggregate" }
+            }
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short", "decimals": 1,
+          "color": { "mode": "fixed", "fixedColor": "blue" },
+          "custom": {
+            "drawStyle": "line", "lineWidth": 2, "fillOpacity": 10, "showPoints": "always", "pointSize": 6,
+            "lineInterpolation": "smooth", "spanNulls": true,
+            "thresholdsStyle": { "mode": "dashed" }
+          },
+          "thresholds": { "mode": "absolute", "steps": [ { "color": "green", "value": null }, { "color": "yellow", "value": 20 }, { "color": "orange", "value": 40 }, { "color": "red", "value": 70 } ] }
+        },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "score (mean)" }, "properties": [ { "id": "displayName", "value": "Avg Drift Score" } ] }
+        ]
+      },
+      "options": {
+        "legend": { "displayMode": "list", "placement": "bottom", "showLegend": false },
+        "tooltip": { "mode": "single", "sort": "none" }
+      }
+    },
+    {
+      "id": 40,
+      "type": "barchart",
+      "title": "Forecast Keys by Average Drift Score",
+      "description": "Forecast keys ranked by average forecast_drift_score (highest risk first), honoring the shared filters. Neutral bar color — the ranking value is the drift score itself.",
+      "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+      "gridPos": { "h": 12, "w": 8, "x": 0, "y": 20 },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+          "type": "csv", "source": "url", "format": "table", "parser": "backend",
+          "url": "http://aegis-csv/forecast_drift_signals.csv",
+          "url_options": { "method": "GET", "data": "" }, "root_selector": "",
+          "columns": [
+            { "selector": "forecast_key", "text": "forecast_key", "type": "string" },
+            { "selector": "forecast_drift_score", "text": "score", "type": "number" },
+            { "selector": "region", "text": "region", "type": "string" },
+            { "selector": "forecast_version", "text": "forecast_version", "type": "string" },
+            { "selector": "drift_status", "text": "drift_status", "type": "string" },
+            { "selector": "calculation_run_id", "text": "calculation_run_id", "type": "string" }
+          ],
+          "computed_columns": [ { "selector": "'v' + forecast_version", "text": "fv_label" } ],
+          "filters": [],
+          "filterExpression": "region IN (${region:singlequote}) && forecast_key IN (${forecast_key:singlequote}) && fv_label IN (${forecast_version:singlequote}) && drift_status IN (${drift_status:singlequote}) && calculation_run_id IN (${run_id:singlequote})"
+        }
+      ],
+      "transformations": [
+        {
+          "id": "groupBy",
+          "options": {
+            "fields": {
+              "forecast_key": { "aggregations": [], "operation": "groupby" },
+              "score": { "aggregations": ["mean"], "operation": "aggregate" }
+            }
+          }
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {},
+            "renameByName": { "forecast_key": "Forecast Key", "score (mean)": "Avg Drift Score" },
+            "indexByName": { "forecast_key": 0, "score (mean)": 1 }
+          }
+        },
+        { "id": "sortBy", "options": { "sort": [ { "field": "Avg Drift Score", "desc": true } ] } }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short", "decimals": 1,
+          "color": { "mode": "fixed", "fixedColor": "blue" }
+        },
+        "overrides": []
+      },
+      "options": {
+        "orientation": "horizontal",
+        "xTickLabelRotation": 0,
+        "xTickLabelSpacing": 0,
+        "showValue": "always",
+        "stacking": "none",
+        "groupWidth": 0.7,
+        "barWidth": 0.8,
+        "fullHighlight": false,
+        "legend": { "showLegend": false, "displayMode": "list", "placement": "bottom" },
+        "tooltip": { "mode": "single", "sort": "none" }
+      }
+    },
+    {
+      "id": 50,
+      "type": "table",
+      "title": "Drift Score Heatmap — Forecast Key × Forecast Version",
+      "description": "Governed forecast_drift_score for every forecast key (rows) across each forecast version (columns), pivoted from long format via a single Infinity query and the Grouping-to-matrix transform (one query — avoids the per-URL request coalescing that empties multi-target Infinity pivots). One score per cell. Cell color follows the severity bands: Healthy 0–20 (green) · Watch 20–40 (yellow) · Warning 40–70 (orange) · Critical 70+ (red). Responds to the five shared filters.",
+      "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+      "gridPos": { "h": 12, "w": 16, "x": 8, "y": 20 },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+          "type": "csv", "source": "url", "format": "table", "parser": "backend",
+          "url": "http://aegis-csv/forecast_drift_signals.csv",
+          "url_options": { "method": "GET", "data": "" }, "root_selector": "",
+          "columns": [
+            { "selector": "forecast_key", "text": "forecast_key", "type": "string" },
+            { "selector": "forecast_drift_score", "text": "forecast_drift_score", "type": "number" },
+            { "selector": "forecast_version", "text": "forecast_version", "type": "string" },
+            { "selector": "region", "text": "region", "type": "string" },
+            { "selector": "drift_status", "text": "drift_status", "type": "string" },
+            { "selector": "calculation_run_id", "text": "calculation_run_id", "type": "string" }
+          ],
+          "computed_columns": [ { "selector": "'v' + forecast_version", "text": "fv_label" } ],
+          "filters": [],
+          "filterExpression": "region IN (${region:singlequote}) && forecast_key IN (${forecast_key:singlequote}) && fv_label IN (${forecast_version:singlequote}) && drift_status IN (${drift_status:singlequote}) && calculation_run_id IN (${run_id:singlequote})"
+        }
+      ],
+      "transformations": [
+        { "id": "sortBy", "options": { "fields": {}, "sort": [ { "field": "fv_label", "desc": false } ] } },
+        { "id": "groupingToMatrix", "options": { "columnField": "fv_label", "rowField": "forecast_key", "valueField": "forecast_drift_score", "emptyValue": "null" } },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {},
+            "renameByName": { "forecast_key\\fv_label": "Forecast Key", "forecast_key": "Forecast Key", "fv_label": "Forecast Key" },
+            "indexByName": {}
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short", "decimals": 1,
+          "custom": { "align": "center", "cellOptions": { "type": "color-background" }, "filterable": false, "minWidth": 60 },
+          "color": { "mode": "thresholds" },
+          "thresholds": { "mode": "absolute", "steps": [ { "color": "green", "value": null }, { "color": "yellow", "value": 20 }, { "color": "orange", "value": 40 }, { "color": "red", "value": 70 } ] }
+        },
+        "overrides": [
+          {
+            "matcher": { "id": "byName", "options": "Forecast Key" },
+            "properties": [
+              { "id": "custom.align", "value": "left" },
+              { "id": "custom.cellOptions", "value": { "type": "auto" } },
+              { "id": "custom.width", "value": 170 },
+              { "id": "color", "value": { "mode": "fixed", "fixedColor": "text" } }
+            ]
+          }
+        ]
+      },
+      "options": { "showHeader": true, "cellHeight": "sm", "footer": { "show": false, "reducer": ["sum"], "fields": "" } }
+    },
+    {
+      "id": 60,
+      "type": "table",
+      "title": "Latest Governed Run",
+      "description": "Metadata of the governed calculation run selected by the Run ID filter (forecast_drift_runs.csv).",
+      "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+      "gridPos": { "h": 6, "w": 16, "x": 0, "y": 32 },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+          "type": "csv", "source": "url", "format": "table", "parser": "backend",
+          "url": "http://aegis-csv/forecast_drift_runs.csv",
+          "url_options": { "method": "GET", "data": "" }, "root_selector": "",
+          "columns": [
+            { "selector": "calculation_run_id", "text": "calculation_run_id", "type": "string" },
+            { "selector": "run_status", "text": "Status", "type": "string" },
+            { "selector": "run_finished_at", "text": "Finished At (UTC)", "type": "timestamp" },
+            { "selector": "signals_written", "text": "Signals Written", "type": "number" },
+            { "selector": "events_created", "text": "Events Created", "type": "number" }
+          ],
+          "filters": [],
+          "filterExpression": "calculation_run_id IN (${run_id:singlequote})"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": { "custom": { "align": "left", "filterable": false } },
+        "overrides": [
+          {
+            "matcher": { "id": "byName", "options": "calculation_run_id" },
+            "properties": [ { "id": "displayName", "value": "Run ID" }, { "id": "custom.align", "value": "left" } ]
+          },
+          {
+            "matcher": { "id": "byName", "options": "Finished At (UTC)" },
+            "properties": [ { "id": "unit", "value": "time:YYYY-MM-DD HH:mm" }, { "id": "custom.align", "value": "left" } ]
+          },
+          {
+            "matcher": { "id": "byName", "options": "Status" },
+            "properties": [
+              { "id": "custom.cellOptions", "value": { "type": "color-text" } },
+              { "id": "mappings", "value": [ { "type": "value", "options": { "Success": { "color": "green", "index": 0 } } } ] }
+            ]
+          },
+          {
+            "matcher": { "id": "byName", "options": "Signals Written" },
+            "properties": [ { "id": "decimals", "value": 0 }, { "id": "custom.align", "value": "right" } ]
+          },
+          {
+            "matcher": { "id": "byName", "options": "Events Created" },
+            "properties": [ { "id": "decimals", "value": 0 }, { "id": "custom.align", "value": "right" } ]
+          }
+        ]
+      },
+      "options": { "showHeader": true, "cellHeight": "sm", "footer": { "show": false, "reducer": ["sum"], "fields": "" } }
+    },
+    {
+      "id": 70,
+      "type": "stat",
+      "title": "Data Quality — Checks Passed",
+      "description": "Governance checks passed vs total for the selected run. Per-check detail lives in Settings & Data Quality.",
+      "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+      "gridPos": { "h": 6, "w": 8, "x": 16, "y": 32 },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+          "type": "csv", "source": "url", "format": "table", "parser": "backend",
+          "url": "http://aegis-csv/forecast_drift_runs.csv",
+          "url_options": { "method": "GET", "data": "" }, "root_selector": "",
+          "columns": [
+            { "selector": "checks_passed", "text": "checks_passed", "type": "number" },
+            { "selector": "checks_total", "text": "checks_total", "type": "number" },
+            { "selector": "calculation_run_id", "text": "calculation_run_id", "type": "string" }
+          ],
+          "computed_columns": [ { "selector": "checks_passed + ' / ' + checks_total", "text": "dq" } ],
+          "filters": [],
+          "filterExpression": "calculation_run_id IN (${run_id:singlequote})"
+        }
+      ],
+      "fieldConfig": { "defaults": { "color": { "mode": "fixed", "fixedColor": "green" } }, "overrides": [] },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "dq", "values": false },
+        "orientation": "auto", "colorMode": "background", "graphMode": "none", "justifyMode": "center", "textMode": "value"
+      }
+    }
+  ],
+  "annotations": { "list": [] }
+}

@@ -1,0 +1,4 @@
+# Local, machine-specific and potentially sensitive artifacts — never commit.
+.env
+.backups/
+*.tar.gz

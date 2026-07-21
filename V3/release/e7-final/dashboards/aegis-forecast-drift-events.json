@@ -1,0 +1,452 @@
+{
+  "uid": "aegis-forecast-drift-events",
+  "title": "AEGIS Forecast Drift — Events",
+  "description": "Governed read-only event log for forecast drift signals, severity, family, affected forecast keys and available event explanations. Events are the subset of the governed V2 signals snapshot where is_event = 1 (71 events from run 1, all detected 2026-07-13 UTC). Read through datasource aegis-forecast-drift-csv (forecast_drift_signals.csv + forecast_drift_runs.csv). This dashboard is strictly read-only: no resolve/acknowledge/close actions, no invented lifecycle states. The only governed lifecycle field is event_status = Open (constant); drift_status carries the governed severity band (Healthy/Watch/Warning/Critical). service, scenario, a separate severity and event_type do not exist in the governed snapshot and are intentionally absent.",
+  "tags": ["aegis", "forecast-drift", "aegis-nav", "events", "e7d7"],
+  "editable": true,
+  "schemaVersion": 39,
+  "version": 0,
+  "timezone": "utc",
+  "time": { "from": "2026-07-01T00:00:00.000Z", "to": "2026-07-31T00:00:00.000Z" },
+  "timepicker": { "hidden": true },
+  "refresh": "",
+  "links": [
+    { "asDropdown": true, "title": "AEGIS Sections", "type": "dashboards", "tags": ["aegis-nav"], "icon": "external link", "includeVars": true, "keepTime": false, "targetBlank": false, "tooltip": "", "url": "" }
+  ],
+  "templating": {
+    "list": [
+      {
+        "name": "forecast_key", "label": "Forecast Key", "type": "query",
+        "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+        "query": { "queryType": "infinity", "refId": "variable", "infinityQuery": { "refId": "variable", "type": "csv", "source": "url", "format": "table", "parser": "backend", "url": "http://aegis-csv/forecast_drift_signals.csv", "url_options": { "method": "GET", "data": "" }, "root_selector": "", "columns": [ { "selector": "forecast_key", "text": "", "type": "string" } ], "filters": [] } },
+        "includeAll": true, "multi": true, "allValue": null, "current": { "text": "All", "value": "$__all", "selected": false }, "refresh": 1, "sort": 1, "hide": 0
+      },
+      {
+        "name": "forecast_version", "label": "Forecast Version", "type": "query",
+        "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+        "query": { "queryType": "infinity", "refId": "variable", "infinityQuery": { "refId": "variable", "type": "csv", "source": "url", "format": "table", "parser": "backend", "url": "http://aegis-csv/forecast_drift_signals.csv", "url_options": { "method": "GET", "data": "" }, "root_selector": "", "columns": [ { "selector": "forecast_version", "text": "forecast_version", "type": "string" } ], "computed_columns": [ { "selector": "'v' + forecast_version", "text": "__value" } ], "filters": [] } },
+        "includeAll": true, "multi": true, "allValue": null, "current": { "text": "All", "value": "$__all", "selected": false }, "refresh": 1, "sort": 1, "hide": 0
+      },
+      {
+        "name": "region", "label": "Region", "type": "query",
+        "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+        "query": { "queryType": "infinity", "refId": "variable", "infinityQuery": { "refId": "variable", "type": "csv", "source": "url", "format": "table", "parser": "backend", "url": "http://aegis-csv/forecast_drift_signals.csv", "url_options": { "method": "GET", "data": "" }, "root_selector": "", "columns": [ { "selector": "region", "text": "", "type": "string" } ], "filters": [] } },
+        "includeAll": true, "multi": true, "allValue": null, "current": { "text": "All", "value": "$__all", "selected": false }, "refresh": 1, "sort": 1, "hide": 0
+      },
+      {
+        "name": "drift_status", "label": "Drift Status", "type": "query",
+        "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+        "query": { "queryType": "infinity", "refId": "variable", "infinityQuery": { "refId": "variable", "type": "csv", "source": "url", "format": "table", "parser": "backend", "url": "http://aegis-csv/forecast_drift_signals.csv", "url_options": { "method": "GET", "data": "" }, "root_selector": "", "columns": [ { "selector": "drift_status", "text": "", "type": "string" } ], "filters": [] } },
+        "includeAll": true, "multi": true, "allValue": null, "current": { "text": "All", "value": "$__all", "selected": false }, "refresh": 1, "sort": 1, "hide": 0
+      },
+      {
+        "name": "run_id", "label": "Run ID", "type": "query",
+        "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+        "query": { "queryType": "infinity", "refId": "variable", "infinityQuery": { "refId": "variable", "type": "csv", "source": "url", "format": "table", "parser": "backend", "url": "http://aegis-csv/forecast_drift_runs.csv", "url_options": { "method": "GET", "data": "" }, "root_selector": "", "columns": [ { "selector": "calculation_run_id", "text": "", "type": "string" } ], "filters": [] } },
+        "includeAll": true, "multi": true, "allValue": null, "current": { "text": "All", "value": "$__all", "selected": false }, "refresh": 1, "sort": 1, "hide": 0
+      },
+      {
+        "name": "drift_family", "label": "Drift Family", "type": "query",
+        "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+        "query": { "queryType": "infinity", "refId": "variable", "infinityQuery": { "refId": "variable", "type": "csv", "source": "url", "format": "table", "parser": "backend", "url": "http://aegis-csv/forecast_drift_signals.csv", "url_options": { "method": "GET", "data": "" }, "root_selector": "", "columns": [ { "selector": "dominant_drift_family", "text": "", "type": "string" } ], "filters": [] } },
+        "includeAll": true, "multi": true, "allValue": null, "current": { "text": "All", "value": "$__all", "selected": false }, "refresh": 1, "sort": 1, "hide": 0
+      }
+    ]
+  },
+  "panels": [
+    {
+      "id": 1, "type": "text", "title": "",
+      "gridPos": { "h": 2, "w": 24, "x": 0, "y": 0 },
+      "options": { "mode": "markdown", "content": "**AEGIS Forecast Drift**  ·  [Overview](/d/aegis-forecast-drift-foundation) · [Forecast](/d/aegis-forecast-drift-forecast) · [Performance](/d/aegis-forecast-drift-performance) · [Shape](/d/aegis-forecast-drift-shape) · [Stability](/d/aegis-forecast-drift-stability) · [Volatility](/d/aegis-forecast-drift-volatility) · **Events** · [Historical Timeline](/d/aegis-forecast-drift-timeline) · [Top Risk](/d/aegis-forecast-drift-top-keys) · [Settings & Data Quality](/d/aegis-forecast-drift-settings)" }
+    },
+    {
+      "id": 2, "type": "text", "title": "",
+      "gridPos": { "h": 3, "w": 24, "x": 0, "y": 2 },
+      "options": { "mode": "markdown", "content": "# AEGIS Forecast Drift — Events\n\nGoverned read-only event log — **V2** snapshot. Events are governed drift signals with `is_event = 1`; the only lifecycle state is `event_status = Open`, and `drift_status` carries the governed severity band. KPIs, distributions and the event log honor the shared filters." }
+    },
+    {
+      "id": 10, "type": "stat", "title": "Total Events",
+      "description": "Count of governed drift events (signals with is_event = 1) in the current selection. Baseline at filters = All is 71 (reconciles with events_created in the latest governed run). Honors all shared filters.",
+      "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+      "gridPos": { "h": 4, "w": 6, "x": 0, "y": 5 },
+      "targets": [
+        {
+          "refId": "A", "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+          "type": "csv", "source": "url", "format": "table", "parser": "backend",
+          "url": "http://aegis-csv/forecast_drift_signals.csv", "url_options": { "method": "GET", "data": "" }, "root_selector": "",
+          "columns": [
+            { "selector": "drift_event_id", "text": "drift_event_id", "type": "string" },
+            { "selector": "is_event", "text": "is_event", "type": "string" },
+            { "selector": "region", "text": "region", "type": "string" },
+            { "selector": "forecast_key", "text": "forecast_key", "type": "string" },
+            { "selector": "forecast_version", "text": "forecast_version", "type": "string" },
+            { "selector": "drift_status", "text": "drift_status", "type": "string" },
+            { "selector": "dominant_drift_family", "text": "dominant_drift_family", "type": "string" },
+            { "selector": "calculation_run_id", "text": "calculation_run_id", "type": "string" }
+          ],
+          "computed_columns": [ { "selector": "'v' + forecast_version", "text": "fv_label" } ],
+          "filters": [],
+          "filterExpression": "is_event == '1' && region IN (${region:singlequote}) && forecast_key IN (${forecast_key:singlequote}) && fv_label IN (${forecast_version:singlequote}) && drift_status IN (${drift_status:singlequote}) && calculation_run_id IN (${run_id:singlequote}) && dominant_drift_family IN (${drift_family:singlequote})"
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "short", "decimals": 0, "color": { "mode": "fixed", "fixedColor": "blue" } }, "overrides": [] },
+      "options": { "reduceOptions": { "calcs": ["count"], "fields": "/^drift_event_id$/", "values": false }, "orientation": "auto", "colorMode": "value", "graphMode": "none", "justifyMode": "center", "textMode": "value" }
+    },
+    {
+      "id": 11, "type": "stat", "title": "Critical Events",
+      "description": "Governed drift events with drift_status = Critical (governed severity band 70+). Baseline at filters = All is 14. Honors all shared filters.",
+      "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+      "gridPos": { "h": 4, "w": 6, "x": 6, "y": 5 },
+      "targets": [
+        {
+          "refId": "A", "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+          "type": "csv", "source": "url", "format": "table", "parser": "backend",
+          "url": "http://aegis-csv/forecast_drift_signals.csv", "url_options": { "method": "GET", "data": "" }, "root_selector": "",
+          "columns": [
+            { "selector": "drift_event_id", "text": "drift_event_id", "type": "string" },
+            { "selector": "is_event", "text": "is_event", "type": "string" },
+            { "selector": "region", "text": "region", "type": "string" },
+            { "selector": "forecast_key", "text": "forecast_key", "type": "string" },
+            { "selector": "forecast_version", "text": "forecast_version", "type": "string" },
+            { "selector": "drift_status", "text": "drift_status", "type": "string" },
+            { "selector": "dominant_drift_family", "text": "dominant_drift_family", "type": "string" },
+            { "selector": "calculation_run_id", "text": "calculation_run_id", "type": "string" }
+          ],
+          "computed_columns": [ { "selector": "'v' + forecast_version", "text": "fv_label" } ],
+          "filters": [],
+          "filterExpression": "is_event == '1' && drift_status == 'Critical' && region IN (${region:singlequote}) && forecast_key IN (${forecast_key:singlequote}) && fv_label IN (${forecast_version:singlequote}) && drift_status IN (${drift_status:singlequote}) && calculation_run_id IN (${run_id:singlequote}) && dominant_drift_family IN (${drift_family:singlequote})"
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "short", "decimals": 0, "color": { "mode": "fixed", "fixedColor": "red" } }, "overrides": [] },
+      "options": { "reduceOptions": { "calcs": ["count"], "fields": "/^drift_event_id$/", "values": false }, "orientation": "auto", "colorMode": "value", "graphMode": "none", "justifyMode": "center", "textMode": "value" }
+    },
+    {
+      "id": 12, "type": "stat", "title": "Warning Events",
+      "description": "Governed drift events with drift_status = Warning (governed severity band 40–70). Baseline at filters = All is 34. Honors all shared filters.",
+      "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+      "gridPos": { "h": 4, "w": 6, "x": 12, "y": 5 },
+      "targets": [
+        {
+          "refId": "A", "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+          "type": "csv", "source": "url", "format": "table", "parser": "backend",
+          "url": "http://aegis-csv/forecast_drift_signals.csv", "url_options": { "method": "GET", "data": "" }, "root_selector": "",
+          "columns": [
+            { "selector": "drift_event_id", "text": "drift_event_id", "type": "string" },
+            { "selector": "is_event", "text": "is_event", "type": "string" },
+            { "selector": "region", "text": "region", "type": "string" },
+            { "selector": "forecast_key", "text": "forecast_key", "type": "string" },
+            { "selector": "forecast_version", "text": "forecast_version", "type": "string" },
+            { "selector": "drift_status", "text": "drift_status", "type": "string" },
+            { "selector": "dominant_drift_family", "text": "dominant_drift_family", "type": "string" },
+            { "selector": "calculation_run_id", "text": "calculation_run_id", "type": "string" }
+          ],
+          "computed_columns": [ { "selector": "'v' + forecast_version", "text": "fv_label" } ],
+          "filters": [],
+          "filterExpression": "is_event == '1' && drift_status == 'Warning' && region IN (${region:singlequote}) && forecast_key IN (${forecast_key:singlequote}) && fv_label IN (${forecast_version:singlequote}) && drift_status IN (${drift_status:singlequote}) && calculation_run_id IN (${run_id:singlequote}) && dominant_drift_family IN (${drift_family:singlequote})"
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "short", "decimals": 0, "color": { "mode": "fixed", "fixedColor": "orange" } }, "overrides": [] },
+      "options": { "reduceOptions": { "calcs": ["count"], "fields": "/^drift_event_id$/", "values": false }, "orientation": "auto", "colorMode": "value", "graphMode": "none", "justifyMode": "center", "textMode": "value" }
+    },
+    {
+      "id": 13, "type": "stat", "title": "Affected Forecast Keys",
+      "description": "Distinct forecast_key values among the governed events in the current selection. Baseline at filters = All is 12. This is a count of Forecast Keys, not services (the governed service column is empty). Honors all shared filters.",
+      "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+      "gridPos": { "h": 4, "w": 6, "x": 18, "y": 5 },
+      "targets": [
+        {
+          "refId": "A", "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+          "type": "csv", "source": "url", "format": "table", "parser": "backend",
+          "url": "http://aegis-csv/forecast_drift_signals.csv", "url_options": { "method": "GET", "data": "" }, "root_selector": "",
+          "columns": [
+            { "selector": "forecast_key", "text": "forecast_key", "type": "string" },
+            { "selector": "is_event", "text": "is_event", "type": "string" },
+            { "selector": "region", "text": "region", "type": "string" },
+            { "selector": "forecast_version", "text": "forecast_version", "type": "string" },
+            { "selector": "drift_status", "text": "drift_status", "type": "string" },
+            { "selector": "dominant_drift_family", "text": "dominant_drift_family", "type": "string" },
+            { "selector": "calculation_run_id", "text": "calculation_run_id", "type": "string" }
+          ],
+          "computed_columns": [ { "selector": "'v' + forecast_version", "text": "fv_label" } ],
+          "filters": [],
+          "filterExpression": "is_event == '1' && region IN (${region:singlequote}) && forecast_key IN (${forecast_key:singlequote}) && fv_label IN (${forecast_version:singlequote}) && drift_status IN (${drift_status:singlequote}) && calculation_run_id IN (${run_id:singlequote}) && dominant_drift_family IN (${drift_family:singlequote})"
+        }
+      ],
+      "transformations": [
+        { "id": "groupBy", "options": { "fields": { "forecast_key": { "aggregations": [], "operation": "groupby" }, "is_event": { "aggregations": ["count"], "operation": "aggregate" } } } }
+      ],
+      "fieldConfig": { "defaults": { "unit": "short", "decimals": 0, "color": { "mode": "fixed", "fixedColor": "blue" } }, "overrides": [] },
+      "options": { "reduceOptions": { "calcs": ["count"], "fields": "/^forecast_key$/", "values": false }, "orientation": "auto", "colorMode": "value", "graphMode": "none", "justifyMode": "center", "textMode": "value" }
+    },
+    {
+      "id": 20, "type": "table", "title": "Latest Event",
+      "description": "The most recent governed event in the current selection. All 71 events share a single detection instant (2026-07-13 UTC, run 1); when timestamps tie, the highest event id is treated as most recent. Honors all shared filters.",
+      "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+      "gridPos": { "h": 4, "w": 24, "x": 0, "y": 9 },
+      "targets": [
+        {
+          "refId": "A", "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+          "type": "csv", "source": "url", "format": "table", "parser": "backend",
+          "url": "http://aegis-csv/forecast_drift_signals.csv", "url_options": { "method": "GET", "data": "" }, "root_selector": "",
+          "columns": [
+            { "selector": "drift_event_id", "text": "drift_event_id", "type": "number" },
+            { "selector": "detected_on", "text": "detected_on", "type": "timestamp" },
+            { "selector": "forecast_key", "text": "forecast_key", "type": "string" },
+            { "selector": "dominant_drift_family", "text": "dominant_drift_family", "type": "string" },
+            { "selector": "forecast_drift_score", "text": "forecast_drift_score", "type": "number" },
+            { "selector": "drift_status", "text": "drift_status", "type": "string" },
+            { "selector": "is_event", "text": "is_event", "type": "string" },
+            { "selector": "region", "text": "region", "type": "string" },
+            { "selector": "forecast_version", "text": "forecast_version", "type": "string" },
+            { "selector": "calculation_run_id", "text": "calculation_run_id", "type": "string" }
+          ],
+          "computed_columns": [ { "selector": "'v' + forecast_version", "text": "fv_label" } ],
+          "filters": [],
+          "filterExpression": "is_event == '1' && region IN (${region:singlequote}) && forecast_key IN (${forecast_key:singlequote}) && fv_label IN (${forecast_version:singlequote}) && drift_status IN (${drift_status:singlequote}) && calculation_run_id IN (${run_id:singlequote}) && dominant_drift_family IN (${drift_family:singlequote})"
+        }
+      ],
+      "transformations": [
+        { "id": "sortBy", "options": { "sort": [ { "field": "detected_on", "desc": true } ] } },
+        { "id": "sortBy", "options": { "sort": [ { "field": "drift_event_id", "desc": true } ] } },
+        { "id": "limit", "options": { "limitField": 1 } },
+        { "id": "organize", "options": { "excludeByName": { "is_event": true, "region": true, "forecast_version": true, "calculation_run_id": true, "fv_label": true }, "indexByName": { "drift_event_id": 0, "detected_on": 1, "forecast_key": 2, "dominant_drift_family": 3, "forecast_drift_score": 4, "drift_status": 5 }, "renameByName": {} } }
+      ],
+      "fieldConfig": {
+        "defaults": { "custom": { "align": "left", "filterable": false } },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "drift_event_id" }, "properties": [ { "id": "displayName", "value": "Event ID" }, { "id": "unit", "value": "short" }, { "id": "decimals", "value": 0 }, { "id": "custom.width", "value": 90 }, { "id": "custom.align", "value": "center" } ] },
+          { "matcher": { "id": "byName", "options": "detected_on" }, "properties": [ { "id": "displayName", "value": "Event Timestamp (UTC)" }, { "id": "unit", "value": "time:YYYY-MM-DD HH:mm" }, { "id": "custom.width", "value": 190 } ] },
+          { "matcher": { "id": "byName", "options": "forecast_key" }, "properties": [ { "id": "displayName", "value": "Forecast Key" }, { "id": "custom.width", "value": 150 } ] },
+          { "matcher": { "id": "byName", "options": "dominant_drift_family" }, "properties": [ { "id": "displayName", "value": "Drift Family" }, { "id": "custom.width", "value": 130 }, { "id": "mappings", "value": [ { "type": "value", "options": { "performance": { "text": "Performance", "color": "#5794F2", "index": 0 }, "shape": { "text": "Shape", "color": "#B877D9", "index": 1 }, "stability": { "text": "Stability", "color": "#1F78C1", "index": 2 }, "volatility": { "text": "Volatility", "color": "#C0A3E5", "index": 3 } } } ] }, { "id": "custom.cellOptions", "value": { "type": "color-text" } } ] },
+          { "matcher": { "id": "byName", "options": "forecast_drift_score" }, "properties": [ { "id": "displayName", "value": "Drift Score" }, { "id": "unit", "value": "short" }, { "id": "decimals", "value": 2 }, { "id": "custom.align", "value": "right" }, { "id": "custom.width", "value": 110 } ] },
+          { "matcher": { "id": "byName", "options": "drift_status" }, "properties": [ { "id": "displayName", "value": "Drift Status" }, { "id": "custom.width", "value": 130 }, { "id": "mappings", "value": [ { "type": "value", "options": { "Healthy": { "color": "green", "index": 0 }, "Watch": { "color": "yellow", "index": 1 }, "Warning": { "color": "orange", "index": 2 }, "Critical": { "color": "red", "index": 3 } } } ] }, { "id": "custom.cellOptions", "value": { "type": "color-text" } } ] }
+        ]
+      },
+      "options": { "showHeader": true, "cellHeight": "sm", "footer": { "show": false } }
+    },
+    {
+      "id": 30, "type": "piechart", "title": "Events by Drift Family",
+      "description": "Distribution of governed events by dominant drift family (Performance / Shape / Stability / Volatility). Family colors are deliberately distinct from the severity palette. Legend shows count and percentage. Honors all shared filters.",
+      "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+      "gridPos": { "h": 9, "w": 8, "x": 0, "y": 13 },
+      "targets": [
+        {
+          "refId": "A", "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+          "type": "csv", "source": "url", "format": "table", "parser": "backend",
+          "url": "http://aegis-csv/forecast_drift_signals.csv", "url_options": { "method": "GET", "data": "" }, "root_selector": "",
+          "columns": [
+            { "selector": "dominant_drift_family", "text": "dominant_drift_family", "type": "string" },
+            { "selector": "drift_event_id", "text": "drift_event_id", "type": "string" },
+            { "selector": "is_event", "text": "is_event", "type": "string" },
+            { "selector": "region", "text": "region", "type": "string" },
+            { "selector": "forecast_key", "text": "forecast_key", "type": "string" },
+            { "selector": "forecast_version", "text": "forecast_version", "type": "string" },
+            { "selector": "drift_status", "text": "drift_status", "type": "string" },
+            { "selector": "calculation_run_id", "text": "calculation_run_id", "type": "string" }
+          ],
+          "computed_columns": [ { "selector": "'v' + forecast_version", "text": "fv_label" } ],
+          "filters": [],
+          "filterExpression": "is_event == '1' && region IN (${region:singlequote}) && forecast_key IN (${forecast_key:singlequote}) && fv_label IN (${forecast_version:singlequote}) && drift_status IN (${drift_status:singlequote}) && calculation_run_id IN (${run_id:singlequote}) && dominant_drift_family IN (${drift_family:singlequote})"
+        }
+      ],
+      "transformations": [
+        { "id": "groupBy", "options": { "fields": { "dominant_drift_family": { "aggregations": [], "operation": "groupby" }, "drift_event_id": { "aggregations": ["count"], "operation": "aggregate" } } } }
+      ],
+      "fieldConfig": {
+        "defaults": { "unit": "short", "decimals": 0, "color": { "mode": "palette-classic" }, "mappings": [ { "type": "value", "options": { "performance": { "text": "Performance", "color": "#5794F2", "index": 0 }, "shape": { "text": "Shape", "color": "#B877D9", "index": 1 }, "stability": { "text": "Stability", "color": "#1F78C1", "index": 2 }, "volatility": { "text": "Volatility", "color": "#C0A3E5", "index": 3 } } } ] },
+        "overrides": []
+      },
+      "options": { "reduceOptions": { "calcs": ["sum"], "fields": "", "values": true }, "pieType": "donut", "tooltip": { "mode": "single", "sort": "none" }, "legend": { "showLegend": true, "displayMode": "table", "placement": "right", "values": ["value", "percent"] } }
+    },
+    {
+      "id": 31, "type": "piechart", "title": "Events by Drift Status",
+      "description": "Distribution of governed events by drift_status (Healthy / Watch / Warning / Critical) using the governed severity palette. Only statuses present in the current selection are shown; no artificial zero segments. Legend shows count and percentage. Honors all shared filters.",
+      "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+      "gridPos": { "h": 9, "w": 8, "x": 8, "y": 13 },
+      "targets": [
+        {
+          "refId": "A", "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+          "type": "csv", "source": "url", "format": "table", "parser": "backend",
+          "url": "http://aegis-csv/forecast_drift_signals.csv", "url_options": { "method": "GET", "data": "" }, "root_selector": "",
+          "columns": [
+            { "selector": "drift_status", "text": "drift_status", "type": "string" },
+            { "selector": "drift_event_id", "text": "drift_event_id", "type": "string" },
+            { "selector": "is_event", "text": "is_event", "type": "string" },
+            { "selector": "region", "text": "region", "type": "string" },
+            { "selector": "forecast_key", "text": "forecast_key", "type": "string" },
+            { "selector": "forecast_version", "text": "forecast_version", "type": "string" },
+            { "selector": "dominant_drift_family", "text": "dominant_drift_family", "type": "string" },
+            { "selector": "calculation_run_id", "text": "calculation_run_id", "type": "string" }
+          ],
+          "computed_columns": [ { "selector": "'v' + forecast_version", "text": "fv_label" } ],
+          "filters": [],
+          "filterExpression": "is_event == '1' && region IN (${region:singlequote}) && forecast_key IN (${forecast_key:singlequote}) && fv_label IN (${forecast_version:singlequote}) && drift_status IN (${drift_status:singlequote}) && calculation_run_id IN (${run_id:singlequote}) && dominant_drift_family IN (${drift_family:singlequote})"
+        }
+      ],
+      "transformations": [
+        { "id": "groupBy", "options": { "fields": { "drift_status": { "aggregations": [], "operation": "groupby" }, "drift_event_id": { "aggregations": ["count"], "operation": "aggregate" } } } }
+      ],
+      "fieldConfig": {
+        "defaults": { "unit": "short", "decimals": 0, "color": { "mode": "fixed" }, "mappings": [ { "type": "value", "options": { "Healthy": { "color": "green", "index": 0 }, "Watch": { "color": "yellow", "index": 1 }, "Warning": { "color": "orange", "index": 2 }, "Critical": { "color": "red", "index": 3 } } } ] },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "Healthy" }, "properties": [ { "id": "color", "value": { "mode": "fixed", "fixedColor": "green" } } ] },
+          { "matcher": { "id": "byName", "options": "Watch" }, "properties": [ { "id": "color", "value": { "mode": "fixed", "fixedColor": "yellow" } } ] },
+          { "matcher": { "id": "byName", "options": "Warning" }, "properties": [ { "id": "color", "value": { "mode": "fixed", "fixedColor": "orange" } } ] },
+          { "matcher": { "id": "byName", "options": "Critical" }, "properties": [ { "id": "color", "value": { "mode": "fixed", "fixedColor": "red" } } ] }
+        ]
+      },
+      "options": { "reduceOptions": { "calcs": ["sum"], "fields": "", "values": true }, "pieType": "donut", "tooltip": { "mode": "single", "sort": "none" }, "legend": { "showLegend": true, "displayMode": "table", "placement": "right", "values": ["value", "percent"] } }
+    },
+    {
+      "id": 32, "type": "barchart", "title": "Events by Forecast Key",
+      "description": "Governed event count per forecast_key (replaces an events-over-time trend, since all events share one detection instant). Sorted by count. Honors all shared filters.",
+      "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+      "gridPos": { "h": 9, "w": 8, "x": 16, "y": 13 },
+      "targets": [
+        {
+          "refId": "A", "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+          "type": "csv", "source": "url", "format": "table", "parser": "backend",
+          "url": "http://aegis-csv/forecast_drift_signals.csv", "url_options": { "method": "GET", "data": "" }, "root_selector": "",
+          "columns": [
+            { "selector": "forecast_key", "text": "forecast_key", "type": "string" },
+            { "selector": "drift_event_id", "text": "drift_event_id", "type": "string" },
+            { "selector": "is_event", "text": "is_event", "type": "string" },
+            { "selector": "region", "text": "region", "type": "string" },
+            { "selector": "forecast_version", "text": "forecast_version", "type": "string" },
+            { "selector": "drift_status", "text": "drift_status", "type": "string" },
+            { "selector": "dominant_drift_family", "text": "dominant_drift_family", "type": "string" },
+            { "selector": "calculation_run_id", "text": "calculation_run_id", "type": "string" }
+          ],
+          "computed_columns": [ { "selector": "'v' + forecast_version", "text": "fv_label" } ],
+          "filters": [],
+          "filterExpression": "is_event == '1' && region IN (${region:singlequote}) && forecast_key IN (${forecast_key:singlequote}) && fv_label IN (${forecast_version:singlequote}) && drift_status IN (${drift_status:singlequote}) && calculation_run_id IN (${run_id:singlequote}) && dominant_drift_family IN (${drift_family:singlequote})"
+        }
+      ],
+      "transformations": [
+        { "id": "groupBy", "options": { "fields": { "forecast_key": { "aggregations": [], "operation": "groupby" }, "drift_event_id": { "aggregations": ["count"], "operation": "aggregate" } } } },
+        { "id": "sortBy", "options": { "sort": [ { "field": "drift_event_id (count)", "desc": true } ] } }
+      ],
+      "fieldConfig": { "defaults": { "unit": "short", "decimals": 0, "color": { "mode": "fixed", "fixedColor": "#5794F2" } }, "overrides": [] },
+      "options": { "orientation": "horizontal", "showValue": "always", "stacking": "none", "xTickLabelRotation": 0, "legend": { "showLegend": false }, "tooltip": { "mode": "single", "sort": "none" } }
+    },
+    {
+      "id": 40, "type": "table", "title": "Governed Event Log",
+      "description": "Read-only governed log of forecast drift events (signals with is_event = 1), most recent first. Columns are all sourced directly from the governed V2 snapshot: Event ID, Event Timestamp, Forecast Key, Region, Forecast Version, Previous Version, Drift Family, Drift Score, Drift Status (severity-colored), Event Status (governed lifecycle = Open) and Run ID, plus the governed Explanation. No resolve/acknowledge/close actions; no invented statuses, service or scenario. Use the column filter icons to search. Honors all shared filters.",
+      "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+      "gridPos": { "h": 18, "w": 24, "x": 0, "y": 22 },
+      "targets": [
+        {
+          "refId": "A", "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+          "type": "csv", "source": "url", "format": "table", "parser": "backend",
+          "url": "http://aegis-csv/forecast_drift_signals.csv", "url_options": { "method": "GET", "data": "" }, "root_selector": "",
+          "columns": [
+            { "selector": "drift_event_id", "text": "drift_event_id", "type": "number" },
+            { "selector": "detected_on", "text": "detected_on", "type": "timestamp" },
+            { "selector": "forecast_key", "text": "forecast_key", "type": "string" },
+            { "selector": "region", "text": "region", "type": "string" },
+            { "selector": "forecast_version", "text": "forecast_version", "type": "string" },
+            { "selector": "previous_forecast_version", "text": "previous_forecast_version", "type": "string" },
+            { "selector": "dominant_drift_family", "text": "dominant_drift_family", "type": "string" },
+            { "selector": "forecast_drift_score", "text": "forecast_drift_score", "type": "number" },
+            { "selector": "drift_status", "text": "drift_status", "type": "string" },
+            { "selector": "event_status", "text": "event_status", "type": "string" },
+            { "selector": "explanation", "text": "explanation", "type": "string" },
+            { "selector": "is_event", "text": "is_event", "type": "string" },
+            { "selector": "calculation_run_id", "text": "calculation_run_id", "type": "string" }
+          ],
+          "computed_columns": [ { "selector": "'v' + forecast_version", "text": "fv_label" } ],
+          "filters": [],
+          "filterExpression": "is_event == '1' && region IN (${region:singlequote}) && forecast_key IN (${forecast_key:singlequote}) && fv_label IN (${forecast_version:singlequote}) && drift_status IN (${drift_status:singlequote}) && calculation_run_id IN (${run_id:singlequote}) && dominant_drift_family IN (${drift_family:singlequote})"
+        }
+      ],
+      "transformations": [
+        { "id": "sortBy", "options": { "sort": [ { "field": "detected_on", "desc": true } ] } },
+        { "id": "sortBy", "options": { "sort": [ { "field": "drift_event_id", "desc": true } ] } },
+        { "id": "organize", "options": { "excludeByName": { "is_event": true, "fv_label": true }, "indexByName": { "drift_event_id": 0, "detected_on": 1, "forecast_key": 2, "region": 3, "forecast_version": 4, "previous_forecast_version": 5, "dominant_drift_family": 6, "forecast_drift_score": 7, "drift_status": 8, "event_status": 9, "explanation": 10, "calculation_run_id": 11 }, "renameByName": {} } }
+      ],
+      "fieldConfig": {
+        "defaults": { "custom": { "align": "left", "filterable": true } },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "drift_event_id" }, "properties": [ { "id": "displayName", "value": "Event ID" }, { "id": "unit", "value": "short" }, { "id": "decimals", "value": 0 }, { "id": "custom.width", "value": 84 }, { "id": "custom.align", "value": "center" } ] },
+          { "matcher": { "id": "byName", "options": "detected_on" }, "properties": [ { "id": "displayName", "value": "Event Timestamp (UTC)" }, { "id": "unit", "value": "time:YYYY-MM-DD HH:mm" }, { "id": "custom.width", "value": 165 } ] },
+          { "matcher": { "id": "byName", "options": "forecast_key" }, "properties": [ { "id": "displayName", "value": "Forecast Key" }, { "id": "custom.width", "value": 140 } ] },
+          { "matcher": { "id": "byName", "options": "region" }, "properties": [ { "id": "displayName", "value": "Region" }, { "id": "custom.width", "value": 84 }, { "id": "custom.align", "value": "center" } ] },
+          { "matcher": { "id": "byName", "options": "forecast_version" }, "properties": [ { "id": "displayName", "value": "Forecast Version" }, { "id": "custom.width", "value": 130 } ] },
+          { "matcher": { "id": "byName", "options": "previous_forecast_version" }, "properties": [ { "id": "displayName", "value": "Previous Version" }, { "id": "custom.width", "value": 130 } ] },
+          { "matcher": { "id": "byName", "options": "dominant_drift_family" }, "properties": [ { "id": "displayName", "value": "Drift Family" }, { "id": "custom.width", "value": 120 }, { "id": "mappings", "value": [ { "type": "value", "options": { "performance": { "text": "Performance", "color": "#5794F2", "index": 0 }, "shape": { "text": "Shape", "color": "#B877D9", "index": 1 }, "stability": { "text": "Stability", "color": "#1F78C1", "index": 2 }, "volatility": { "text": "Volatility", "color": "#C0A3E5", "index": 3 } } } ] }, { "id": "custom.cellOptions", "value": { "type": "color-text" } } ] },
+          { "matcher": { "id": "byName", "options": "forecast_drift_score" }, "properties": [ { "id": "displayName", "value": "Drift Score" }, { "id": "unit", "value": "short" }, { "id": "decimals", "value": 2 }, { "id": "custom.align", "value": "right" }, { "id": "custom.width", "value": 100 } ] },
+          { "matcher": { "id": "byName", "options": "drift_status" }, "properties": [ { "id": "displayName", "value": "Drift Status" }, { "id": "custom.width", "value": 118 }, { "id": "mappings", "value": [ { "type": "value", "options": { "Healthy": { "color": "green", "index": 0 }, "Watch": { "color": "yellow", "index": 1 }, "Warning": { "color": "orange", "index": 2 }, "Critical": { "color": "red", "index": 3 } } } ] }, { "id": "custom.cellOptions", "value": { "type": "color-text" } } ] },
+          { "matcher": { "id": "byName", "options": "event_status" }, "properties": [ { "id": "displayName", "value": "Event Status" }, { "id": "custom.width", "value": 110 }, { "id": "custom.align", "value": "center" } ] },
+          { "matcher": { "id": "byName", "options": "explanation" }, "properties": [ { "id": "displayName", "value": "Explanation" }, { "id": "custom.minWidth", "value": 320 }, { "id": "custom.cellOptions", "value": { "type": "auto", "wrapText": true } } ] },
+          { "matcher": { "id": "byName", "options": "calculation_run_id" }, "properties": [ { "id": "displayName", "value": "Run ID" }, { "id": "custom.width", "value": 78 }, { "id": "custom.align", "value": "center" } ] }
+        ]
+      },
+      "options": { "showHeader": true, "cellHeight": "sm", "footer": { "show": false } }
+    },
+    {
+      "id": 50, "type": "table", "title": "Latest Governed Run",
+      "description": "Provenance of the current governed snapshot. Events Created reconciles with Total Events (71) at filters = All. Timestamps in UTC.",
+      "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+      "gridPos": { "h": 6, "w": 16, "x": 0, "y": 40 },
+      "targets": [
+        {
+          "refId": "A", "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+          "type": "csv", "source": "url", "format": "table", "parser": "backend",
+          "url": "http://aegis-csv/forecast_drift_runs.csv", "url_options": { "method": "GET", "data": "" }, "root_selector": "",
+          "columns": [
+            { "selector": "calculation_run_id", "text": "calculation_run_id", "type": "string" },
+            { "selector": "run_status", "text": "run_status", "type": "string" },
+            { "selector": "run_finished_at", "text": "run_finished_at", "type": "timestamp" },
+            { "selector": "signals_written", "text": "signals_written", "type": "number" },
+            { "selector": "events_created", "text": "events_created", "type": "number" }
+          ],
+          "filters": [],
+          "filterExpression": "calculation_run_id IN (${run_id:singlequote})"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": { "custom": { "align": "left", "filterable": false } },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "calculation_run_id" }, "properties": [ { "id": "displayName", "value": "Run ID" }, { "id": "custom.width", "value": 90 }, { "id": "custom.align", "value": "center" } ] },
+          { "matcher": { "id": "byName", "options": "run_status" }, "properties": [ { "id": "displayName", "value": "Run Status" }, { "id": "custom.width", "value": 120 } ] },
+          { "matcher": { "id": "byName", "options": "run_finished_at" }, "properties": [ { "id": "displayName", "value": "Finished At (UTC)" }, { "id": "unit", "value": "time:YYYY-MM-DD HH:mm" }, { "id": "custom.width", "value": 190 } ] },
+          { "matcher": { "id": "byName", "options": "signals_written" }, "properties": [ { "id": "displayName", "value": "Signals Written" }, { "id": "unit", "value": "short" }, { "id": "decimals", "value": 0 }, { "id": "custom.align", "value": "right" } ] },
+          { "matcher": { "id": "byName", "options": "events_created" }, "properties": [ { "id": "displayName", "value": "Events Created" }, { "id": "unit", "value": "short" }, { "id": "decimals", "value": 0 }, { "id": "custom.align", "value": "right" } ] }
+        ]
+      },
+      "options": { "showHeader": true, "cellHeight": "sm", "footer": { "show": false } }
+    },
+    {
+      "id": 60, "type": "table", "title": "Data Quality",
+      "description": "Governed data-quality checks for the latest run (18 / 18 passed). The individual checks are surfaced in E7D.11 (Settings & Data Quality).",
+      "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+      "gridPos": { "h": 6, "w": 8, "x": 16, "y": 40 },
+      "targets": [
+        {
+          "refId": "A", "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+          "type": "csv", "source": "url", "format": "table", "parser": "backend",
+          "url": "http://aegis-csv/forecast_drift_runs.csv", "url_options": { "method": "GET", "data": "" }, "root_selector": "",
+          "columns": [
+            { "selector": "checks_passed", "text": "checks_passed", "type": "number" },
+            { "selector": "checks_total", "text": "checks_total", "type": "number" },
+            { "selector": "calculation_run_id", "text": "calculation_run_id", "type": "string" }
+          ],
+          "filters": [],
+          "filterExpression": "calculation_run_id IN (${run_id:singlequote})"
+        }
+      ],
+      "transformations": [
+        { "id": "organize", "options": { "excludeByName": { "calculation_run_id": true }, "indexByName": {}, "renameByName": {} } }
+      ],
+      "fieldConfig": {
+        "defaults": { "custom": { "align": "center", "filterable": false }, "unit": "short", "decimals": 0, "color": { "mode": "fixed", "fixedColor": "green" } },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "checks_passed" }, "properties": [ { "id": "displayName", "value": "Checks Passed" } ] },
+          { "matcher": { "id": "byName", "options": "checks_total" }, "properties": [ { "id": "displayName", "value": "Checks Total" } ] }
+        ]
+      },
+      "options": { "showHeader": true, "cellHeight": "sm", "footer": { "show": false } }
+    }
+  ],
+  "annotations": { "list": [] }
+}
