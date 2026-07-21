@@ -44,6 +44,12 @@ The script copies only the governed allow-list, validates row counts
 (168/672/71/1) and SHA256 (fails hard on mismatch), and regenerates
 `data_manifest.json`. It never writes to V1.
 
+Since **E7D.12** the same run also **regenerates the 18-check data-quality catalog**
+transactionally (validates the authoritative source is 18 rows / 0 FAIL, rebuilds
+`validation/` + `current/` copies, verifies they are byte-identical by SHA256, rolls
+back on any mismatch) and records `catalog_refresh_integrated=true` in the manifest.
+Use `-DryRun` to preview without writing anything.
+
 ## Serving to Grafana
 
 `docker compose up -d aegis-csv` starts the nginx CSV server, which bind-mounts
@@ -420,3 +426,24 @@ inside the `aegis-net` Docker network (no host port). The pre-existing Grafana
   `E7D11_SETTINGS_DATA_QUALITY_COMPLETED_VISUALLY_ACCEPTED`. **Carry-over to E7D.12:** verify the governed refresh
   auto-regenerates the `validation/` + `current/` catalog copies (matching SHA-256). **Stop before E7D.12 (not yet
   authorized).** URL `http://localhost:3000/d/aegis-forecast-drift-settings`. See `engineering/E7_grafana/E7D11_*` (10 docs).
+- **E7D.12** — Final Integration, Regression Validation & Deployment Readiness. **Completed — visually
+  accepted (Oscar, 2026-07-20).** Consolidated the **10 active dashboards** (Top Scenarios retired from nav,
+  preserved for rollback) into one governed, reproducible, local product. The governed refresh
+  `V2/scripts/sync-governed-data.ps1` now **regenerates the 18-check data-quality catalog inside a transactional,
+  idempotent** run (DryRun supported; rolls back on any mismatch), so the served catalog stays in lockstep with
+  `_data_quality_checks.csv` and is never hand-generated — `validation == served` (SHA-256 `9E76361…551EE1`), manifest
+  `catalog_refresh_integrated=true`, emits `CATALOG_REFRESH_INTEGRATED=True` (E7D.11 carry-over resolved). Added local
+  `start-aegis-grafana.ps1` / `stop-aegis-grafana.ps1` and four read-only validators
+  (`validate-e7-final.ps1` → **`E7_FINAL_VALIDATION_PASS`**, `test-aegis-endpoints.ps1`, `test-aegis-navigation.ps1`,
+  `test-aegis-data-quality.ps1`). Navigation (10 `aegis-nav`, native dropdown includeVars=true/keepTime=false, Top
+  Scenarios absent, no legacy datasource), 5 shared filters, and per-dashboard data all reconcile to the live CSVs.
+  Secret scan **0 matches**. Backup/rollback package `V2/release/e7-final/` (+ `SHA256SUMS.txt` / `ROLLBACK.md` /
+  `UID_INVENTORY.md` / `VERSION_INFO.md`); deployment-readiness `engineering/E7_grafana/deployment_readiness/`
+  (blocker: `http://aegis-csv` won't resolve in a corporate portal). `aegis-csv` `restart: unless-stopped` (already
+  satisfied). No formula/weight/threshold/UID/datasource-UID/DPAPI/MCP change; no plugins/alerts/deletes; **no
+  deployment**; no manual commit; R1 unchanged. Token `E7D12_FINAL_INTEGRATION_COMPLETED_VISUALLY_ACCEPTED` (Oscar
+  visually accepted 2026-07-20); global E7 close `E7_GRAFANA_V2_COMPLETED_DEPLOYMENT_READY`. **AEGIS Forecast Drift
+  V2 is finished and locally validated; deployment-ready; NOT yet deployed.**
+  **Next:** Corporate Grafana Portal Deployment — **requires separate authorization; NOT started** (`http://aegis-csv`
+  is a local source and must be replaced by a governed source reachable from the portal). See
+  `engineering/E7_grafana/E7D12_*` (12 docs). URL `http://localhost:3000/dashboards?tag=aegis-nav`.

@@ -1,0 +1,92 @@
+{
+  "stage": "E7A.2 + E7D.12",
+  "description": "V2 governed data snapshot (byte-equivalent copy of V1 authoritative drift outputs) with integrated 18-check data-quality catalog regeneration.",
+  "authoritative_source": "V1/data/processed (Python Drift Engine)",
+  "snapshot_timestamp": "2026-07-20T21:31:18Z",
+  "calculation_version": "E5A-v1",
+  "v1_modified": false,
+  "catalog_refresh_integrated": true,
+  "data_quality_catalog": {
+    "rows": 18,
+    "pass": 18,
+    "fail": 0,
+    "sha256": "9E76361F23A9C74E34B32F90697499F4FB065F1E00C8E03F3A18374B88551EE1",
+    "validation_copy": "V2/data/processed/validation/forecast_drift_data_quality_checks.csv",
+    "served_copy": "V2/data/processed/current/forecast_drift_data_quality_checks.csv",
+    "checksums_match": true
+  },
+  "files": [
+    {
+      "file": "current/forecast_drift_signals.csv",
+      "origin": "V1/data/processed/current/forecast_drift_signals.csv",
+      "dest": "V2/data/processed/current/forecast_drift_signals.csv",
+      "sha256": "D975B4655DADDFA51F6F3EE4C9388D54197A842C3BC87E9BCF3D94B21C34AEE5",
+      "rows": 168,
+      "size_bytes": 97325
+    },
+    {
+      "file": "current/forecast_drift_family_scores.csv",
+      "origin": "V1/data/processed/current/forecast_drift_family_scores.csv",
+      "dest": "V2/data/processed/current/forecast_drift_family_scores.csv",
+      "sha256": "61DF281F0D703E9B1930842C79ACC69A600469EAD95C5DAC3B41FE2D384737DB",
+      "rows": 672,
+      "size_bytes": 70880
+    },
+    {
+      "file": "current/forecast_drift_event_history.csv",
+      "origin": "V1/data/processed/current/forecast_drift_event_history.csv",
+      "dest": "V2/data/processed/current/forecast_drift_event_history.csv",
+      "sha256": "1038709D314AE52EE90D7F323F99B97E26B7FAC89074518816BC7F03B1ACA8CE",
+      "rows": 71,
+      "size_bytes": 6138
+    },
+    {
+      "file": "current/forecast_drift_runs.csv",
+      "origin": "V1/data/processed/current/forecast_drift_runs.csv",
+      "dest": "V2/data/processed/current/forecast_drift_runs.csv",
+      "sha256": "361BB46BBD6B616BD29581D451F638E4E7C25BAA74E15874153D7014498F06CD",
+      "rows": 1,
+      "size_bytes": 444
+    },
+    {
+      "file": "metadata/run_metadata.json",
+      "origin": "V1/data/processed/metadata/run_metadata.json",
+      "dest": "V2/data/processed/metadata/run_metadata.json",
+      "sha256": "6A9A76D7446B36352C091407CCFECD54A45C09F010D525B51B6CF5F90D1B9475",
+      "rows": null,
+      "size_bytes": 4827
+    },
+    {
+      "file": "validation/_data_quality_checks.csv",
+      "origin": "V1/data/processed/validation/_data_quality_checks.csv",
+      "dest": "V2/data/processed/validation/_data_quality_checks.csv",
+      "sha256": "6C082BEAFD39918785B4439AAAACA4D77FB65EAF27A54CB085EB8CE3E8B45C7F",
+      "rows": 18,
+      "size_bytes": 554
+    },
+    {
+      "file": "validation/_fixture_results.csv",
+      "origin": "V1/data/processed/validation/_fixture_results.csv",
+      "dest": "V2/data/processed/validation/_fixture_results.csv",
+      "sha256": "FBC910BCBEE9C3103A5B0061E4A91D915C3147D15017247EA341FB45D46FC9E3",
+      "rows": 7,
+      "size_bytes": 422
+    },
+    {
+      "file": "validation/forecast_drift_data_quality_checks.csv",
+      "origin": "derived from validation/_data_quality_checks.csv + drift_engine/checks.py via build-e7d11-check-catalog.ps1",
+      "dest": "V2/data/processed/validation/forecast_drift_data_quality_checks.csv",
+      "sha256": "9E76361F23A9C74E34B32F90697499F4FB065F1E00C8E03F3A18374B88551EE1",
+      "rows": 18,
+      "size_bytes": 7143
+    },
+    {
+      "file": "current/forecast_drift_data_quality_checks.csv",
+      "origin": "derived from validation/_data_quality_checks.csv + drift_engine/checks.py via build-e7d11-check-catalog.ps1",
+      "dest": "V2/data/processed/current/forecast_drift_data_quality_checks.csv",
+      "sha256": "9E76361F23A9C74E34B32F90697499F4FB065F1E00C8E03F3A18374B88551EE1",
+      "rows": 18,
+      "size_bytes": 7143
+    }
+  ]
+}

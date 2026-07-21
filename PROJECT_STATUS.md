@@ -6,7 +6,41 @@ Last updated: 2026-07-20
 > Microsoft internal / confidential. Engineering stages (E-prefix) build the product; product/document versions (V1/V2/V3) are separate. See `engineering/ROADMAP.md`.
 
 ## Current stage
-**E7D.11 — Settings & Data Quality Dashboard Content: COMPLETED — VISUALLY ACCEPTED (Oscar, 2026-07-20).**
+**E7D.12 — Final Integration, Regression Validation & Deployment Readiness: COMPLETED — VISUALLY ACCEPTED (Oscar, 2026-07-20).**
+> **Last internal Grafana build/validation stage.** Consolidated the **10 active dashboards** (Overview, Forecast,
+> Performance, Shape, Stability, Volatility, Events, Historical Timeline, Top Risk, Settings & Data Quality; **Top
+> Scenarios retired from nav, preserved for rollback**) into one governed, reproducible, locally-runnable product and
+> proved it regression-clean. **Refresh (Phase 3/4):** `V2/scripts/sync-governed-data.ps1` now regenerates the 18-check
+> data-quality catalog **inside** the transactional, idempotent governed refresh (DryRun supported; aborts + rolls back
+> on any mismatch); `validation == served` (SHA-256 `9E76361…551EE1`), manifest `catalog_refresh_integrated=true`,
+> emits `CATALOG_REFRESH_INTEGRATED = True`. **Resilience (Phase 5):** `aegis-csv` `restart: unless-stopped` (already
+> satisfied; no host ports; RO mounts). **Startup (Phase 6/16):** `start-aegis-grafana.ps1` (+ `stop-…`) bring up
+> aegis-csv, verify 5 endpoints (169/673/72/2/19) + Grafana HTTP 200, exit 0 (~34 s); clean restart test PASS.
+> **Validators (Phase 15):** `validate-e7-final.ps1` (orchestrator → **`E7_FINAL_VALIDATION_PASS`**) +
+> `test-aegis-endpoints.ps1` / `test-aegis-navigation.ps1` / `test-aegis-data-quality.ps1` (read-only, exit 0). **Regression
+> (Phases 7–11):** navigation (10 `aegis-nav` dashboards, native dropdown `includeVars=true`/`keepTime=false`, Top
+> Scenarios absent, no legacy datasource), shared filters (5), and per-dashboard data all reconcile to the live CSVs
+> (signals 168 / family 672 / events 71 / runs 1 / checks 18-18; perf 7.71/156, shape 26.03/168, stability 38.93/168,
+> volatility 56.04/144; events crit 14/warn 34/keys 12; Top Risk avg 28.83, NAM-SDF 42.74). **Security (Phase 12):**
+> secret scan 83 files / **0 matches**; DPAPI token outside repo, never printed. **Backup (Phase 13):**
+> `V2/release/e7-final/` (10 dashboards + retired Top Scenarios + datasource + nginx + compose + scripts + manifest +
+> `SHA256SUMS.txt` + `ROLLBACK.md` + `UID_INVENTORY.md` + `VERSION_INFO.md`). **Readiness (Phase 14):**
+> `engineering/E7_grafana/deployment_readiness/` (14-item checklist + `INFORMATION_REQUEST.md`; known blocker:
+> `http://aegis-csv` won't resolve in the portal). **Docs (Phase 17):** `engineering/E7_grafana/E7D12_*` (12 docs).
+> **No drift formula/weight/threshold/source-data/UID/datasource-UID/DPAPI/MCP change; no plugins/alerts; no dashboard
+> or Top Scenarios deletion; no deployment; no manual commit; R1 unchanged.** Token
+> **E7D12_FINAL_INTEGRATION_COMPLETED_VISUALLY_ACCEPTED** — **Oscar visually accepted 2026-07-20** (10 active
+> dashboards: correct navigation, Top Scenarios out of menu, no broken panels, no red triangles, no datasource errors,
+> no unexpected "No data", shared filters operative, headline figures correct, Data Quality 18/18, catalog
+> DQ-01→DQ-18, Top Risk and Settings & Data Quality correct, release package 28 files / 28 hashes,
+> `RELEASE_MANIFEST_VALID=True`, `E7_FINAL_VALIDATION_PASS`). Global E7 close
+> **E7_GRAFANA_V2_COMPLETED_DEPLOYMENT_READY**. **AEGIS Forecast Drift V2 is finished and locally validated;
+> deployment-ready; NOT yet deployed.** **Next step:** Corporate Grafana Portal Deployment — **requires separate
+> authorization; NOT started.** `http://aegis-csv` is a local source and must be replaced by a governed source
+> reachable from the portal. URL `http://localhost:3000/dashboards?tag=aegis-nav`.
+
+<details><summary>Previous stage — E7D.11 (COMPLETED — VISUALLY ACCEPTED, Oscar 2026-07-20)</summary>
+
 > **Analytical content only** (navigation shell from E7D.0 replaced). Converted the Settings & Data Quality shell
 > (UID `aegis-forecast-drift-settings` **preserved**) into a governed, read-only view of the **18 governed
 > data-quality checks** + model parameters. **GATE A PASSED** — the 18 checks are sourced authoritatively from
@@ -36,6 +70,8 @@ Last updated: 2026-07-20
 > lineage correct, read-only with no secrets, and no No-data/broken panels. **Carry-over to E7D.12:** verify the
 > governed refresh auto-regenerates the `validation/` + `current/` catalog copies (matching SHA-256). **Do not start
 > E7D.12 (not yet authorized).** URL `http://localhost:3000/d/aegis-forecast-drift-settings`.
+
+</details>
 
 <details><summary>Previous stage — E7D.9B (COMPLETED — VISUALLY ACCEPTED, Oscar 2026-07-20)</summary>
 
