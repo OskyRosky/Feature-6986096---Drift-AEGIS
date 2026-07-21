@@ -1,0 +1,22 @@
+# AEGIS Forecast Drift — Overview Pilot · checksums & counts
+# Source of CSVs: V3/data/processed/current/
+# Generated: 2026-07-21 (READ-ONLY audit; no Azure/portal writes)
+# Algorithm: SHA-256 (uppercase hex)
+
+## Governed CSVs required by the Overview dashboard (exactly 2)
+forecast_drift_signals.csv  SHA256=D975B4655DADDFA51F6F3EE4C9388D54197A842C3BC87E9BCF3D94B21C34AEE5  bytes=97325  header_cols=54  data_rows=168
+forecast_drift_runs.csv     SHA256=361BB46BBD6B616BD29581D451F638E4E7C25BAA74E15874153D7014498F06CD  bytes=444    header_cols=18  data_rows=1
+
+## Package artifacts (derived; verified 0 secrets, 769 lines each)
+overview-original.json          SHA256=4A1DF596BB7EDAD0962EF2BEDDADBD8DC91C5B460031F91EEA740231E6308C22  lines=769
+overview-portal-migration.json  SHA256=6DBEC0BAE556507DB4EB7D0B4C617F14DF4D86D9A7E01E32D7D3CECD74DC6412  lines=769
+
+## Verification counts (from the two CSVs)
+signals.data_rows                = 168
+signals.distinct(forecast_key)   = 12
+signals.count(is_event == 1)     = 71
+signals.drift_status             = Critical:14  Warning:34  Watch:38  Healthy:82  (sum 168)
+runs.signals_written             = 168
+runs.events_created              = 71
+runs.checks_passed / checks_total = 18 / 18
+runs.run_status                  = Success   (calculation_run_id = 1)
