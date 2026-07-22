@@ -1,0 +1,431 @@
+{
+  "uid": "aegis-forecast-drift-settings",
+  "title": "AEGIS Forecast Drift — Settings & Data Quality",
+  "description": "Governance & data-quality transparency for the governed V2 snapshot (read-only). Surfaces the 18 governed data-quality checks (served live from validation/forecast_drift_data_quality_checks.csv, byte-identical checksum 9E76361F…551EE1), the latest governed run, governed weights (Performance 20 / Shape 40 / Stability 30 / Volatility 10 = 100) and status thresholds (Healthy [0,20) / Watch [20,40) / Warning [40,70) / Critical [70,100]), computability coverage, non-computable reasons, dataset inventory, lineage, governance rules and known limitations. All logic lives in the V1 Python engine — el dashboard no cocina datos. The 18-check catalog is read via Infinity URL (https://aegisforecasti0654609440.blob.core.windows.net/aegis-forecast-drift/forecast_drift_data_quality_checks.csv?se=2026-08-20T22%3A54Z&sp=rl&spr=https&sv=2026-04-06&sr=c), not hardcoded.",
+  "tags": ["aegis", "forecast-drift", "aegis-nav", "settings", "e7d11"],
+  "editable": true,
+  "schemaVersion": 39,
+  "version": 0,
+  "timezone": "utc",
+  "time": { "from": "now-5y", "to": "now" },
+  "timepicker": { "hidden": true },
+  "refresh": "",
+  "links": [
+    { "asDropdown": true, "title": "AEGIS Sections", "type": "dashboards", "tags": ["aegis-nav"], "icon": "external link", "includeVars": true, "keepTime": false, "targetBlank": false, "tooltip": "", "url": "" }
+  ],
+  "templating": {
+    "list": [
+      {
+        "name": "run_id", "label": "Run ID", "type": "query",
+        "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+        "query": { "queryType": "infinity", "refId": "variable", "infinityQuery": { "refId": "variable", "type": "csv", "source": "url", "format": "table", "parser": "backend", "url": "https://aegisforecasti0654609440.blob.core.windows.net/aegis-forecast-drift/forecast_drift_runs.csv?se=2026-08-20T22%3A54Z&sp=rl&spr=https&sv=2026-04-06&sr=c", "url_options": { "method": "GET", "data": "" }, "root_selector": "", "columns": [ { "selector": "calculation_run_id", "text": "", "type": "string" } ], "filters": [] } },
+        "includeAll": true, "multi": true, "allValue": null, "current": { "text": "All", "value": "$__all", "selected": false }, "refresh": 1, "sort": 1, "hide": 0
+      }
+    ]
+  },
+  "panels": [
+    {
+      "id": 1, "type": "text", "title": "",
+      "gridPos": { "h": 2, "w": 24, "x": 0, "y": 0 },
+      "options": { "mode": "markdown", "content": "**AEGIS Forecast Drift**  ·  [Overview](/d/aegis-forecast-drift-foundation) · [Forecast](/d/aegis-forecast-drift-forecast) · [Performance](/d/aegis-forecast-drift-performance) · [Shape](/d/aegis-forecast-drift-shape) · [Stability](/d/aegis-forecast-drift-stability) · [Volatility](/d/aegis-forecast-drift-volatility) · [Events](/d/aegis-forecast-drift-events) · [Historical Timeline](/d/aegis-forecast-drift-timeline) · [Top Risk](/d/aegis-forecast-drift-top-keys) · **Settings & Data Quality**" }
+    },
+    {
+      "id": 2, "type": "text", "title": "",
+      "gridPos": { "h": 3, "w": 24, "x": 0, "y": 2 },
+      "options": { "mode": "markdown", "content": "# AEGIS Forecast Drift — Settings & Data Quality\n\nGoverned monitoring metadata — **V2** snapshot (read-only). The 18 data-quality checks, latest governed run, model parameters, computability, lineage and limitations. _Governed & read-only — not editable configuration._" }
+    },
+    {
+      "id": 3, "type": "text", "title": "About this section",
+      "gridPos": { "h": 6, "w": 24, "x": 0, "y": 5 },
+      "options": { "mode": "markdown", "content": "### Purpose\nGovernance & data-quality transparency for the governed **V2** snapshot: the **18 data-quality checks**, latest governed run, model parameters (weights & thresholds), computability coverage, dataset inventory, lineage and known limitations. **Read-only** — not editable configuration.\n\n### Governed model parameters (read-only)\n- **Weights:** Performance 20% · Shape 40% · Stability 30% · Volatility 10%  (Σ = 100%)\n- **Thresholds:** Healthy [0,20) · Watch [20,40) · Warning [40,70) · Critical [70,100]\n\n_All logic lives in the V1 Python engine — el dashboard no cocina datos._" }
+    },
+
+    {
+      "id": 10, "type": "stat", "title": "Data Quality — Checks Passed",
+      "description": "Governance checks passed vs total for the selected run, from the governed run record (forecast_drift_runs.csv). Green background when all checks pass. Per-check detail is in the 18-check catalog below.",
+      "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+      "gridPos": { "h": 5, "w": 8, "x": 0, "y": 11 },
+      "targets": [
+        {
+          "refId": "A", "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+          "type": "csv", "source": "url", "format": "table", "parser": "backend",
+          "url": "https://aegisforecasti0654609440.blob.core.windows.net/aegis-forecast-drift/forecast_drift_runs.csv?se=2026-08-20T22%3A54Z&sp=rl&spr=https&sv=2026-04-06&sr=c", "url_options": { "method": "GET", "data": "" }, "root_selector": "",
+          "columns": [
+            { "selector": "checks_passed", "text": "checks_passed", "type": "number" },
+            { "selector": "checks_total", "text": "checks_total", "type": "number" },
+            { "selector": "calculation_run_id", "text": "calculation_run_id", "type": "string" }
+          ],
+          "computed_columns": [ { "selector": "checks_passed + ' / ' + checks_total", "text": "dq" } ],
+          "filters": [],
+          "filterExpression": "calculation_run_id IN (${run_id:singlequote}, '__na__')"
+        }
+      ],
+      "fieldConfig": { "defaults": { "color": { "mode": "fixed", "fixedColor": "green" } }, "overrides": [] },
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"], "fields": "/^dq$/", "values": false }, "orientation": "auto", "colorMode": "background", "graphMode": "none", "justifyMode": "center", "textMode": "value" }
+    },
+    {
+      "id": 11, "type": "stat", "title": "Checks Passed",
+      "description": "Number of governance checks that passed in the selected run (forecast_drift_runs.csv).",
+      "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+      "gridPos": { "h": 5, "w": 4, "x": 8, "y": 11 },
+      "targets": [
+        {
+          "refId": "A", "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+          "type": "csv", "source": "url", "format": "table", "parser": "backend",
+          "url": "https://aegisforecasti0654609440.blob.core.windows.net/aegis-forecast-drift/forecast_drift_runs.csv?se=2026-08-20T22%3A54Z&sp=rl&spr=https&sv=2026-04-06&sr=c", "url_options": { "method": "GET", "data": "" }, "root_selector": "",
+          "columns": [
+            { "selector": "checks_passed", "text": "checks_passed", "type": "number" },
+            { "selector": "calculation_run_id", "text": "calculation_run_id", "type": "string" }
+          ],
+          "filters": [],
+          "filterExpression": "calculation_run_id IN (${run_id:singlequote}, '__na__')"
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "short", "decimals": 0, "color": { "mode": "fixed", "fixedColor": "green" } }, "overrides": [] },
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"], "fields": "/^checks_passed$/", "values": false }, "orientation": "auto", "colorMode": "value", "graphMode": "none", "justifyMode": "center", "textMode": "value" }
+    },
+    {
+      "id": 12, "type": "stat", "title": "Checks Failed",
+      "description": "Number of governance checks that failed in the selected run, computed as checks_total − checks_passed. Green at 0; red if any check fails.",
+      "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+      "gridPos": { "h": 5, "w": 4, "x": 12, "y": 11 },
+      "targets": [
+        {
+          "refId": "A", "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+          "type": "csv", "source": "url", "format": "table", "parser": "backend",
+          "url": "https://aegisforecasti0654609440.blob.core.windows.net/aegis-forecast-drift/forecast_drift_runs.csv?se=2026-08-20T22%3A54Z&sp=rl&spr=https&sv=2026-04-06&sr=c", "url_options": { "method": "GET", "data": "" }, "root_selector": "",
+          "columns": [
+            { "selector": "checks_passed", "text": "checks_passed", "type": "number" },
+            { "selector": "checks_total", "text": "checks_total", "type": "number" },
+            { "selector": "calculation_run_id", "text": "calculation_run_id", "type": "string" }
+          ],
+          "computed_columns": [ { "selector": "checks_total - checks_passed", "text": "checks_failed" } ],
+          "filters": [],
+          "filterExpression": "calculation_run_id IN (${run_id:singlequote}, '__na__')"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short", "decimals": 0,
+          "color": { "mode": "thresholds" },
+          "thresholds": { "mode": "absolute", "steps": [ { "value": null, "color": "green" }, { "value": 1, "color": "red" } ] }
+        },
+        "overrides": []
+      },
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"], "fields": "/^checks_failed$/", "values": false }, "orientation": "auto", "colorMode": "background", "graphMode": "none", "justifyMode": "center", "textMode": "value" }
+    },
+    {
+      "id": 13, "type": "stat", "title": "Checks Total",
+      "description": "Total number of governance checks defined for the run (forecast_drift_runs.csv).",
+      "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+      "gridPos": { "h": 5, "w": 4, "x": 16, "y": 11 },
+      "targets": [
+        {
+          "refId": "A", "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+          "type": "csv", "source": "url", "format": "table", "parser": "backend",
+          "url": "https://aegisforecasti0654609440.blob.core.windows.net/aegis-forecast-drift/forecast_drift_runs.csv?se=2026-08-20T22%3A54Z&sp=rl&spr=https&sv=2026-04-06&sr=c", "url_options": { "method": "GET", "data": "" }, "root_selector": "",
+          "columns": [
+            { "selector": "checks_total", "text": "checks_total", "type": "number" },
+            { "selector": "calculation_run_id", "text": "calculation_run_id", "type": "string" }
+          ],
+          "filters": [],
+          "filterExpression": "calculation_run_id IN (${run_id:singlequote}, '__na__')"
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "short", "decimals": 0, "color": { "mode": "fixed", "fixedColor": "blue" } }, "overrides": [] },
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"], "fields": "/^checks_total$/", "values": false }, "orientation": "auto", "colorMode": "value", "graphMode": "none", "justifyMode": "center", "textMode": "value" }
+    },
+    {
+      "id": 14, "type": "stat", "title": "Run Status",
+      "description": "Governed run status for the selected run (forecast_drift_runs.csv).",
+      "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+      "gridPos": { "h": 5, "w": 4, "x": 20, "y": 11 },
+      "targets": [
+        {
+          "refId": "A", "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+          "type": "csv", "source": "url", "format": "table", "parser": "backend",
+          "url": "https://aegisforecasti0654609440.blob.core.windows.net/aegis-forecast-drift/forecast_drift_runs.csv?se=2026-08-20T22%3A54Z&sp=rl&spr=https&sv=2026-04-06&sr=c", "url_options": { "method": "GET", "data": "" }, "root_selector": "",
+          "columns": [
+            { "selector": "run_status", "text": "run_status", "type": "string" },
+            { "selector": "calculation_run_id", "text": "calculation_run_id", "type": "string" }
+          ],
+          "filters": [],
+          "filterExpression": "calculation_run_id IN (${run_id:singlequote}, '__na__')"
+        }
+      ],
+      "fieldConfig": { "defaults": { "color": { "mode": "fixed", "fixedColor": "green" } }, "overrides": [] },
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"], "fields": "/^run_status$/", "values": false }, "orientation": "auto", "colorMode": "value", "graphMode": "none", "justifyMode": "center", "textMode": "value" }
+    },
+
+    {
+      "id": 20, "type": "table", "title": "Latest Validation Run",
+      "description": "Data-quality outcome of the latest governed run (forecast_drift_runs.csv): checks passed vs total, plus signals and events written. Timestamps in UTC. Run-scoped.",
+      "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+      "gridPos": { "h": 6, "w": 24, "x": 0, "y": 16 },
+      "targets": [
+        {
+          "refId": "A", "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+          "type": "csv", "source": "url", "format": "table", "parser": "backend",
+          "url": "https://aegisforecasti0654609440.blob.core.windows.net/aegis-forecast-drift/forecast_drift_runs.csv?se=2026-08-20T22%3A54Z&sp=rl&spr=https&sv=2026-04-06&sr=c", "url_options": { "method": "GET", "data": "" }, "root_selector": "",
+          "columns": [
+            { "selector": "calculation_run_id", "text": "calculation_run_id", "type": "string" },
+            { "selector": "run_status", "text": "run_status", "type": "string" },
+            { "selector": "run_finished_at", "text": "run_finished_at", "type": "timestamp" },
+            { "selector": "checks_passed", "text": "checks_passed", "type": "number" },
+            { "selector": "checks_total", "text": "checks_total", "type": "number" },
+            { "selector": "signals_written", "text": "signals_written", "type": "number" },
+            { "selector": "events_created", "text": "events_created", "type": "number" }
+          ],
+          "filters": [],
+          "filterExpression": "calculation_run_id IN (${run_id:singlequote}, '__na__')"
+        }
+      ],
+      "transformations": [
+        { "id": "organize", "options": { "excludeByName": {}, "indexByName": { "calculation_run_id": 0, "run_status": 1, "run_finished_at": 2, "checks_passed": 3, "checks_total": 4, "signals_written": 5, "events_created": 6 }, "renameByName": {} } }
+      ],
+      "fieldConfig": {
+        "defaults": { "custom": { "align": "left", "filterable": false } },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "calculation_run_id" }, "properties": [ { "id": "displayName", "value": "Run ID" }, { "id": "custom.width", "value": 90 }, { "id": "custom.align", "value": "center" } ] },
+          { "matcher": { "id": "byName", "options": "run_status" }, "properties": [ { "id": "displayName", "value": "Run Status" }, { "id": "custom.width", "value": 140 } ] },
+          { "matcher": { "id": "byName", "options": "run_finished_at" }, "properties": [ { "id": "displayName", "value": "Finished At (UTC)" }, { "id": "unit", "value": "time:YYYY-MM-DD HH:mm" }, { "id": "custom.width", "value": 200 } ] },
+          { "matcher": { "id": "byName", "options": "checks_passed" }, "properties": [ { "id": "displayName", "value": "Checks Passed" }, { "id": "unit", "value": "short" }, { "id": "decimals", "value": 0 }, { "id": "custom.align", "value": "right" }, { "id": "custom.width", "value": 130 } ] },
+          { "matcher": { "id": "byName", "options": "checks_total" }, "properties": [ { "id": "displayName", "value": "Checks Total" }, { "id": "unit", "value": "short" }, { "id": "decimals", "value": 0 }, { "id": "custom.align", "value": "right" }, { "id": "custom.width", "value": 120 } ] },
+          { "matcher": { "id": "byName", "options": "signals_written" }, "properties": [ { "id": "displayName", "value": "Signals Written" }, { "id": "unit", "value": "short" }, { "id": "decimals", "value": 0 }, { "id": "custom.align", "value": "right" } ] },
+          { "matcher": { "id": "byName", "options": "events_created" }, "properties": [ { "id": "displayName", "value": "Events Created" }, { "id": "unit", "value": "short" }, { "id": "decimals", "value": 0 }, { "id": "custom.align", "value": "right" } ] }
+        ]
+      },
+      "options": { "showHeader": true, "cellHeight": "sm", "footer": { "show": false } }
+    },
+
+    {
+      "id": 25, "type": "text", "title": "",
+      "gridPos": { "h": 3, "w": 24, "x": 0, "y": 22 },
+      "options": { "mode": "markdown", "content": "## 18 Governed Data-Quality Checks\nRead **live** from the governed catalog `https://aegisforecasti0654609440.blob.core.windows.net/aegis-forecast-drift/forecast_drift_data_quality_checks.csv?se=2026-08-20T22%3A54Z&sp=rl&spr=https&sv=2026-04-06&sr=c` (byte-identical to `validation/forecast_drift_data_quality_checks.csv`, SHA-256 `9E76361F…551EE1`). Each row maps **1:1** to a check in `V1/python/drift_engine/checks.py`. **Category** and **Scope** are derived presentation fields; **Canonical Name** is authoritative. Use the column filter icons to search." }
+    },
+    {
+      "id": 30, "type": "table", "title": "Data-Quality Check Catalog (18 checks)",
+      "description": "The 18 governed data-quality checks, served live from validation/forecast_drift_data_quality_checks.csv via the nginx aegis-csv allowlist. Not hardcoded. PASS shown in green. Category and Scope are derived presentation fields; canonical_check_name is verbatim from checks.py.",
+      "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+      "gridPos": { "h": 24, "w": 24, "x": 0, "y": 25 },
+      "targets": [
+        {
+          "refId": "A", "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+          "type": "csv", "source": "url", "format": "table", "parser": "backend",
+          "url": "https://aegisforecasti0654609440.blob.core.windows.net/aegis-forecast-drift/forecast_drift_data_quality_checks.csv?se=2026-08-20T22%3A54Z&sp=rl&spr=https&sv=2026-04-06&sr=c", "url_options": { "method": "GET", "data": "" }, "root_selector": "",
+          "columns": [
+            { "selector": "check_order", "text": "check_order", "type": "number" },
+            { "selector": "check_id", "text": "check_id", "type": "string" },
+            { "selector": "display_name", "text": "display_name", "type": "string" },
+            { "selector": "canonical_check_name", "text": "canonical_check_name", "type": "string" },
+            { "selector": "category", "text": "category", "type": "string" },
+            { "selector": "scope", "text": "scope", "type": "string" },
+            { "selector": "rule_description", "text": "rule_description", "type": "string" },
+            { "selector": "expected_value", "text": "expected_value", "type": "string" },
+            { "selector": "observed_value", "text": "observed_value", "type": "string" },
+            { "selector": "check_status", "text": "check_status", "type": "string" },
+            { "selector": "evidence_reference", "text": "evidence_reference", "type": "string" },
+            { "selector": "checked_at_utc", "text": "checked_at_utc", "type": "timestamp" }
+          ],
+          "filters": []
+        }
+      ],
+      "transformations": [
+        { "id": "sortBy", "options": { "sort": [ { "field": "check_order", "desc": false } ] } },
+        { "id": "organize", "options": { "excludeByName": {}, "indexByName": { "check_order": 0, "check_id": 1, "display_name": 2, "canonical_check_name": 3, "category": 4, "scope": 5, "rule_description": 6, "expected_value": 7, "observed_value": 8, "check_status": 9, "evidence_reference": 10, "checked_at_utc": 11 }, "renameByName": {} } }
+      ],
+      "fieldConfig": {
+        "defaults": { "custom": { "align": "left", "filterable": true } },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "check_order" }, "properties": [ { "id": "displayName", "value": "#" }, { "id": "custom.width", "value": 50 }, { "id": "custom.align", "value": "center" } ] },
+          { "matcher": { "id": "byName", "options": "check_id" }, "properties": [ { "id": "displayName", "value": "Check ID" }, { "id": "custom.width", "value": 90 }, { "id": "custom.align", "value": "center" } ] },
+          { "matcher": { "id": "byName", "options": "display_name" }, "properties": [ { "id": "displayName", "value": "Check" }, { "id": "custom.width", "value": 200 } ] },
+          { "matcher": { "id": "byName", "options": "canonical_check_name" }, "properties": [ { "id": "displayName", "value": "Canonical Name" }, { "id": "custom.width", "value": 210 } ] },
+          { "matcher": { "id": "byName", "options": "category" }, "properties": [ { "id": "displayName", "value": "Category (derived)" }, { "id": "custom.width", "value": 180 } ] },
+          { "matcher": { "id": "byName", "options": "scope" }, "properties": [ { "id": "displayName", "value": "Scope" }, { "id": "custom.width", "value": 130 } ] },
+          { "matcher": { "id": "byName", "options": "rule_description" }, "properties": [ { "id": "displayName", "value": "Rule" }, { "id": "custom.minWidth", "value": 340 }, { "id": "custom.cellOptions", "value": { "type": "auto", "wrapText": true } } ] },
+          { "matcher": { "id": "byName", "options": "expected_value" }, "properties": [ { "id": "displayName", "value": "Expected" }, { "id": "custom.width", "value": 200 } ] },
+          { "matcher": { "id": "byName", "options": "observed_value" }, "properties": [ { "id": "displayName", "value": "Observed" }, { "id": "custom.width", "value": 200 } ] },
+          { "matcher": { "id": "byName", "options": "check_status" }, "properties": [ { "id": "displayName", "value": "Status" }, { "id": "custom.width", "value": 90 }, { "id": "custom.align", "value": "center" }, { "id": "mappings", "value": [ { "type": "value", "options": { "PASS": { "color": "green", "index": 0 }, "FAIL": { "color": "red", "index": 1 } } } ] }, { "id": "custom.cellOptions", "value": { "type": "color-text" } } ] },
+          { "matcher": { "id": "byName", "options": "evidence_reference" }, "properties": [ { "id": "displayName", "value": "Evidence" }, { "id": "custom.minWidth", "value": 300 }, { "id": "custom.cellOptions", "value": { "type": "auto", "wrapText": true } } ] },
+          { "matcher": { "id": "byName", "options": "checked_at_utc" }, "properties": [ { "id": "displayName", "value": "Checked At (UTC)" }, { "id": "unit", "value": "time:YYYY-MM-DD HH:mm" }, { "id": "custom.width", "value": 160 } ] }
+        ]
+      },
+      "options": { "showHeader": true, "cellHeight": "md", "footer": { "show": false } }
+    },
+
+    {
+      "id": 40, "type": "barchart", "title": "Checks by Category (derived grouping)",
+      "description": "Count of governed checks per derived category, read live from the catalog. Category is a presentation grouping justified 1:1 by checks.py — no check is invented, split or merged. Total across categories = 18.",
+      "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+      "gridPos": { "h": 9, "w": 14, "x": 0, "y": 49 },
+      "targets": [
+        {
+          "refId": "A", "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+          "type": "csv", "source": "url", "format": "table", "parser": "backend",
+          "url": "https://aegisforecasti0654609440.blob.core.windows.net/aegis-forecast-drift/forecast_drift_data_quality_checks.csv?se=2026-08-20T22%3A54Z&sp=rl&spr=https&sv=2026-04-06&sr=c", "url_options": { "method": "GET", "data": "" }, "root_selector": "",
+          "columns": [
+            { "selector": "category", "text": "category", "type": "string" },
+            { "selector": "check_id", "text": "check_id", "type": "string" }
+          ],
+          "filters": []
+        }
+      ],
+      "transformations": [
+        { "id": "groupBy", "options": { "fields": { "category": { "aggregations": [], "operation": "groupby" }, "check_id": { "aggregations": ["count"], "operation": "aggregate" } } } },
+        { "id": "sortBy", "options": { "sort": [ { "field": "check_id (count)", "desc": true } ] } }
+      ],
+      "fieldConfig": { "defaults": { "unit": "short", "decimals": 0, "color": { "mode": "fixed", "fixedColor": "#5794F2" } }, "overrides": [] },
+      "options": { "orientation": "horizontal", "showValue": "always", "stacking": "none", "xTickLabelRotation": 0, "legend": { "showLegend": false }, "tooltip": { "mode": "single", "sort": "none" } }
+    },
+    {
+      "id": 41, "type": "text", "title": "Category is a derived grouping",
+      "gridPos": { "h": 9, "w": 10, "x": 14, "y": 49 },
+      "options": { "mode": "markdown", "content": "The **9** categories are a **presentation layer** justified 1:1 by `checks.py`. No check is invented, split, merged or renamed — canonical names remain authoritative.\n\n| Category | Checks |\n|---|---:|\n| Completeness & Presence | 4 |\n| Enumeration | 4 |\n| Uniqueness | 2 |\n| Value Range | 2 |\n| Conditional Integrity | 2 |\n| Schema | 1 |\n| Configuration | 1 |\n| Structural Integrity | 1 |\n| Canonicalization | 1 |\n| **Total** | **18** |" }
+    },
+
+    {
+      "id": 50, "type": "text", "title": "Governed Family Weights (read-only)",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 58 },
+      "options": { "mode": "markdown", "content": "Source: `V1/python/drift_engine/config/settings.py` · version `w1.0` · validated by check **DQ-07 `weights_sum_100`**.\n\n| Family | Weight |\n|---|---:|\n| Performance | 20% |\n| Shape | 40% |\n| Stability | 30% |\n| Volatility | 10% |\n| **Total** | **100%** |\n\n_Weights live in the V1 engine. This panel reads governed values — el dashboard no cocina datos._" }
+    },
+    {
+      "id": 52, "type": "text", "title": "Status Thresholds & Boundary Behavior (read-only)",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 58 },
+      "options": { "mode": "markdown", "content": "Source: `settings.py` BANDS · version `t1.0`. Boundaries are **inclusive lower, exclusive upper**; the Critical top is inclusive.\n\n| Status | Range |\n|---|---|\n| 🟢 Healthy | [0, 20) |\n| 🟡 Watch | [20, 40) |\n| 🟠 Warning | [40, 70) |\n| 🔴 Critical | [70, 100] |\n\n**Boundary behavior:** 0 → Healthy · 19.999 → Healthy · 20 → Watch · 39.999 → Watch · 40 → Warning · 69.999 → Warning · 70 → Critical · 100 → Critical." }
+    },
+
+    {
+      "id": 60, "type": "table", "title": "Computability Coverage by Family",
+      "description": "Live count of family-score rows per drift_family and eligibility_status (forecast_drift_family_scores.csv). COMPUTED rows are those with a computable family score; NOT_COMPUTABLE rows carry a null score and a reason. Expected at run 1: Performance 156 COMPUTED / 12 NOT_COMPUTABLE, Shape 168 / 0, Stability 168 / 0, Volatility 144 / 24.",
+      "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+      "gridPos": { "h": 11, "w": 12, "x": 0, "y": 66 },
+      "targets": [
+        {
+          "refId": "A", "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+          "type": "csv", "source": "url", "format": "table", "parser": "backend",
+          "url": "https://aegisforecasti0654609440.blob.core.windows.net/aegis-forecast-drift/forecast_drift_family_scores.csv?se=2026-08-20T22%3A54Z&sp=rl&spr=https&sv=2026-04-06&sr=c", "url_options": { "method": "GET", "data": "" }, "root_selector": "",
+          "columns": [
+            { "selector": "drift_family", "text": "drift_family", "type": "string" },
+            { "selector": "eligibility_status", "text": "eligibility_status", "type": "string" },
+            { "selector": "drift_event_id", "text": "drift_event_id", "type": "string" }
+          ],
+          "filters": []
+        }
+      ],
+      "transformations": [
+        { "id": "groupBy", "options": { "fields": { "drift_family": { "aggregations": [], "operation": "groupby" }, "eligibility_status": { "aggregations": [], "operation": "groupby" }, "drift_event_id": { "aggregations": ["count"], "operation": "aggregate" } } } },
+        { "id": "sortBy", "options": { "sort": [ { "field": "drift_family", "desc": false } ] } }
+      ],
+      "fieldConfig": {
+        "defaults": { "custom": { "align": "left", "filterable": true } },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "drift_family" }, "properties": [ { "id": "displayName", "value": "Drift Family" }, { "id": "custom.width", "value": 160 } ] },
+          { "matcher": { "id": "byName", "options": "eligibility_status" }, "properties": [ { "id": "displayName", "value": "Eligibility Status" }, { "id": "custom.width", "value": 180 } ] },
+          { "matcher": { "id": "byName", "options": "drift_event_id (count)" }, "properties": [ { "id": "displayName", "value": "Rows" }, { "id": "unit", "value": "short" }, { "id": "decimals", "value": 0 }, { "id": "custom.align", "value": "right" } ] }
+        ]
+      },
+      "options": { "showHeader": true, "cellHeight": "sm", "footer": { "show": false } }
+    },
+    {
+      "id": 62, "type": "table", "title": "Non-Computable Reasons by Family",
+      "description": "Live count of NOT_COMPUTABLE family-score rows per drift_family and not_computable_reason (forecast_drift_family_scores.csv). Expected at run 1: Performance NO_REALIZED_OVERLAP = 12, Volatility INSUFFICIENT_VERSIONS = 24. Shape and Stability have no non-computable rows.",
+      "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+      "gridPos": { "h": 11, "w": 12, "x": 12, "y": 66 },
+      "targets": [
+        {
+          "refId": "A", "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+          "type": "csv", "source": "url", "format": "table", "parser": "backend",
+          "url": "https://aegisforecasti0654609440.blob.core.windows.net/aegis-forecast-drift/forecast_drift_family_scores.csv?se=2026-08-20T22%3A54Z&sp=rl&spr=https&sv=2026-04-06&sr=c", "url_options": { "method": "GET", "data": "" }, "root_selector": "",
+          "columns": [
+            { "selector": "drift_family", "text": "drift_family", "type": "string" },
+            { "selector": "not_computable_reason", "text": "not_computable_reason", "type": "string" },
+            { "selector": "eligibility_status", "text": "eligibility_status", "type": "string" },
+            { "selector": "drift_event_id", "text": "drift_event_id", "type": "string" }
+          ],
+          "filters": [],
+          "filterExpression": "eligibility_status == 'NOT_COMPUTABLE'"
+        }
+      ],
+      "transformations": [
+        { "id": "groupBy", "options": { "fields": { "drift_family": { "aggregations": [], "operation": "groupby" }, "not_computable_reason": { "aggregations": [], "operation": "groupby" }, "drift_event_id": { "aggregations": ["count"], "operation": "aggregate" } } } },
+        { "id": "sortBy", "options": { "sort": [ { "field": "drift_event_id (count)", "desc": true } ] } }
+      ],
+      "fieldConfig": {
+        "defaults": { "custom": { "align": "left", "filterable": true } },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "drift_family" }, "properties": [ { "id": "displayName", "value": "Drift Family" }, { "id": "custom.width", "value": 150 } ] },
+          { "matcher": { "id": "byName", "options": "not_computable_reason" }, "properties": [ { "id": "displayName", "value": "Non-Computable Reason" }, { "id": "custom.width", "value": 230 } ] },
+          { "matcher": { "id": "byName", "options": "drift_event_id (count)" }, "properties": [ { "id": "displayName", "value": "Rows" }, { "id": "unit", "value": "short" }, { "id": "decimals", "value": 0 }, { "id": "custom.align", "value": "right" } ] }
+        ]
+      },
+      "options": { "showHeader": true, "cellHeight": "sm", "footer": { "show": false } }
+    },
+
+    {
+      "id": 70, "type": "text", "title": "Dataset Inventory (governed V2 snapshot)",
+      "gridPos": { "h": 9, "w": 12, "x": 0, "y": 77 },
+      "options": { "mode": "markdown", "content": "Source: `V2/data/processed/data_manifest.json` (stage E7A.2, v1_modified = false).\n\n| Dataset | Rows | SHA-256 |\n|---|---:|---|\n| forecast_drift_signals.csv | 168 | `D975B46…` |\n| forecast_drift_family_scores.csv | 672 | `61DF281…` |\n| forecast_drift_event_history.csv | 71 | `1038709…` |\n| forecast_drift_runs.csv | 1 | `361BB46…` |\n| _data_quality_checks.csv (source) | 18 | `6C082BE…` |\n| forecast_drift_data_quality_checks.csv (catalog) | 18 | `9E76361…` |" }
+    },
+    {
+      "id": 72, "type": "text", "title": "Data Lineage",
+      "gridPos": { "h": 9, "w": 12, "x": 12, "y": 77 },
+      "options": { "mode": "markdown", "content": "Source data → **V1 Python drift engine** (`drift_engine`; rules in `checks.py`, governed config in `settings.py`) → `validation/_data_quality_checks.csv` (18 engine checks) → reproducible catalog `validation/forecast_drift_data_quality_checks.csv` via `build-e7d11-check-catalog.ps1` → **byte-identical served copy** in `current/` (same SHA-256 `9E76361…`) → **nginx `aegis-csv`** (read-only exact-match allowlist) → **Grafana Infinity** → this dashboard.\n\nNo secrets traverse this path. Dashboards read governed CSVs only — *el dashboard no cocina datos.*" }
+    },
+
+    {
+      "id": 80, "type": "text", "title": "Governance Rules",
+      "gridPos": { "h": 9, "w": 12, "x": 0, "y": 86 },
+      "options": { "mode": "markdown", "content": "- **Read-only.** This section displays governed metadata; it is not editable configuration.\n- **Single source of truth.** Weights, thresholds, classifications and the 18 checks live in the **V1** Python engine.\n- **No fabrication.** Every catalog row maps 1:1 to `checks.py`; the catalog is generated by `build-e7d11-check-catalog.ps1`, never hand-edited, and the generator **fails if the source ≠ 18 checks**.\n- **Traceability.** The served catalog checksum equals the validation artifact (`9E76361…551EE1`).\n- **Provenance.** All figures derive from the governed V2 snapshot (run 1).\n- **el dashboard no cocina datos.**" }
+    },
+    {
+      "id": 82, "type": "text", "title": "Known Limitations",
+      "gridPos": { "h": 9, "w": 12, "x": 12, "y": 86 },
+      "options": { "mode": "markdown", "content": "- **Single governed run** (`calculation_run_id = 1`); the Run ID picker has one value.\n- **Lifecycle**: 71 initial `Open` records, **0 true status transitions**.\n- **No Scenario/Service dimension**: `service` empty; `scenario` single value (`Enterprise`).\n- **Partial computability**: Performance 156/168 (`NO_REALIZED_OVERLAP`), Volatility 144/168 (`INSUFFICIENT_VERSIONS`); Shape & Stability 168/168.\n- **Not live**: static **V2** snapshot until the next governed refresh.\n- **Category / Scope** are derived presentation fields; canonical check names are authoritative." }
+    },
+
+    {
+      "id": 90, "type": "table", "title": "Latest Governed Run — Provenance",
+      "description": "Provenance of the current governed snapshot (forecast_drift_runs.csv): calculation version, finish time, runtime, peak memory, performance mode, idempotency and author. Timestamps in UTC. Run-scoped.",
+      "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+      "gridPos": { "h": 6, "w": 24, "x": 0, "y": 95 },
+      "targets": [
+        {
+          "refId": "A", "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "aegis-forecast-drift-csv" },
+          "type": "csv", "source": "url", "format": "table", "parser": "backend",
+          "url": "https://aegisforecasti0654609440.blob.core.windows.net/aegis-forecast-drift/forecast_drift_runs.csv?se=2026-08-20T22%3A54Z&sp=rl&spr=https&sv=2026-04-06&sr=c", "url_options": { "method": "GET", "data": "" }, "root_selector": "",
+          "columns": [
+            { "selector": "calculation_run_id", "text": "calculation_run_id", "type": "string" },
+            { "selector": "calculation_version", "text": "calculation_version", "type": "string" },
+            { "selector": "run_finished_at", "text": "run_finished_at", "type": "timestamp" },
+            { "selector": "runtime_seconds", "text": "runtime_seconds", "type": "number" },
+            { "selector": "peak_memory_mb", "text": "peak_memory_mb", "type": "number" },
+            { "selector": "performance_mode", "text": "performance_mode", "type": "string" },
+            { "selector": "idempotent", "text": "idempotent", "type": "string" },
+            { "selector": "created_by", "text": "created_by", "type": "string" }
+          ],
+          "filters": [],
+          "filterExpression": "calculation_run_id IN (${run_id:singlequote}, '__na__')"
+        }
+      ],
+      "transformations": [
+        { "id": "organize", "options": { "excludeByName": {}, "indexByName": { "calculation_run_id": 0, "calculation_version": 1, "run_finished_at": 2, "runtime_seconds": 3, "peak_memory_mb": 4, "performance_mode": 5, "idempotent": 6, "created_by": 7 }, "renameByName": {} } }
+      ],
+      "fieldConfig": {
+        "defaults": { "custom": { "align": "left", "filterable": false } },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "calculation_run_id" }, "properties": [ { "id": "displayName", "value": "Run ID" }, { "id": "custom.width", "value": 80 }, { "id": "custom.align", "value": "center" } ] },
+          { "matcher": { "id": "byName", "options": "calculation_version" }, "properties": [ { "id": "displayName", "value": "Calculation Version" }, { "id": "custom.width", "value": 160 } ] },
+          { "matcher": { "id": "byName", "options": "run_finished_at" }, "properties": [ { "id": "displayName", "value": "Finished At (UTC)" }, { "id": "unit", "value": "time:YYYY-MM-DD HH:mm" }, { "id": "custom.width", "value": 190 } ] },
+          { "matcher": { "id": "byName", "options": "runtime_seconds" }, "properties": [ { "id": "displayName", "value": "Runtime (s)" }, { "id": "unit", "value": "s" }, { "id": "decimals", "value": 2 }, { "id": "custom.align", "value": "right" }, { "id": "custom.width", "value": 120 } ] },
+          { "matcher": { "id": "byName", "options": "peak_memory_mb" }, "properties": [ { "id": "displayName", "value": "Peak Memory (MB)" }, { "id": "unit", "value": "decmbytes" }, { "id": "decimals", "value": 2 }, { "id": "custom.align", "value": "right" }, { "id": "custom.width", "value": 150 } ] },
+          { "matcher": { "id": "byName", "options": "performance_mode" }, "properties": [ { "id": "displayName", "value": "Performance Mode" }, { "id": "custom.width", "value": 150 }, { "id": "custom.align", "value": "center" } ] },
+          { "matcher": { "id": "byName", "options": "idempotent" }, "properties": [ { "id": "displayName", "value": "Idempotent" }, { "id": "custom.width", "value": 110 }, { "id": "custom.align", "value": "center" } ] },
+          { "matcher": { "id": "byName", "options": "created_by" }, "properties": [ { "id": "displayName", "value": "Created By" }, { "id": "custom.width", "value": 140 } ] }
+        ]
+      },
+      "options": { "showHeader": true, "cellHeight": "sm", "footer": { "show": false } }
+    }
+  ],
+  "annotations": { "list": [] }
+}
